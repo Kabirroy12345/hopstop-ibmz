@@ -199,14 +199,14 @@ def _build_trained_scorer() -> SnapMLAcceleratedScorer:
 
 
 def test_treeshap_local_accuracy_additivity() -> None:
-    """Verifies exact TreeSHAP local accuracy: sum(phi) + expected_base == raw_margin(x) to 1e-9."""
+    """Verifies exact TreeSHAP local accuracy: sum(phi) + expected_log_odds == raw_margin(x) to 1e-9."""
     scorer = _build_trained_scorer()
     rng = random.Random(99)
 
     for _ in range(50):
         vec = [rng.uniform(0.0, 6.0) for _ in range(12)]
-        phis, expected_base, raw_margin = scorer.explain_instance(vec)
-        assert abs((sum(phis) + expected_base) - raw_margin) < 1e-9
+        phis = scorer.explain_instance(vec)
+        assert abs((sum(phis) + scorer.expected_log_odds) - scorer.raw_margin(vec)) < 1e-9
 
 
 def test_treeshap_signed_negative_attributions_on_payroll() -> None:
@@ -215,8 +215,8 @@ def test_treeshap_signed_negative_attributions_on_payroll() -> None:
     payroll_vec = [0.0, 5.0, 1.0, 5.0, 0.0, 0.0, 11.36, 0.0, 0.0, 0.25, 5.0, 0.75]
     mule_vec = [2.0, 5.0, 3.0, 6.0, 0.96, 0.95, 4.78, 1.0, 1.0, 4.2, 5.0, 1.0]
 
-    phis_payroll, _, _ = scorer.explain_instance(payroll_vec)
-    phis_mule, _, _ = scorer.explain_instance(mule_vec)
+    phis_payroll = scorer.explain_instance(payroll_vec)
+    phis_mule = scorer.explain_instance(mule_vec)
 
     assert sum(phis_payroll) < 0.0
     assert any(p < 0.0 for p in phis_payroll)
