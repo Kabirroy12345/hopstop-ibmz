@@ -82,7 +82,7 @@ All metrics below are generated in a single reproducible pipeline ([`hopstop/tra
 
 ### B. Alert-Budget Scaling Curve & Realistic Base-Rate Precision (`alert_budget_curve` in `benchmark_results.json`)
 
-For any alert budget $B$ (`alerts_count` $= A$) on $P = 272$ positives (`test_prevalence` $\pi_{\text{test}} = 272 / 15,232 = 1.7857\%$), maximum possible recall is bounded by $\text{Ceiling}(B) = \min(1.0, A / P)$ (enforced in `test_alert_budget_recall_ceiling_and_dashboard_sync`). To evaluate precision under realistic banking base rates $\pi_{\text{real}} \in \{10\text{ bps} (0.10\%), 5\text{ bps} (0.05\%)\}$, we compute Bayes prior-adjusted precision from test TPR and FPR:
+For any alert budget $B$ (`alerts_count` $= A$) on $P = 272$ positives (`test_prevalence` = 272 / 15,232 = 1.7857%), maximum possible recall is bounded by $\text{Ceiling}(B) = \min(1.0, A / P)$ (enforced in `test_alert_budget_recall_ceiling_and_dashboard_sync`). To evaluate precision under realistic banking base rates $\pi_{\text{real}} \in \{0.0010, 0.0005\}$ (10 bps / 0.10% and 5 bps / 0.05%), we compute Bayes prior-adjusted precision from test TPR and FPR:
 
 $$\text{Precision}(\pi_{\text{real}}) = \frac{\text{TPR} \cdot \pi_{\text{real}}}{\text{TPR} \cdot \pi_{\text{real}} + \text{FPR} \cdot (1 - \pi_{\text{real}})}$$
 
@@ -99,7 +99,7 @@ $$\text{Precision}(\pi_{\text{real}}) = \frac{\text{TPR} \cdot \pi_{\text{real}}
 
 > **Why Tie-Invariant Grouping Matters for Discrete Tree/Rule Scores:** In stratified bootstrap resampling (`idx_sample = s_pos + s_neg`), positive indices precede negative indices. A naive `sorted(zip(y_scores, y_true), key=lambda x: x[0], reverse=True)` uses Python's stable Timsort, which breaks tied scores by placing `y=1` first—biasing bootstrap PR-AUC upward on discrete-score models (`VelocityRulesBaseline` and `Depth2Tree`). Grouping by distinct score thresholds in [`compute_roc_and_pr_auc()`](hopstop/train_and_benchmark.py) and [`recall_at_alert_rate()`](hopstop/train_and_benchmark.py) makes all metrics **100% order-invariant and tie-invariant** (verified in `test_tie_invariance_and_paired_bootstrap_delta_consistency`), so bootstrap mean differences align with point estimate differences:
 
-| Paired Comparison (`400` Stratified Transaction Resamples, $n=15,232$) | Point $\Delta\text{PR-AUC}$ | Bootstrap Mean $\Delta\text{PR-AUC}$ (95% CI) | Point $\Delta\text{Recall@1\%}$ | Bootstrap Mean $\Delta\text{Recall@1\%}$ (95% CI) | Statistical Conclusion |
+| Paired Comparison (`400` Stratified Transaction Resamples, $n=15,232$) | Point ΔPR-AUC | Bootstrap Mean ΔPR-AUC (95% CI) | Point ΔRecall @ 1% | Bootstrap Mean ΔRecall @ 1% (95% CI) | Statistical Conclusion |
 | :--- | :---: | :---: | :---: | :---: | :--- |
 | **HopStop GBDT minus Static Rules (`gbdt_minus_rules`)** | **`+0.3629`** (`0.8100 - 0.4471`) | **`+0.3604`** `[+0.3081, +0.4064]` | **`+18.09%`** (`53.75% - 35.66%`) | **`+17.78%`** `[+12.87%, +22.98%]` | **Highly significant gain** driven by the 12 causal $O(1)$ graph-velocity features. |
 | **HopStop GBDT minus Logistic Regression (`gbdt_minus_logreg`)** | **`+0.0041`** (`0.8100 - 0.8059`) | **`+0.0018`** `[-0.0158, +0.0213]` | **`+1.18%`** (`53.75% - 52.57%`) | **`+0.72%`** `[-0.74%, +2.94%]` | **Statistically tied** on PR-AUC and Recall@1% (95% CIs span zero). |
@@ -139,7 +139,7 @@ Exact path-dependent TreeSHAP (`top_reason_codes`) runs **only on flagged `HOLD`
 Because training uses `pos_weight=14.0` to emphasize rare laundering chains, raw sigmoid outputs cluster near `0.98–0.99` in the upper tail. [`SnapMLAcceleratedScorer.calibrate_on_validation()`](hopstop/ibmz_runtime.py) fits a **Day-7 PAVA Isotonic Regression + Prior-Shift Calibrator** and stores the **Day-7 validation score distribution (`5,032` transfers)** inside [`artifacts/hopstop_model.json`](artifacts/hopstop_model.json). Every scored transaction reports:
 - **`hopstop_score`**: Day-7 calibrated empirical laundering probability (`HOLD >= 0.9390`, `STEP_UP >= 0.8797`),
 - **`hopstop_val_percentile`**: Exact empirical percentile rank on the Day-7 validation set (`HOLD >= P99.50`, `STEP_UP >= P99.00`), and
-- **Exact Path-Dependent TreeSHAP (`reason_codes`)**: Satisfying $\sum_{j=1}^{12} \phi_j(x) + \mathbb{E}[f(X)] = \text{raw\_margin}(x)$ to $10^{-9}$.
+- **Exact Path-Dependent TreeSHAP (`reason_codes`)**: Satisfying $\sum_{j=1}^{12} \phi_j(x) + \mathbb{E}[f(X)] = f(x)$ to $10^{-9}$ (where $f(x)$ is the `raw_margin` log-odds).
 
 ### A. Deterministic Unseen Test-Split (`Days 8–10`) Case Studies — Wins & False Negative
 
@@ -186,12 +186,12 @@ Each per-account time window is managed by [`SlidingWindow`](hopstop/feature_eng
 | 2 | `fan_out_1h` | 1h (`O(1)` amortized) | `len(out_1h.cnt)` — distinct outbound payees in the past 3,600s |
 | 3 | `fan_in_24h` | 24h (`O(1)` amortized) | `len(in_24h.cnt)` — distinct inbound senders in the past 86,400s |
 | 4 | `fan_out_24h` | 24h (`O(1)` amortized) | `len(out_24h.cnt)` — distinct outbound payees in the past 86,400s |
-| 5 | `pass_through_ratio_15m` | 15m / 15m (`O(1)`) | $\min(5.0, (\text{out\_15m} + \text{amt}) / (\text{in\_15m} + 1))$ when $\text{in\_15m} > 0$ else $0.0$ |
-| 6 | `pass_through_ratio_1h` | 1h / 1h (`O(1)`) | $\min(5.0, (\text{out\_1h} + \text{amt}) / (\text{in\_1h} + 1))$ when $\text{in\_1h} > 0$ else $0.0$ |
-| 7 | `time_since_last_credit_log` | Instant (`O(1)`) | $\log(1 + \min(86400, \max(1, t - t_{\text{last\_credit}})))$ |
-| 8 | `rapid_turnover_flag` | Tiered 15m / 1h (`O(1)`) | `1.0` if $\Delta t_{\text{credit}} \le 900\text{s}, \text{in\_15m} \ge 5000, \text{pt\_15m} \ge 0.65$; `0.5` if $\Delta t_{\text{credit}} \le 3600\text{s}, \text{in\_1h} \ge 5000, \text{pt\_1h} \ge 0.65$; else `0.0` |
+| 5 | `pass_through_ratio_15m` | 15m / 15m (`O(1)`) | `min(5.0, (out_15m + amt) / (in_15m + 1))` when `in_15m > 0`, else `0.0` |
+| 6 | `pass_through_ratio_1h` | 1h / 1h (`O(1)`) | `min(5.0, (out_1h + amt) / (in_1h + 1))` when `in_1h > 0`, else `0.0` |
+| 7 | `time_since_last_credit_log` | Instant (`O(1)`) | `log(1 + min(86400, max(1, t - t_last_credit)))` |
+| 8 | `rapid_turnover_flag` | Tiered 15m / 1h (`O(1)`) | `1.0` if `dt_credit <= 900s`, `in_15m >= 5000`, and `pt_15m >= 0.65`; `0.5` if `dt_credit <= 3600s`, `in_1h >= 5000`, and `pt_1h >= 0.65`; else `0.0` |
 | 9 | `counterparty_novelty` | LRU + Rotating Bloom (`O(1)`) | `0.0` if recipient is in sender's exact LRU `known_payees` (`max=2,048`) **or** dual-generation `PayeeBloomFilter`, else `1.0` |
-| 10 | `amount_zscore` | Online Welford (`O(1)`) | Clipped sender Z-score $(\text{amt} - \mu) / \sigma \in [-3, 10]$ using Welford running variance |
+| 10 | `amount_zscore` | Online Welford (`O(1)`) | Clipped sender Z-score `(amt - μ) / σ ∈ [-3, 10]` using Welford running variance |
 | 11 | `out_tx_velocity_1h` | 1h (`O(1)`) | `len(out_1h.q)` — total outgoing transactions in the last 3,600s |
 | 12 | `payment_format_risk` | Instant (`O(1)`) | Rail risk weight (`Wire=1.0`, `ACH=0.75`, `Cash=0.65`, `Credit Card=0.30`, `Cheque=0.20`) |
 
@@ -199,11 +199,11 @@ Each per-account time window is managed by [`SlidingWindow`](hopstop/feature_eng
 
 [`PayeeBloomFilter`](hopstop/feature_engine.py) is lazily allocated only when a hub account exceeds `2,048` recurring payees (`99.9%` of accounts use `0 bytes` of Bloom memory and have `0.0%` exact-LRU FPR). It maintains two generations (`active_bits` and `prev_bits`) with $k = 4$ SHA-256 probes. Because `contains()` queries **both** generations (`active_bits OR prev_bits`), the single-generation and combined dual-generation false-positive rates are:
 
-$$\text{FPR}_1(n, m) = \left(1 - e^{-kn/m}\right)^k, \qquad \text{FPR}_{\text{dual}}(n_{\text{act}}, n_{\text{prev}}, m) = 1 - \bigl(1 - \text{FPR}_1(n_{\text{act}}, m)\bigr)\bigl(1 - \text{FPR}_1(n_{\text{prev}}, m)\bigr)$$
+$$\text{FPR}_1(n, m) = \left(1 - e^{-kn/m}\right)^k, \qquad \text{FPR}_{\text{dual}}(n_1, n_2, m) = 1 - \bigl(1 - \text{FPR}_1(n_1, m)\bigr)\bigl(1 - \text{FPR}_1(n_2, m)\bigr)$$
 
 Both configurations below are verified in [`PayeeBloomFilter.single_generation_fpr()`](hopstop/feature_engine.py), [`PayeeBloomFilter.dual_generation_fpr()`](hopstop/feature_engine.py), and `test_bloom_filter_exact_fpr_math_and_60day_dormancy`:
 
-| Filter Allocation (`k = 4` probes) | Bits per Generation ($m$) | Single-Gen FPR @ $n=10\text{k}$ Evicted | Dual-Gen FPR @ $(10\text{k}, 10\text{k})$ | Single-Gen FPR @ $n=25\text{k}$ (Rotation Cap) | Dual-Gen Peak FPR @ $(25\text{k}, 25\text{k})$ Just Before Rotation |
+| Filter Allocation (`k = 4` probes) | Bits per Generation ($m$) | Single-Gen FPR @ $n = 10\text{k}$ | Dual-Gen FPR @ $(10\text{k}, 10\text{k})$ | Single-Gen FPR @ $n = 25\text{k}$ (Rotation Cap) | Dual-Gen Peak FPR @ $(25\text{k}, 25\text{k})$ Just Before Rotation |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Default Production (`64 KB/gen` = `128 KB total` across 2 gens)** | `524,288` bits (`65,536 B/gen`) | **`0.00291%`** (`2.91e-5`) | **`0.00582%`** | **`0.0910%`** (`9.10e-4`) | **`0.1819%`** (`< 0.2%`) |
 | **Compact Option (`32 KB/gen` = `64 KB total` across 2 gens)** | `262,144` bits (`32,768 B/gen`) | **`0.0401%`** (`4.01e-4`) | **`0.0802%`** | **`1.012%`** (`1.01e-2`) | **`2.014%`** (`~2.0%`) |
@@ -229,7 +229,7 @@ Runs [`tests/test_hopstop.py`](tests/test_hopstop.py) (`22 passed` across 12 tes
 - `test_large_employer_payroll_5000_payees_bloom_filter` — verifies zero false novelty on 5,000 recurring employees and verifies dual-generation aging.
 - `test_bloom_filter_exact_fpr_math_and_60day_dormancy` — verifies exact single-gen and dual-gen FPR formulas for both `64 KB/gen` (`524,288` bits) and `32 KB/gen` (`262,144` bits), plus the `> 60-day` two-rotation dormancy horizon.
 - `test_strict_causality_no_future_leakage` — future transactions have zero effect on past features.
-- `test_treeshap_local_accuracy_additivity` — exact TreeSHAP local accuracy ($\sum \phi_j + \mathbb{E}[f(X)] = \text{raw\_margin}(x)$ to $10^{-9}$) across 50 random vectors.
+- `test_treeshap_local_accuracy_additivity` — exact TreeSHAP local accuracy ($\sum \phi_j + \mathbb{E}[f(X)] = f(x)$ to $10^{-9}$, matching `raw_margin(x)`) across 50 random vectors.
 - `test_treeshap_signed_negative_attributions_on_payroll` — signed negative TreeSHAP log-odds on corporate payroll vs. positive on mule fan-out.
 - `test_tie_invariance_and_paired_bootstrap_delta_consistency` — verifies that `compute_roc_and_pr_auc` and `recall_at_alert_rate` are 100% invariant to `[y=1 first]` vs. `[y=0 first]` tie ordering and that `point_delta_pr_auc` matches `benchmark_results.json`.
 - `test_alert_budget_recall_ceiling_and_dashboard_sync` — asserts `recall <= alerts / positives` across all budgets in `alert_budget_curve` and verifies that `dashboard.html` contains no impossible recall figures.
