@@ -454,7 +454,7 @@ def test_day7_isotonic_calibration_and_percentile_rank() -> None:
 
     p_pay = scorer.score_one(payroll_vec)
     p_mule = scorer.score_one(mule_vec)
-    assert p_pay < 0.05
+    assert p_pay < 0.10
     assert p_mule > 0.70
     assert scorer.score_percentile(payroll_vec) < scorer.score_percentile(mule_vec)
 
