@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HopStop - IBM Z Datathon 4 - Kabir Roy</title>
+<style>
+  @page { size: A4; margin: 9mm 10mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 8.4pt; line-height: 1.32; color: #161616; margin: 0; }
+  h1 { font-size: 15pt; margin: 0; color: #0f62fe; }
+  h2 { font-size: 9.4pt; margin: 6px 0 3px; color: #0f62fe; border-bottom: 1px solid #c6c6c6; padding-bottom: 1px; text-transform: uppercase; letter-spacing: .3px; }
+  .sub { font-size: 8.6pt; color: #393939; margin: 2px 0 4px; }
+  .meta { font-size: 7.6pt; color: #525252; }
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 4px 0 2px; }
+  .box { flex: 1; border: 1.3px solid #0f62fe; border-radius: 4px; padding: 4px 5px; background: #edf5ff; font-size: 7.5pt; }
+  .box b { display: block; font-size: 7.9pt; color: #002d9c; margin-bottom: 1px; }
+  .box.z { background: #e5f6ff; border-color: #0043ce; }
+  .box.out { background: #defbe6; border-color: #198038; }
+  .box.out b { color: #0e6027; }
+  .arrow { width: 14px; display: flex; align-items: center; justify-content: center; color: #0f62fe; font-weight: bold; font-size: 11pt; }
+  .zone { border: 1.5px dashed #0043ce; border-radius: 6px; padding: 3px 5px 5px; margin-top: 3px; }
+  .zone .label { font-size: 7.4pt; color: #0043ce; font-weight: 600; margin-bottom: 2px; }
+  .cols { display: flex; gap: 10px; }
+  .cols > div { flex: 1; }
+  ul, ol { margin: 2px 0; padding-left: 15px; }
+  li { margin: 1px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 7.6pt; }
+  th, td { border: 1px solid #c6c6c6; padding: 2px 4px; vertical-align: top; text-align: left; }
+  th { background: #f2f4f8; }
+  .note { font-size: 7.2pt; color: #525252; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>HopStop: stop mule payments at the first hop</h1>
+<div class="sub">Track: <b>Real-Time AI for Critical Decisions</b> &nbsp;|&nbsp; Transaction-time money-mule scoring on IBM LinuxONE with Snap ML and the Telum Integrated Accelerator for AI</div>
+<div class="meta">Kabir Roy, B.Tech CSE, VIT Bhopal &nbsp;|&nbsp; IBM Z Datathon 4 (17-18 Oct 2026) &nbsp;|&nbsp; Data: IBM Transactions for AML (synthetic, CDLA-Sharing-1.0)</div>
+
+<h2>Problem</h2>
+<div>Mule accounts pass cyber-fraud money onward within minutes, while AML transaction monitoring often runs hours later. Each extra hop spreads the money across more accounts and banks, which makes freezing and recovery harder. HopStop moves the mule check into the payment path: score each outgoing transfer before it settles, and pause it while the money is still close to the victim.</div>
+
+<h2>Architecture</h2>
+<div class="zone">
+  <div class="label">IBM LinuxONE instance (s390x) - data, features, model and decision stay on one platform</div>
+  <div class="flow">
+    <div class="box"><b>1. Payment stream</b>IBM AML HI-Small replayed in timestamp order at set rates (Python producer; Kafka if available)</div>
+    <div class="arrow">&rarr;</div>
+    <div class="box"><b>2. Feature engine</b>In-memory per-account state: fan-in/fan-out over 1h/24h, pass-through ratio, time since last credit, new-counterparty flag, amount z-score. Past events only.</div>
+    <div class="arrow">&rarr;</div>
+    <div class="box z"><b>3. Scoring</b>LightGBM/XGBoost model imported into IBM Snap ML (AI Toolkit for IBM Z container). tree_format=auto: Integrated Accelerator for AI if present, else CPU.</div>
+    <div class="arrow">&rarr;</div>
+    <div class="box"><b>4. Policy layer</b>Thresholds set by alert budget: allow / step-up / hold. Top-3 reason codes from per-feature contributions.</div>
+    <div class="arrow">&rarr;</div>
+    <div class="box out"><b>5. Analyst view</b>Live queue of held payments, reason codes, account hop graph, latency panel (p50/p99, CPU vs accelerator).</div>
+  </div>
+</div>
+<div class="note">Offline path: training and threshold tuning on a time-based split (early days train, later days test). The same feature code runs offline and online to avoid train/serve skew.</div>
+
+<div class="cols">
+<div>
+<h2>Why IBM Z, concretely</h2>
+<ul>
+  <li><b>Co-location:</b> where core payments already run on Z, scoring on the same platform avoids shipping transaction data to an external AI server and removes a network hop from the decision.</li>
+  <li><b>On-chip inference:</b> Telum (z16) and Telum II (z17) include an on-chip AI accelerator; Snap ML can map tree ensembles to it. We report measured latency, accelerator vs CPU-only.</li>
+  <li><b>Data protection:</b> stored data and logs encrypted with AES-GCM via OpenSSL (CPACF-accelerated on Z). Stretch: run the scorer in an IBM Secure Execution guest if the event environment supports it.</li>
+</ul>
+<h2>Success metrics (targets, to be measured)</h2>
+<table>
+  <tr><th>Metric</th><th>Target</th></tr>
+  <tr><td>p99 end-to-end decision latency</td><td>&lt; 10 ms per transfer</td></tr>
+  <tr><td>Laundering recall at 1% alert rate</td><td>Above a velocity-rules baseline</td></tr>
+  <tr><td>PR-AUC (minority class)</td><td>Reported vs published GBT baselines</td></tr>
+  <tr><td>Chain interruption</td><td>% of pattern-file chains flagged by hop 2</td></tr>
+  <tr><td>Sustained throughput</td><td>Measured TPS at the latency target</td></tr>
+</table>
+</div>
+<div>
+<h2>24-hour build plan</h2>
+<table>
+  <tr><th>When</th><th>Work</th></tr>
+  <tr><td>Before event</td><td>Study data, design features, define rules baseline (code only if rules allow pre-work)</td></tr>
+  <tr><td>16 Oct</td><td>LinuxONE setup: Python env, Snap ML container, check NNPA with zDNN</td></tr>
+  <tr><td>H0-4</td><td>Load HI-Small, time split, feature engine, rules baseline</td></tr>
+  <tr><td>H4-9</td><td>Train GBT, import to Snap ML, offline metrics</td></tr>
+  <tr><td>H9-13</td><td>Stream replayer + scoring API + policy layer</td></tr>
+  <tr><td>H13-16</td><td>Latency/throughput benchmark, CPU vs accelerator, micro-batching</td></tr>
+  <tr><td>H16-20</td><td>Analyst dashboard, reason codes, chain-interruption metric</td></tr>
+  <tr><td>H20-24</td><td>README, repo cleanup, 3-min video and pitch</td></tr>
+</table>
+<h2>Risks and mitigations</h2>
+<table>
+  <tr><th>Risk</th><th>Mitigation</th></tr>
+  <tr><td>Accelerator not exposed on event VM</td><td>Same code on CPU; report honestly; show tree_format=auto path</td></tr>
+  <tr><td>Accelerator gains need batches</td><td>Benchmark batch 1 vs micro-batches; pick per latency budget</td></tr>
+  <tr><td>Label leakage from graph features</td><td>Past-only windows, strict time split</td></tr>
+  <tr><td>False holds hurt customers</td><td>Step-up tier, alert budget, recall at fixed alert rate</td></tr>
+  <tr><td>Synthetic data realism</td><td>Test on LI-Small too; no claims about real-bank numbers</td></tr>
+</table>
+</div>
+</div>
+
+<div class="cols">
+<div>
+<h2>Demo storyline (3-minute video)</h2>
+<ol>
+  <li>A fan-out laundering chain from the patterns file starts replaying in the stream.</li>
+  <li>Hop 1 transfer is scored on LinuxONE; HopStop returns HOLD with reason codes (e.g., high pass-through ratio, burst of new counterparties).</li>
+  <li>Analyst queue shows the held payment and the account hop graph; downstream hops never receive the funds.</li>
+  <li>Latency panel: p50/p99 for CPU-only vs accelerator; recall vs rules baseline at the same alert rate.</li>
+</ol>
+</div>
+<div>
+<h2>Stretch goals (only after core works)</h2>
+<ul>
+  <li>Score inside an IBM Secure Execution guest, if the event environment supports it.</li>
+  <li>Small ONNX model compiled with IBM Z Deep Learning Compiler (zDLC) as a second scorer for comparison.</li>
+  <li>Cross-bank view: use the From Bank / To Bank fields to compare one-bank vs ecosystem-level features.</li>
+  <li>Tamper-evident log of hold decisions for audit (hash-chained records).</li>
+</ul>
+</div>
+</div>
+
+<div class="note">Sources: IBM AML dataset - kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml (Altman et al., "Realistic Synthetic Financial Transactions for Anti-Money Laundering Models", NeurIPS 2023, arXiv:2306.16424). Snap ML on IBM Z - AI Toolkit for IBM Z and LinuxONE (ibmz-accelerated-for-snapml). All performance figures above are targets, not results.</div>
+
+</body>
+</html>

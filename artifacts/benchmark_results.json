@@ -1,0 +1,1716 @@
+{
+  "generated_at": "2026-10-18 09:27:35 IST",
+  "environment": {
+    "architecture": "amd64",
+    "is_s390x": false,
+    "nnpa_accelerator_available": false,
+    "zdnn_status": "libzdnn not loaded (running on non-zDNN host; using CPU tensor-tree fallback)",
+    "secure_execution_facility": false,
+    "snapml_available": false,
+    "snapml_version": null,
+    "tree_format_mode": "auto (Telum NNPA tensor-trees if present, else compressed CPU trees)",
+    "cpacf_crypto_mode": "AES-256-GCM / SHA-256 (CPACF hardware-assisted on s390x)",
+    "os_platform": "Windows 11"
+  },
+  "dataset": {
+    "total_transactions": 50880,
+    "laundering_transactions": 880,
+    "legitimate_transactions": 50000,
+    "laundering_ratio": 0.0173,
+    "total_accounts": 5000,
+    "total_banks": 24,
+    "total_chains": 160,
+    "days_spanned": 10,
+    "train_transactions": 35648,
+    "test_transactions": 15232,
+    "train_laundering": 608,
+    "test_laundering": 272,
+    "test_chains": 50
+  },
+  "model_metrics": {
+    "hopstop_gbdt": {
+      "roc_auc": 0.9857,
+      "pr_auc": 0.8317,
+      "recall_at_1pct_alert_rate": 0.5331,
+      "precision_at_1pct_alert_rate": 0.9539,
+      "recall_at_2pct_alert_rate": 0.7831,
+      "hold_threshold": 0.994015,
+      "step_up_threshold": 0.989928,
+      "train_time_sec": 3.971
+    },
+    "velocity_rules_baseline": {
+      "roc_auc": 0.938,
+      "pr_auc": 0.5306,
+      "recall_at_1pct_alert_rate": 0.4449,
+      "precision_at_1pct_alert_rate": 0.7961,
+      "recall_at_2pct_alert_rate": 0.5772
+    },
+    "relative_lift": {
+      "recall_lift_at_1pct": 19.8,
+      "pr_auc_lift_pct": 56.7
+    }
+  },
+  "chain_interruption": {
+    "test_chains_total": 50,
+    "hopstop_stopped_by_hop1": 1,
+    "hopstop_stopped_by_hop1_pct": 2.0,
+    "hopstop_stopped_by_hop2": 47,
+    "hopstop_stopped_by_hop2_pct": 94.0,
+    "rules_stopped_by_hop2": 43,
+    "rules_stopped_by_hop2_pct": 86.0,
+    "by_typology": {
+      "Scatter-Gather": {
+        "total": 6,
+        "stopped_hop2_ml": 4,
+        "stopped_hop2_rules": 1
+      },
+      "Simple-Cycle": {
+        "total": 6,
+        "stopped_hop2_ml": 5,
+        "stopped_hop2_rules": 5
+      },
+      "Gather-Scatter": {
+        "total": 8,
+        "stopped_hop2_ml": 8,
+        "stopped_hop2_rules": 8
+      },
+      "Stack": {
+        "total": 10,
+        "stopped_hop2_ml": 10,
+        "stopped_hop2_rules": 9
+      },
+      "Random-Walk": {
+        "total": 3,
+        "stopped_hop2_ml": 3,
+        "stopped_hop2_rules": 3
+      },
+      "Fan-In": {
+        "total": 9,
+        "stopped_hop2_ml": 9,
+        "stopped_hop2_rules": 9
+      },
+      "Bipartite": {
+        "total": 4,
+        "stopped_hop2_ml": 4,
+        "stopped_hop2_rules": 4
+      },
+      "Fan-Out": {
+        "total": 4,
+        "stopped_hop2_ml": 4,
+        "stopped_hop2_rules": 4
+      }
+    }
+  },
+  "latency_benchmark": {
+    "batch_1_end_to_end_p50_ms": 0.0403,
+    "batch_1_end_to_end_p95_ms": 0.0594,
+    "batch_1_end_to_end_p99_ms": 0.2022,
+    "batch_1_end_to_end_mean_ms": 0.0491,
+    "target_p99_ms": 10.0,
+    "single_worker_stream_tps": 20366,
+    "microbatch_64_scoring_tps": 109612
+  },
+  "feature_importances": [
+    {
+      "feature": "rapid_turnover_flag",
+      "label": "Rapid Credit-to-Debit Drain",
+      "weight": 0.25
+    },
+    {
+      "feature": "amount_zscore",
+      "label": "Anomalous Transfer Size (Z-Score)",
+      "weight": 0.2431
+    },
+    {
+      "feature": "payment_format_risk",
+      "label": "High-Risk Instant Rail (Wire/ACH)",
+      "weight": 0.2361
+    },
+    {
+      "feature": "counterparty_novelty",
+      "label": "First-Time Counterparty Transfer",
+      "weight": 0.125
+    },
+    {
+      "feature": "fan_in_1h",
+      "label": "Inbound Fan-In Burst (1h)",
+      "weight": 0.0833
+    },
+    {
+      "feature": "time_since_last_credit_log",
+      "label": "Immediate Post-Credit Dispersal",
+      "weight": 0.0278
+    },
+    {
+      "feature": "fan_in_24h",
+      "label": "24h Inbound Counterparty Surge",
+      "weight": 0.0208
+    },
+    {
+      "feature": "pass_through_ratio_15m",
+      "label": "Rapid 15m Pass-Through Ratio",
+      "weight": 0.0139
+    },
+    {
+      "feature": "fan_out_1h",
+      "label": "Outbound Fan-Out Dispersal (1h)",
+      "weight": 0.0
+    },
+    {
+      "feature": "fan_out_24h",
+      "label": "24h Outbound Counterparty Surge",
+      "weight": 0.0
+    },
+    {
+      "feature": "pass_through_ratio_1h",
+      "label": "High 1h Pass-Through Ratio",
+      "weight": 0.0
+    },
+    {
+      "feature": "out_tx_velocity_1h",
+      "label": "High Outgoing Transfer Velocity (1h)",
+      "weight": 0.0
+    }
+  ],
+  "sample_held_alerts": [
+    {
+      "tx_id": 35746,
+      "timestamp": "2026/09/08 02:50:13",
+      "from_account_hash": "ACCT_E178CF7EA414",
+      "to_account_hash": "ACCT_E8CC33683DA2",
+      "from_bank": 21,
+      "to_bank": 28,
+      "amount": 67214.5,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "3.0",
+          "impact": 4.285
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        }
+      ],
+      "chain_id": 67,
+      "hop_number": 2,
+      "typology": "Gather-Scatter",
+      "prev_audit_hash": "0000000000000000",
+      "audit_hash": "a251463f107eac9a",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102504",
+      "raw_to_account": "ACC102873"
+    },
+    {
+      "tx_id": 35747,
+      "timestamp": "2026/09/08 02:51:18",
+      "from_account_hash": "ACCT_E178CF7EA414",
+      "to_account_hash": "ACCT_4439D6FCFB06",
+      "from_bank": 21,
+      "to_bank": 24,
+      "amount": 67214.5,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.994,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "3.0",
+          "impact": 4.285
+        },
+        {
+          "feature": "fan_in_24h",
+          "label": "24h Inbound Counterparty Surge",
+          "value": "4.0",
+          "impact": 1.145
+        }
+      ],
+      "chain_id": 67,
+      "hop_number": 2,
+      "typology": "Gather-Scatter",
+      "prev_audit_hash": "a251463f107eac9a",
+      "audit_hash": "39e283b53f5daaf2",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102504",
+      "raw_to_account": "ACC104139"
+    },
+    {
+      "tx_id": 35749,
+      "timestamp": "2026/09/08 02:52:23",
+      "from_account_hash": "ACCT_E178CF7EA414",
+      "to_account_hash": "ACCT_DD95AE01CA42",
+      "from_bank": 21,
+      "to_bank": 17,
+      "amount": 67214.5,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9899,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "3.0",
+          "impact": 4.285
+        },
+        {
+          "feature": "fan_out_1h",
+          "label": "Outbound Fan-Out Dispersal (1h)",
+          "value": "2.0",
+          "impact": 1.245
+        }
+      ],
+      "chain_id": 67,
+      "hop_number": 2,
+      "typology": "Gather-Scatter",
+      "prev_audit_hash": "39e283b53f5daaf2",
+      "audit_hash": "5249c7bf8735fbfc",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102504",
+      "raw_to_account": "ACC102469"
+    },
+    {
+      "tx_id": 35848,
+      "timestamp": "2026/09/08 05:05:45",
+      "from_account_hash": "ACCT_5DA0359FB154",
+      "to_account_hash": "ACCT_B830C907DC92",
+      "from_bank": 16,
+      "to_bank": 22,
+      "amount": 51926.03,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9935,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "1.0",
+          "impact": 0.816
+        }
+      ],
+      "chain_id": 60,
+      "hop_number": 2,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "5249c7bf8735fbfc",
+      "audit_hash": "4d5cf02d8303ac27",
+      "is_laundering": 1,
+      "raw_from_account": "ACC100943",
+      "raw_to_account": "ACC100749"
+    },
+    {
+      "tx_id": 35855,
+      "timestamp": "2026/09/08 05:09:35",
+      "from_account_hash": "ACCT_B830C907DC92",
+      "to_account_hash": "ACCT_8E7D38C59B78",
+      "from_bank": 22,
+      "to_bank": 32,
+      "amount": 49848.99,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.994,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.96x inflow",
+          "impact": 1.045
+        }
+      ],
+      "chain_id": 60,
+      "hop_number": 3,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "4d5cf02d8303ac27",
+      "audit_hash": "6dc628dd69f18f0a",
+      "is_laundering": 1,
+      "raw_from_account": "ACC100749",
+      "raw_to_account": "ACC101288"
+    },
+    {
+      "tx_id": 35861,
+      "timestamp": "2026/09/08 05:11:55",
+      "from_account_hash": "ACCT_1E0121085B98",
+      "to_account_hash": "ACCT_8E7D38C59B78",
+      "from_bank": 26,
+      "to_bank": 32,
+      "amount": 49848.99,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 60,
+      "hop_number": 3,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "6dc628dd69f18f0a",
+      "audit_hash": "40f75966e04e0a40",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101777",
+      "raw_to_account": "ACC101288"
+    },
+    {
+      "tx_id": 35875,
+      "timestamp": "2026/09/08 05:24:10",
+      "from_account_hash": "ACCT_6E4346D90CDD",
+      "to_account_hash": "ACCT_8216AAD8B644",
+      "from_bank": 24,
+      "to_bank": 15,
+      "amount": 162330.32,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.994,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.97x inflow",
+          "impact": 1.057
+        }
+      ],
+      "chain_id": 5,
+      "hop_number": 2,
+      "typology": "Simple-Cycle",
+      "prev_audit_hash": "40f75966e04e0a40",
+      "audit_hash": "1257c72e9beabeb6",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101736",
+      "raw_to_account": "ACC104974"
+    },
+    {
+      "tx_id": 35878,
+      "timestamp": "2026/09/08 05:26:30",
+      "from_account_hash": "ACCT_8216AAD8B644",
+      "to_account_hash": "ACCT_6A17CB3B6264",
+      "from_bank": 15,
+      "to_bank": 32,
+      "amount": 157460.41,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 5,
+      "hop_number": 3,
+      "typology": "Simple-Cycle",
+      "prev_audit_hash": "1257c72e9beabeb6",
+      "audit_hash": "7fb803585601b2d5",
+      "is_laundering": 1,
+      "raw_from_account": "ACC104974",
+      "raw_to_account": "ACC102560"
+    },
+    {
+      "tx_id": 35882,
+      "timestamp": "2026/09/08 05:28:50",
+      "from_account_hash": "ACCT_6A17CB3B6264",
+      "to_account_hash": "ACCT_AF7973FC3743",
+      "from_bank": 32,
+      "to_bank": 17,
+      "amount": 152736.6,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 5,
+      "hop_number": 4,
+      "typology": "Simple-Cycle",
+      "prev_audit_hash": "7fb803585601b2d5",
+      "audit_hash": "71ec29bd9120682a",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102560",
+      "raw_to_account": "ACC103101"
+    },
+    {
+      "tx_id": 35928,
+      "timestamp": "2026/09/08 05:56:08",
+      "from_account_hash": "ACCT_FC308EA92EDA",
+      "to_account_hash": "ACCT_87BBDABDB991",
+      "from_bank": 20,
+      "to_bank": 16,
+      "amount": 118189.64,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 87,
+      "hop_number": 2,
+      "typology": "Stack",
+      "prev_audit_hash": "71ec29bd9120682a",
+      "audit_hash": "3b09b505545993e6",
+      "is_laundering": 1,
+      "raw_from_account": "ACC103304",
+      "raw_to_account": "ACC101223"
+    },
+    {
+      "tx_id": 35932,
+      "timestamp": "2026/09/08 05:58:38",
+      "from_account_hash": "ACCT_87BBDABDB991",
+      "to_account_hash": "ACCT_F388874A6081",
+      "from_bank": 16,
+      "to_bank": 15,
+      "amount": 114534.29,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9899,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.97x inflow",
+          "impact": 1.056
+        }
+      ],
+      "chain_id": 87,
+      "hop_number": 3,
+      "typology": "Stack",
+      "prev_audit_hash": "3b09b505545993e6",
+      "audit_hash": "b389424a51f1b8f9",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101223",
+      "raw_to_account": "ACC102650"
+    },
+    {
+      "tx_id": 35942,
+      "timestamp": "2026/09/08 06:01:38",
+      "from_account_hash": "ACCT_F388874A6081",
+      "to_account_hash": "ACCT_9320EDE96F7E",
+      "from_bank": 15,
+      "to_bank": 26,
+      "amount": 110878.94,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 87,
+      "hop_number": 4,
+      "typology": "Stack",
+      "prev_audit_hash": "b389424a51f1b8f9",
+      "audit_hash": "72685f7b10d37709",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102650",
+      "raw_to_account": "ACC102898"
+    },
+    {
+      "tx_id": 36031,
+      "timestamp": "2026/09/08 06:46:32",
+      "from_account_hash": "ACCT_CB4FE98A2D94",
+      "to_account_hash": "ACCT_F97202A01AFC",
+      "from_bank": 25,
+      "to_bank": 32,
+      "amount": 46541.91,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9906,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "4.00x inflow",
+          "impact": 4.497
+        },
+        {
+          "feature": "pass_through_ratio_1h",
+          "label": "High 1h Pass-Through Ratio",
+          "value": "4.00x inflow",
+          "impact": 2.186
+        }
+      ],
+      "chain_id": 52,
+      "hop_number": 1,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "72685f7b10d37709",
+      "audit_hash": "78c864bf0c8fd80b",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102174",
+      "raw_to_account": "ACC102236"
+    },
+    {
+      "tx_id": 36043,
+      "timestamp": "2026/09/08 06:52:12",
+      "from_account_hash": "ACCT_E9D78E2B763E",
+      "to_account_hash": "ACCT_3A9C8711EEA5",
+      "from_bank": 26,
+      "to_bank": 22,
+      "amount": 14446.61,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9899,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.96x inflow",
+          "impact": 1.045
+        }
+      ],
+      "chain_id": 52,
+      "hop_number": 3,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "78c864bf0c8fd80b",
+      "audit_hash": "71152a6d620fd99a",
+      "is_laundering": 1,
+      "raw_from_account": "ACC103256",
+      "raw_to_account": "ACC101227"
+    },
+    {
+      "tx_id": 36048,
+      "timestamp": "2026/09/08 06:53:22",
+      "from_account_hash": "ACCT_C140B10CB1B4",
+      "to_account_hash": "ACCT_3A9C8711EEA5",
+      "from_bank": 31,
+      "to_bank": 22,
+      "amount": 14446.61,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.994,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "2.0",
+          "impact": 2.818
+        },
+        {
+          "feature": "fan_in_24h",
+          "label": "24h Inbound Counterparty Surge",
+          "value": "4.0",
+          "impact": 1.145
+        }
+      ],
+      "chain_id": 52,
+      "hop_number": 3,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "71152a6d620fd99a",
+      "audit_hash": "aa8badd83ced1785",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101357",
+      "raw_to_account": "ACC101227"
+    },
+    {
+      "tx_id": 36053,
+      "timestamp": "2026/09/08 06:54:32",
+      "from_account_hash": "ACCT_FD9DD1920E31",
+      "to_account_hash": "ACCT_3A9C8711EEA5",
+      "from_bank": 24,
+      "to_bank": 22,
+      "amount": 14446.61,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9939,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "8.7",
+          "impact": 2.236
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 52,
+      "hop_number": 3,
+      "typology": "Scatter-Gather",
+      "prev_audit_hash": "aa8badd83ced1785",
+      "audit_hash": "e5e8fafb40c5c6ae",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102785",
+      "raw_to_account": "ACC101227"
+    },
+    {
+      "tx_id": 36388,
+      "timestamp": "2026/09/08 08:51:17",
+      "from_account_hash": "ACCT_FF84DFDF7610",
+      "to_account_hash": "ACCT_081C8DFB8642",
+      "from_bank": 11,
+      "to_bank": 23,
+      "amount": 152057.23,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 15,
+      "hop_number": 2,
+      "typology": "Stack",
+      "prev_audit_hash": "e5e8fafb40c5c6ae",
+      "audit_hash": "fc38810274451ee3",
+      "is_laundering": 1,
+      "raw_from_account": "ACC100364",
+      "raw_to_account": "ACC101552"
+    },
+    {
+      "tx_id": 36398,
+      "timestamp": "2026/09/08 08:53:47",
+      "from_account_hash": "ACCT_081C8DFB8642",
+      "to_account_hash": "ACCT_8B9D7C0C38E6",
+      "from_bank": 23,
+      "to_bank": 32,
+      "amount": 147354.43,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9935,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.97x inflow",
+          "impact": 1.056
+        }
+      ],
+      "chain_id": 15,
+      "hop_number": 3,
+      "typology": "Stack",
+      "prev_audit_hash": "fc38810274451ee3",
+      "audit_hash": "1dd927caa06a0ce4",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101552",
+      "raw_to_account": "ACC101354"
+    },
+    {
+      "tx_id": 36409,
+      "timestamp": "2026/09/08 08:56:47",
+      "from_account_hash": "ACCT_8B9D7C0C38E6",
+      "to_account_hash": "ACCT_5E8A54E3A119",
+      "from_bank": 32,
+      "to_bank": 19,
+      "amount": 142651.63,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.994,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.97x inflow",
+          "impact": 1.054
+        }
+      ],
+      "chain_id": 15,
+      "hop_number": 4,
+      "typology": "Stack",
+      "prev_audit_hash": "1dd927caa06a0ce4",
+      "audit_hash": "824f51433f2991a0",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101354",
+      "raw_to_account": "ACC101298"
+    },
+    {
+      "tx_id": 36973,
+      "timestamp": "2026/09/08 10:47:35",
+      "from_account_hash": "ACCT_EA7CE8D3F4FB",
+      "to_account_hash": "ACCT_C9D62B5F7AB6",
+      "from_bank": 14,
+      "to_bank": 26,
+      "amount": 39442.29,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9899,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.97x inflow",
+          "impact": 1.057
+        }
+      ],
+      "chain_id": 79,
+      "hop_number": 2,
+      "typology": "Stack",
+      "prev_audit_hash": "824f51433f2991a0",
+      "audit_hash": "ec71b749818f4718",
+      "is_laundering": 1,
+      "raw_from_account": "ACC104147",
+      "raw_to_account": "ACC102777"
+    },
+    {
+      "tx_id": 36987,
+      "timestamp": "2026/09/08 10:50:05",
+      "from_account_hash": "ACCT_C9D62B5F7AB6",
+      "to_account_hash": "ACCT_82210170D14E",
+      "from_bank": 26,
+      "to_bank": 16,
+      "amount": 38222.42,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9939,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 79,
+      "hop_number": 3,
+      "typology": "Stack",
+      "prev_audit_hash": "ec71b749818f4718",
+      "audit_hash": "80891c5f63ed4146",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102777",
+      "raw_to_account": "ACC104747"
+    },
+    {
+      "tx_id": 37004,
+      "timestamp": "2026/09/08 10:53:05",
+      "from_account_hash": "ACCT_82210170D14E",
+      "to_account_hash": "ACCT_88394A6C8BC8",
+      "from_bank": 16,
+      "to_bank": 21,
+      "amount": 37002.56,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.994,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "2.0",
+          "impact": 2.818
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.91x inflow",
+          "impact": 0.984
+        }
+      ],
+      "chain_id": 79,
+      "hop_number": 4,
+      "typology": "Stack",
+      "prev_audit_hash": "80891c5f63ed4146",
+      "audit_hash": "06795099567fed36",
+      "is_laundering": 1,
+      "raw_from_account": "ACC104747",
+      "raw_to_account": "ACC104370"
+    },
+    {
+      "tx_id": 37281,
+      "timestamp": "2026/09/08 11:40:54",
+      "from_account_hash": "ACCT_BF39F4D4574E",
+      "to_account_hash": "ACCT_EB7C6120C07D",
+      "from_bank": 23,
+      "to_bank": 29,
+      "amount": 118447.25,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9899,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "4.0",
+          "impact": 5.752
+        },
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_24h",
+          "label": "24h Inbound Counterparty Surge",
+          "value": "4.0",
+          "impact": 1.145
+        }
+      ],
+      "chain_id": 146,
+      "hop_number": 2,
+      "typology": "Fan-In",
+      "prev_audit_hash": "06795099567fed36",
+      "audit_hash": "19243db9b090c48e",
+      "is_laundering": 1,
+      "raw_from_account": "ACC102124",
+      "raw_to_account": "ACC103617"
+    },
+    {
+      "tx_id": 37317,
+      "timestamp": "2026/09/08 11:44:41",
+      "from_account_hash": "ACCT_23B2F82A2AE0",
+      "to_account_hash": "ACCT_2716A4DE5B50",
+      "from_bank": 25,
+      "to_bank": 14,
+      "amount": 53280.85,
+      "currency": "INR",
+      "payment_format": "ACH",
+      "risk_score": 0.9899,
+      "action": "STEP_UP",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "3.0",
+          "impact": 4.285
+        },
+        {
+          "feature": "fan_in_24h",
+          "label": "24h Inbound Counterparty Surge",
+          "value": "4.0",
+          "impact": 1.145
+        }
+      ],
+      "chain_id": 75,
+      "hop_number": 2,
+      "typology": "Gather-Scatter",
+      "prev_audit_hash": "19243db9b090c48e",
+      "audit_hash": "e1774b58f2ba143a",
+      "is_laundering": 1,
+      "raw_from_account": "ACC101179",
+      "raw_to_account": "ACC101698"
+    },
+    {
+      "tx_id": 37320,
+      "timestamp": "2026/09/08 11:45:14",
+      "from_account_hash": "ACCT_EB7C6120C07D",
+      "to_account_hash": "ACCT_BAB057D2077B",
+      "from_bank": 29,
+      "to_bank": 32,
+      "amount": 114745.77,
+      "currency": "INR",
+      "payment_format": "Wire",
+      "risk_score": 0.9944,
+      "action": "HOLD",
+      "reason_codes": [
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "impact": 4.698
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.0",
+          "impact": 2.615
+        },
+        {
+          "feature": "fan_in_1h",
+          "label": "Inbound Fan-In Burst (1h)",
+          "value": "1.0",
+          "impact": 1.352
+        }
+      ],
+      "chain_id": 146,
+      "hop_number": 3,
+      "typology": "Fan-In",
+      "prev_audit_hash": "e1774b58f2ba143a",
+      "audit_hash": "88c5897d8f1fc83a",
+      "is_laundering": 1,
+      "raw_from_account": "ACC103617",
+      "raw_to_account": "ACC101454"
+    }
+  ],
+  "sample_interrupted_chains": [
+    {
+      "chain_id": 5,
+      "typology": "Simple-Cycle",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 35872,
+          "timestamp": "2026/09/08 05:21:50",
+          "hop": 1,
+          "from_account": "ACC103101",
+          "to_account": "ACC101736",
+          "from_bank": 17,
+          "to_bank": 24,
+          "amount": 167350.85,
+          "risk_score": 0.8734,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 35875,
+          "timestamp": "2026/09/08 05:24:10",
+          "hop": 2,
+          "from_account": "ACC101736",
+          "to_account": "ACC104974",
+          "from_bank": 24,
+          "to_bank": 15,
+          "amount": 162330.32,
+          "risk_score": 0.994,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 35878,
+          "timestamp": "2026/09/08 05:26:30",
+          "hop": 3,
+          "from_account": "ACC104974",
+          "to_account": "ACC102560",
+          "from_bank": 15,
+          "to_bank": 32,
+          "amount": 157460.41,
+          "risk_score": 0.9944,
+          "decision": "BLOCKED_UPSTREAM"
+        },
+        {
+          "tx_id": 35882,
+          "timestamp": "2026/09/08 05:28:50",
+          "hop": 4,
+          "from_account": "ACC102560",
+          "to_account": "ACC103101",
+          "from_bank": 32,
+          "to_bank": 17,
+          "amount": 152736.6,
+          "risk_score": 0.9944,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    },
+    {
+      "chain_id": 11,
+      "typology": "Gather-Scatter",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 46827,
+          "timestamp": "2026/09/10 09:46:26",
+          "hop": 1,
+          "from_account": "ACC104393",
+          "to_account": "ACC102226",
+          "from_bank": 25,
+          "to_bank": 19,
+          "amount": 101785.51,
+          "risk_score": 0.8985,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 46833,
+          "timestamp": "2026/09/10 09:47:46",
+          "hop": 1,
+          "from_account": "ACC102776",
+          "to_account": "ACC102226",
+          "from_bank": 14,
+          "to_bank": 19,
+          "amount": 101785.51,
+          "risk_score": 0.1869,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 46838,
+          "timestamp": "2026/09/10 09:49:06",
+          "hop": 1,
+          "from_account": "ACC103141",
+          "to_account": "ACC102226",
+          "from_bank": 22,
+          "to_bank": 19,
+          "amount": 101785.51,
+          "risk_score": 0.1869,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 46849,
+          "timestamp": "2026/09/10 09:50:46",
+          "hop": 2,
+          "from_account": "ACC102226",
+          "to_account": "ACC101899",
+          "from_bank": 19,
+          "to_bank": 26,
+          "amount": 97714.09,
+          "risk_score": 0.9944,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 46850,
+          "timestamp": "2026/09/10 09:51:51",
+          "hop": 2,
+          "from_account": "ACC102226",
+          "to_account": "ACC102647",
+          "from_bank": 19,
+          "to_bank": 26,
+          "amount": 97714.09,
+          "risk_score": 0.994,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 46856,
+          "timestamp": "2026/09/10 09:52:56",
+          "hop": 2,
+          "from_account": "ACC102226",
+          "to_account": "ACC104284",
+          "from_bank": 19,
+          "to_bank": 14,
+          "amount": 97714.09,
+          "risk_score": 0.9899,
+          "decision": "STEP_UP"
+        }
+      ]
+    },
+    {
+      "chain_id": 13,
+      "typology": "Simple-Cycle",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 50664,
+          "timestamp": "2026/09/10 21:10:37",
+          "hop": 1,
+          "from_account": "ACC104348",
+          "to_account": "ACC100649",
+          "from_bank": 29,
+          "to_bank": 15,
+          "amount": 275010.12,
+          "risk_score": 0.8905,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 50671,
+          "timestamp": "2026/09/10 21:12:57",
+          "hop": 2,
+          "from_account": "ACC100649",
+          "to_account": "ACC102970",
+          "from_bank": 15,
+          "to_bank": 16,
+          "amount": 266759.82,
+          "risk_score": 0.9939,
+          "decision": "STEP_UP"
+        },
+        {
+          "tx_id": 50676,
+          "timestamp": "2026/09/10 21:15:17",
+          "hop": 3,
+          "from_account": "ACC102970",
+          "to_account": "ACC103364",
+          "from_bank": 16,
+          "to_bank": 12,
+          "amount": 258757.02,
+          "risk_score": 0.9944,
+          "decision": "BLOCKED_UPSTREAM"
+        },
+        {
+          "tx_id": 50682,
+          "timestamp": "2026/09/10 21:17:37",
+          "hop": 4,
+          "from_account": "ACC103364",
+          "to_account": "ACC104348",
+          "from_bank": 12,
+          "to_bank": 29,
+          "amount": 250994.31,
+          "risk_score": 0.9939,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    },
+    {
+      "chain_id": 15,
+      "typology": "Stack",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 36378,
+          "timestamp": "2026/09/08 08:49:17",
+          "hop": 1,
+          "from_account": "ACC100957",
+          "to_account": "ACC100364",
+          "from_bank": 15,
+          "to_bank": 11,
+          "amount": 156760.03,
+          "risk_score": 0.7592,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 36388,
+          "timestamp": "2026/09/08 08:51:17",
+          "hop": 2,
+          "from_account": "ACC100364",
+          "to_account": "ACC101552",
+          "from_bank": 11,
+          "to_bank": 23,
+          "amount": 152057.23,
+          "risk_score": 0.9944,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 36398,
+          "timestamp": "2026/09/08 08:53:47",
+          "hop": 3,
+          "from_account": "ACC101552",
+          "to_account": "ACC101354",
+          "from_bank": 23,
+          "to_bank": 32,
+          "amount": 147354.43,
+          "risk_score": 0.9935,
+          "decision": "BLOCKED_UPSTREAM"
+        },
+        {
+          "tx_id": 36409,
+          "timestamp": "2026/09/08 08:56:47",
+          "hop": 4,
+          "from_account": "ACC101354",
+          "to_account": "ACC101298",
+          "from_bank": 32,
+          "to_bank": 19,
+          "amount": 142651.63,
+          "risk_score": 0.994,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    },
+    {
+      "chain_id": 24,
+      "typology": "Random-Walk",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 40655,
+          "timestamp": "2026/09/08 22:07:24",
+          "hop": 1,
+          "from_account": "ACC104274",
+          "to_account": "ACC102359",
+          "from_bank": 12,
+          "to_bank": 26,
+          "amount": 49119.87,
+          "risk_score": 0.8905,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 40658,
+          "timestamp": "2026/09/08 22:09:24",
+          "hop": 2,
+          "from_account": "ACC102359",
+          "to_account": "ACC102827",
+          "from_bank": 26,
+          "to_bank": 21,
+          "amount": 47646.27,
+          "risk_score": 0.9944,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 40665,
+          "timestamp": "2026/09/08 22:11:54",
+          "hop": 3,
+          "from_account": "ACC102827",
+          "to_account": "ACC102925",
+          "from_bank": 21,
+          "to_bank": 11,
+          "amount": 46172.68,
+          "risk_score": 0.9939,
+          "decision": "BLOCKED_UPSTREAM"
+        },
+        {
+          "tx_id": 40667,
+          "timestamp": "2026/09/08 22:14:54",
+          "hop": 4,
+          "from_account": "ACC102925",
+          "to_account": "ACC102327",
+          "from_bank": 11,
+          "to_bank": 19,
+          "amount": 44699.08,
+          "risk_score": 0.9939,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    },
+    {
+      "chain_id": 26,
+      "typology": "Fan-In",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 44455,
+          "timestamp": "2026/09/09 16:44:54",
+          "hop": 1,
+          "from_account": "ACC104219",
+          "to_account": "ACC100493",
+          "from_bank": 20,
+          "to_bank": 23,
+          "amount": 34832.1,
+          "risk_score": 0.8734,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 44459,
+          "timestamp": "2026/09/09 16:46:04",
+          "hop": 1,
+          "from_account": "ACC101504",
+          "to_account": "ACC100493",
+          "from_bank": 18,
+          "to_bank": 23,
+          "amount": 34832.1,
+          "risk_score": 0.8985,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 44465,
+          "timestamp": "2026/09/09 16:47:14",
+          "hop": 1,
+          "from_account": "ACC101209",
+          "to_account": "ACC100493",
+          "from_bank": 28,
+          "to_bank": 23,
+          "amount": 34832.1,
+          "risk_score": 0.1274,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 44472,
+          "timestamp": "2026/09/09 16:48:24",
+          "hop": 1,
+          "from_account": "ACC102774",
+          "to_account": "ACC100493",
+          "from_bank": 26,
+          "to_bank": 23,
+          "amount": 34832.1,
+          "risk_score": 0.2982,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 44482,
+          "timestamp": "2026/09/09 16:50:14",
+          "hop": 2,
+          "from_account": "ACC100493",
+          "to_account": "ACC102030",
+          "from_bank": 23,
+          "to_bank": 19,
+          "amount": 133755.25,
+          "risk_score": 0.9944,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 44503,
+          "timestamp": "2026/09/09 16:54:34",
+          "hop": 3,
+          "from_account": "ACC102030",
+          "to_account": "ACC103998",
+          "from_bank": 19,
+          "to_bank": 27,
+          "amount": 129575.4,
+          "risk_score": 0.989,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    },
+    {
+      "chain_id": 31,
+      "typology": "Stack",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 46473,
+          "timestamp": "2026/09/10 08:28:29",
+          "hop": 1,
+          "from_account": "ACC100361",
+          "to_account": "ACC101674",
+          "from_bank": 17,
+          "to_bank": 18,
+          "amount": 76053.16,
+          "risk_score": 0.8185,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 46481,
+          "timestamp": "2026/09/10 08:30:29",
+          "hop": 2,
+          "from_account": "ACC101674",
+          "to_account": "ACC102003",
+          "from_bank": 18,
+          "to_bank": 32,
+          "amount": 73771.57,
+          "risk_score": 0.994,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 46489,
+          "timestamp": "2026/09/10 08:32:59",
+          "hop": 3,
+          "from_account": "ACC102003",
+          "to_account": "ACC103020",
+          "from_bank": 32,
+          "to_bank": 28,
+          "amount": 71489.97,
+          "risk_score": 0.9899,
+          "decision": "BLOCKED_UPSTREAM"
+        },
+        {
+          "tx_id": 46506,
+          "timestamp": "2026/09/10 08:35:59",
+          "hop": 4,
+          "from_account": "ACC103020",
+          "to_account": "ACC102867",
+          "from_bank": 28,
+          "to_bank": 26,
+          "amount": 69208.38,
+          "risk_score": 0.9944,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    },
+    {
+      "chain_id": 34,
+      "typology": "Fan-In",
+      "interrupted_at_hop": 2,
+      "hops": [
+        {
+          "tx_id": 39574,
+          "timestamp": "2026/09/08 17:11:36",
+          "hop": 1,
+          "from_account": "ACC102022",
+          "to_account": "ACC102984",
+          "from_bank": 19,
+          "to_bank": 24,
+          "amount": 17313.08,
+          "risk_score": 0.8734,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 39585,
+          "timestamp": "2026/09/08 17:12:46",
+          "hop": 1,
+          "from_account": "ACC103297",
+          "to_account": "ACC102984",
+          "from_bank": 33,
+          "to_bank": 24,
+          "amount": 17313.08,
+          "risk_score": 0.2001,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 39594,
+          "timestamp": "2026/09/08 17:13:56",
+          "hop": 1,
+          "from_account": "ACC101450",
+          "to_account": "ACC102984",
+          "from_bank": 30,
+          "to_bank": 24,
+          "amount": 17313.08,
+          "risk_score": 0.7592,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 39604,
+          "timestamp": "2026/09/08 17:15:06",
+          "hop": 1,
+          "from_account": "ACC101436",
+          "to_account": "ACC102984",
+          "from_bank": 28,
+          "to_bank": 24,
+          "amount": 17313.08,
+          "risk_score": 0.1274,
+          "decision": "ALLOW"
+        },
+        {
+          "tx_id": 39620,
+          "timestamp": "2026/09/08 17:16:56",
+          "hop": 2,
+          "from_account": "ACC102984",
+          "to_account": "ACC100328",
+          "from_bank": 24,
+          "to_bank": 31,
+          "amount": 66482.21,
+          "risk_score": 0.994,
+          "decision": "HOLD"
+        },
+        {
+          "tx_id": 39645,
+          "timestamp": "2026/09/08 17:21:16",
+          "hop": 3,
+          "from_account": "ACC100328",
+          "to_account": "ACC104057",
+          "from_bank": 31,
+          "to_bank": 10,
+          "amount": 64404.64,
+          "risk_score": 0.9944,
+          "decision": "BLOCKED_UPSTREAM"
+        }
+      ]
+    }
+  ]
+}

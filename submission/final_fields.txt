@@ -1,0 +1,31 @@
+1. CHALLENGE: Real-Time AI for Critical Decisions
+
+2. PROBLEM STATEMENT  [167 chars / 26 words]
+Mule accounts pass cyber-fraud money onward within minutes, but bank AML checks often run hours later. Victims lose savings, and every extra hop makes recovery harder.
+
+3. PROPOSED SOLUTION  [1173 chars / 188 words]
+HopStop scores every outgoing transfer for money-mule behaviour before it settles, so a bank can pause the payment while stolen money is still one hop from the victim.
+
+How it works: IBM's synthetic AML transactions are replayed in time order as a payment stream. A stateful feature engine updates each account's rolling fan-in and fan-out, pass-through ratio (money out vs. money in within minutes), time since last credit and counterparty novelty, using only past events. A gradient-boosted tree model, loaded into IBM Snap ML, scores the transfer. On z16/z17-class LinuxONE, Snap ML can run tree inference on the Telum on-chip Integrated Accelerator for AI; we will benchmark it against CPU-only. A policy layer returns allow, step-up verification or hold, with its top three reason codes.
+
+Why IBM Z: where core payments already run on Z, scoring on the same platform keeps transaction data off external AI servers and removes a network hop from the decision path.
+
+Targets (measured, not assumed): p99 decision latency under 10 ms; higher laundering recall than a velocity-rules baseline at the same 1% alert rate; share of laundering chains stopped by the second hop.
+
+4. AUDIENCE  [828 chars / 130 words]
+1. Fraud operations analysts at banks and payment providers: get a live queue of held or step-up payments with reason codes, instead of next-day alerts.
+2. AML compliance officers: get explainable, time-stamped evidence to support suspicious transaction reports to FIU-IND.
+3. Core banking and payments platform teams on IBM Z or LinuxONE: get a scoring service whose latency is measured on the platform against the payment time budget.
+4. Police cyber cells and cybercrime investigators: when a victim calls the 1930 helpline, money held at the first hop is still there to freeze.
+5. Bank risk heads: set the alert rate to match analyst capacity and see the recall trade-off before go-live.
+6. Retail customers, especially new digital-payment users: fewer completed scams, and step-up checks instead of blanket account freezes.
+
+5. DATASETS  [1002 chars / 143 words]
+1. IBM Transactions for Anti Money Laundering (AML), Kaggle (ealtman2019), CDLA-Sharing-1.0, from IBM's AMLworld generator (Altman et al., NeurIPS 2023). Main set HI-Small: ~5M transactions, ~515K accounts, 10 days, ~1 laundering transaction per 981. Fields: timestamp, from/to bank and account, amounts, currencies, payment format; label Is Laundering. A patterns file groups part of the laundering into typologies (fan-in, fan-out, cycle, scatter-gather and more), used to measure how early chains are cut. LI-Small tests a lower illicit ratio.
+2. Optional: IBM TabFormer synthetic card data (~24M transactions, 2,000 users, GitHub IBM/TabFormer) to check generalisation.
+Imbalance: time-based split, class weighting, threshold set by alert budget; report PR-AUC and recall at 1% alerts, not accuracy.
+Privacy: fully synthetic, no real PII; account IDs hashed; data and model stay on the LinuxONE instance.
+IBM Z fit: replayed in timestamp order as a payment stream, mirroring in-transaction scoring.
+
+6. OPTIONAL COMMENTS  [324 chars / 52 words]
+This builds on my fraud-pattern analysis work with the MP Police Cybercrime & Data Analysis Division; I want to stop mule chains at the first hop instead of tracing them afterwards. Question: will the event LinuxONE instances expose the Integrated Accelerator for AI (NNPA), so we can report accelerator vs CPU-only latency?

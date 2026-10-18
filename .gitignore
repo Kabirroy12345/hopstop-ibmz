@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+data/*.csv
+data/*.txt
+submission/outline_preview.png
+
+Dhyuti_Submission_Template.docx

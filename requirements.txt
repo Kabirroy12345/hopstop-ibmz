@@ -1,0 +1,3 @@
+# HopStop runs out-of-the-box using the Python 3 standard library + ctypes (libzdnn).
+# Optional accelerators on IBM Z / LinuxONE (s390x):
+# snapml>=1.14.0

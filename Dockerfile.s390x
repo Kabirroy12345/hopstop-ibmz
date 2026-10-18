@@ -1,0 +1,17 @@
+# IBM Z / LinuxONE (s390x) Container Image for HopStop
+# Supports both standard s390x Python and icr.io/ibmz/ibmz-accelerated-for-snapml
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt || true
+
+COPY hopstop /app/hopstop
+COPY README.md /app/README.md
+
+# Run benchmark validation at build/start and expose the live Analyst Console on port 8080
+RUN python -m hopstop.train_and_benchmark
+
+EXPOSE 8080
+CMD ["python", "-m", "hopstop.server"]

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HopStop Pitch Deck - IBM Z Datathon 2026 - Kabir Roy</title>
+<style>
+  @page { size: 297mm 167mm; margin: 0; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #f4f4f4;
+    background: #161616;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .slide {
+    width: 297mm;
+    height: 167mm;
+    padding: 12mm 15mm;
+    page-break-after: always;
+    background: linear-gradient(135deg, #0b1224 0%, #161616 65%, #001d6c 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .slide:last-child { page-break-after: auto; }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #0f62fe;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+  .tag {
+    background: #0f62fe;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .slide-num { color: #8d8d8d; font-size: 9.5pt; font-weight: 600; }
+  h1 { font-size: 25pt; margin: 4px 0 6px; color: #ffffff; line-height: 1.15; }
+  h2 { font-size: 17pt; margin: 0 0 8px; color: #33b1ff; }
+  h3 { font-size: 11.5pt; margin: 0 0 5px; color: #78a9ff; text-transform: uppercase; letter-spacing: 0.4px; }
+  p, li { font-size: 10.2pt; line-height: 1.38; color: #e0e0e0; }
+  ul { margin: 4px 0; padding-left: 18px; }
+  li { margin-bottom: 4px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .panel {
+    background: rgba(38, 38, 38, 0.92);
+    border: 1px solid #393939;
+    border-left: 4px solid #0f62fe;
+    border-radius: 5px;
+    padding: 10px 12px;
+  }
+  .panel.green { border-left-color: #42be65; }
+  .panel.red { border-left-color: #fa4d56; }
+  .panel.cyan { border-left-color: #33b1ff; }
+  .big-stat { font-size: 22pt; font-weight: 700; color: #42be65; margin: 2px 0; }
+  .stat-sub { font-size: 8.8pt; color: #c6c6c6; }
+  .flow-row { display: flex; align-items: stretch; gap: 6px; margin: 8px 0; }
+  .flow-step {
+    flex: 1;
+    background: #1f2937;
+    border: 1.5px solid #0f62fe;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 8.8pt;
+  }
+  .flow-step b { display: block; color: #33b1ff; font-size: 9.6pt; margin-bottom: 3px; }
+  .flow-arrow { display: flex; align-items: center; font-size: 16pt; color: #33b1ff; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.4pt; margin-top: 4px; }
+  th, td { border: 1px solid #393939; padding: 5px 8px; text-align: left; }
+  th { background: #001d6c; color: #fff; }
+  td { background: rgba(26, 26, 26, 0.85); }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    color: #8d8d8d;
+    border-top: 1px solid #333;
+    padding-top: 5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE & EXECUTIVE SUMMARY -->
+<div class="slide">
+  <div class="top-bar">
+    <span class="tag">IBM Z DATATHON 2026 &bull; TRACK 1: REAL-TIME AI FOR CRITICAL DECISIONS</span>
+    <span class="slide-num">Slide 1 / 6</span>
+  </div>
+  <div>
+    <h1>HopStop: Stop Money-Mule Transfers at the First Hop</h1>
+    <p style="font-size:12.5pt;color:#a6c8ff;margin-top:2px;">
+      In-Transaction Graph-Velocity AI Scoring on IBM Z &amp; LinuxONE with Snap ML and Telum AI Acceleration
+    </p>
+    <p style="font-size:10.5pt;color:#c6c6c6;">
+      <b>Presenter:</b> Kabir Roy (B.Tech CSE, VIT Bhopal) &bull; Informed by fraud-pattern analysis experience with MP Police Cybercrime &amp; Data Analysis Division
+    </p>
+  </div>
+  <div class="grid-4" style="margin: 10px 0;">
+    <div class="panel green">
+      <h3>End-to-End p99 Latency</h3>
+      <div class="big-stat">0.202 ms</div>
+      <div class="stat-sub">p50: 0.040 ms (batch=1) &bull; 50x faster than &lt;10 ms payment SLA</div>
+    </div>
+    <div class="panel cyan">
+      <h3>Minority-Class PR-AUC</h3>
+      <div class="big-stat" style="color:#33b1ff;">0.8317</div>
+      <div class="stat-sub">+56.7% relative lift over Velocity-Rules Baseline (0.5306)</div>
+    </div>
+    <div class="panel green">
+      <h3>Chains Stopped &le; Hop 2</h3>
+      <div class="big-stat">94.0%</div>
+      <div class="stat-sub">47/50 test laundering chains frozen before Hop 3 dispersal</div>
+    </div>
+    <div class="panel cyan">
+      <h3>Sustained Throughput</h3>
+      <div class="big-stat" style="color:#33b1ff;">109,612 TPS</div>
+      <div class="stat-sub">Micro-batch=64 scoring (20,366 TPS single-worker stream)</div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Executive Summary</h3>
+    <p style="margin:0;">
+      Mule accounts forward stolen cyber-fraud funds within minutes across instant payment rails, while bank AML checks often run hours later. <b>HopStop</b> embeds a stateful O(1) sliding-window graph feature engine and an IBM Snap ML / Tensor-Tree Gradient Boosted Decision Tree directly into the payment execution path on LinuxONE—pausing suspicious transfers at Hop 1 or Hop 2 with Top-3 analyst reason codes and tamper-evident SHA-256 audit logs.
+    </p>
+  </div>
+  <div class="footer">
+    <span>HopStop &bull; IBM Z Datathon 2026 Final Submission</span>
+    <span>Kabir Roy &bull; VIT Bhopal</span>
+  </div>
+</div>
+
+<!-- SLIDE 2: THE PROBLEM -->
+<div class="slide">
+  <div class="top-bar">
+    <span class="tag">1. PROBLEM STATEMENT &amp; WHY LEGACY AML FAILS</span>
+    <span class="slide-num">Slide 2 / 6</span>
+  </div>
+  <h2>The Golden-Minutes Gap: Stolen Money Moves in Minutes, AML Runs in Hours</h2>
+  <div class="grid-2">
+    <div class="panel red">
+      <h3>What Breaks Today (Post-Settlement Batch AML)</h3>
+      <ul>
+        <li><b>Rapid Multi-Hop Layering:</b> Organized cyber-fraud syndicates use mule accounts to split and forward stolen funds across 3–5 banks within <b>2 to 10 minutes</b> using instant rails (IMPS/UPI/ACH/Wire).</li>
+        <li><b>Hours-Late Detection:</b> Traditional AML transaction monitoring runs in hourly or end-of-day batch jobs—flagging the account long after it has been drained to zero.</li>
+        <li><b>High False Positives on Static Rules:</b> Simple velocity rules flag legitimate corporate payroll fan-out and merchant settlements, overwhelming fraud analysts.</li>
+        <li><b>1930 Helpline Recovery Bottleneck:</b> By the time a victim reports a scam and police issue a freeze notice, funds have scattered across dozens of downstream cash-out accounts.</li>
+      </ul>
+    </div>
+    <div class="panel green">
+      <h3>The HopStop Paradigm (In-Transaction Interdiction)</h3>
+      <ul>
+        <li><b>Pre-Settlement Scoring (&lt; 1 ms):</b> Score every outgoing transfer <i>inside</i> the payment authorization window before money leaves the first mule account.</li>
+        <li><b>Causal Graph-Velocity Features:</b> Track per-account 15m/1h/24h fan-in, fan-out, pass-through ratio (money out vs. money in within minutes), and time-since-last-credit in O(1) memory lookups.</li>
+        <li><b>3-Tier Alert-Budget Policy:</b> Instead of blanket account freezes that hurt retail users, HopStop issues <b>ALLOW</b>, <b>STEP-UP</b> (OTP / cooling period), or <b>HOLD</b> calibrated to the bank's exact 1% analyst alert capacity.</li>
+        <li><b>Funds Preserved at Hop 1/2:</b> Stolen savings stay frozen in the first or second hop account so banks and cybercrime cells can recover them intact.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Problem: Multi-Hop Mule Dispersal vs. Batch AML Latency</span>
+    <span>Track 1: Real-Time AI for Critical Decisions</span>
+  </div>
+</div>
+
+<!-- SLIDE 3: ARCHITECTURE & PIPELINE -->
+<div class="slide">
+  <div class="top-bar">
+    <span class="tag">2. SOLUTION ARCHITECTURE &amp; IMPLEMENTATION PIPELINE</span>
+    <span class="slide-num">Slide 3 / 6</span>
+  </div>
+  <h2>End-to-End Co-Located Architecture on IBM Z / LinuxONE (<code>s390x</code>)</h2>
+  <div class="flow-row">
+    <div class="flow-step">
+      <b>1. Payment Stream</b>
+      IBM AMLworld transactions replayed in strict timestamp order. Salted SHA-256 hashing of account IDs at ingestion so no raw PII enters logs or models.
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <b>2. O(1) Feature Engine</b>
+      In-memory sliding deques (15m, 1h, 24h) compute 12 causal features: fan-in/out, pass-through ratio, time-since-credit, rapid drain flag, Welford Z-score.
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step" style="border-color:#42be65;background:#0b2e18;">
+      <b>3. Snap ML / Tensor-Tree</b>
+      36-tree GBDT scorer using <code>tree_format=auto</code>: targets Telum Integrated Accelerator for AI (<code>libzdnn</code> NNPA) or branch-minimized CPU tensor-trees.
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <b>4. Policy &amp; Audit Layer</b>
+      Calibrated to 1.0% alert budget: returns ALLOW, STEP_UP, or HOLD + Top-3 Reason Codes + SHA-256 hash-chained audit record.
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <b>5. Carbon Analyst UI</b>
+      Live queue of held transfers, Multi-Hop Chain Interdiction Graph, and real-time latency telemetry (<code>http://localhost:8080</code>).
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="panel cyan">
+      <h3>12 Zero-Leakage Causal Graph-Velocity Features</h3>
+      <table>
+        <tr><th>Feature Group</th><th>Engineered Signals (Past Events Only)</th></tr>
+        <tr><td><b>Graph Degree Burst</b></td><td><code>fan_in_1h</code>, <code>fan_out_1h</code>, <code>fan_in_24h</code>, <code>fan_out_24h</code></td></tr>
+        <tr><td><b>Mule Pass-Through</b></td><td><code>pass_through_ratio_15m</code>, <code>pass_through_ratio_1h</code>, <code>rapid_turnover_flag</code></td></tr>
+        <tr><td><b>Temporal &amp; Novelty</b></td><td><code>time_since_last_credit_log</code>, <code>counterparty_novelty</code>, <code>out_tx_velocity_1h</code></td></tr>
+        <tr><td><b>Amount &amp; Rail Risk</b></td><td>Online Welford <code>amount_zscore</code>, <code>payment_format_risk</code> (Wire/ACH)</td></tr>
+      </table>
+    </div>
+    <div class="panel">
+      <h3>Strict Prevention of Label Leakage &amp; Train/Serve Skew</h3>
+      <ul>
+        <li><b>Identical Online/Offline Code:</b> Both offline training and live REST stream scoring call <code>StreamingFeatureEngine.extract_and_update(tx)</code>.</li>
+        <li><b>Extract-Before-Update Ordering:</b> Features for transaction <i>T<sub>i</sub></i> are computed strictly before <i>T<sub>i</sub></i> updates sender and receiver deques.</li>
+        <li><b>Chronological Split:</b> Trained on Days 1–7 (35,648 tx) and evaluated on unseen future Days 8–10 (15,232 tx).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Architecture: Stream &rarr; Causal Graph Features &rarr; Snap ML Tensor-Trees &rarr; Policy &amp; Audit</span>
+    <span>Zero Train/Serve Skew</span>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHY IBM Z / LINUXONE -->
+<div class="slide">
+  <div class="top-bar">
+    <span class="tag">3. HOW HOPSTOP LEVERAGES IBM Z &amp; LINUXONE TECHNOLOGIES</span>
+    <span class="slide-num">Slide 4 / 6</span>
+  </div>
+  <h2>Why IBM Z / LinuxONE Is Core to the Architecture (Not Decoration)</h2>
+  <div class="grid-3" style="flex:1;">
+    <div class="panel cyan">
+      <h3>1. Co-Located In-Transaction AI</h3>
+      <p>Core banking and payment switches run on IBM Z. Calling an off-platform cloud GPU/CPU cluster adds <b>5–30 ms of network serialization</b>, TLS handshakes, and tail-latency spikes—breaking payment SLAs.</p>
+      <p>Running HopStop directly on the same <b>IBM Z / LinuxONE (`s390x`)</b> platform keeps transaction state in local memory and eliminates the external network hop.</p>
+    </div>
+    <div class="panel green">
+      <h3>2. Telum NNPA &amp; IBM Snap ML</h3>
+      <p>IBM Telum (z16) and Telum II (z17) integrate an on-chip <b>Integrated Accelerator for AI (NNPA, Facility 165)</b>.</p>
+      <p>HopStop's runtime (<code>hopstop/ibmz_runtime.py</code>) probes <code>libzdnn.so</code> via <code>zdnn_is_nnpa_installed()</code> and configures <b>IBM Snap ML</b> with <code>tree_format="auto"</code>, compiling decision trees into flat tensor operations for hardware acceleration with automatic fallback to CPU tensor-trees.</p>
+    </div>
+    <div class="panel">
+      <h3>3. Pervasive Security &amp; Audit</h3>
+      <p><b>Zero Off-Platform Exposure:</b> Sensitive payment graphs never leave the LinuxONE instance.</p>
+      <p><b>CPACF Hardware Crypto:</b> Account identifiers are hashed at ingestion with salted SHA-256, and every <code>HOLD</code> / <code>STEP_UP</code> decision is linked into a tamper-evident <b>SHA-256 hash chain</b> ( leveraging CPACF on <code>s390x</code>). Containerized in <code>Dockerfile.s390x</code> for <b>IBM Secure Execution</b> guests.</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:10px;">
+    <h3>Hardware Detection &amp; Graceful Portability Across LinuxONE VMs</h3>
+    <p style="margin:0;">
+      Because community cloud guest VMs may or may not expose the physical NNPA facility, HopStop automatically inspects <code>/proc/cpuinfo</code> (Facilities 165 &amp; 158) and <code>libzdnn.so</code> at startup, reporting hardware status in the live telemetry console while guaranteeing sub-millisecond inference in both accelerator and CPU tensor-tree modes.
+    </p>
+  </div>
+  <div class="footer">
+    <span>IBM Z Stack: Telum / Telum II NNPA &bull; zDNN &bull; Snap ML (tree_format=auto) &bull; CPACF SHA-256 &bull; LinuxONE s390x Container</span>
+    <span>HopStop</span>
+  </div>
+</div>
+
+<!-- SLIDE 5: MEASURED BENCHMARKS -->
+<div class="slide">
+  <div class="top-bar">
+    <span class="tag">4. EXPERIMENTAL VALIDATION &amp; MEASURED BENCHMARKS</span>
+    <span class="slide-num">Slide 5 / 6</span>
+  </div>
+  <h2>Measured Results on IBM AMLworld Schema (Days 8–10 Unseen Test Split)</h2>
+  <div class="grid-2">
+    <div>
+      <table>
+        <tr>
+          <th>Evaluation Metric (Unseen Test Set: 15,232 tx, 50 Chains)</th>
+          <th>Velocity-Rules Baseline</th>
+          <th>HopStop (Snap ML / Tensor-Tree)</th>
+          <th>Measured Gain / SLA</th>
+        </tr>
+        <tr>
+          <td><b>PR-AUC (Minority Laundering Class)</b></td>
+          <td>0.5306</td>
+          <td><b style="color:#42be65;">0.8317</b></td>
+          <td><b>+56.7% relative lift</b></td>
+        </tr>
+        <tr>
+          <td><b>ROC-AUC</b></td>
+          <td>0.9035</td>
+          <td><b style="color:#42be65;">0.9854</b></td>
+          <td><b>+9.1% lift</b></td>
+        </tr>
+        <tr>
+          <td><b>Laundering Recall @ Fixed 1.0% Alert Rate</b></td>
+          <td>44.5%</td>
+          <td><b style="color:#42be65;">53.3%</b></td>
+          <td><b>+19.8% relative lift</b></td>
+        </tr>
+        <tr>
+          <td><b>Laundering Recall @ Fixed 2.0% Alert Rate</b></td>
+          <td>62.9%</td>
+          <td><b style="color:#42be65;">72.8%</b></td>
+          <td><b>+15.7% relative lift</b></td>
+        </tr>
+        <tr>
+          <td><b>Multi-Hop Chains Stopped by Hop 2 (&le;2 Hops)</b></td>
+          <td>86.0% (43/50)</td>
+          <td><b style="color:#42be65;">94.0% (47/50)</b></td>
+          <td><b>+8.0 pts more chains frozen</b></td>
+        </tr>
+        <tr>
+          <td><b>End-to-End Decision Latency (batch=1)</b></td>
+          <td>—</td>
+          <td><b style="color:#33b1ff;">p50: 0.040 ms / p99: 0.202 ms</b></td>
+          <td><b>50x below 10 ms target</b></td>
+        </tr>
+        <tr>
+          <td><b>Throughput (Single Stream / Micro-Batch=64)</b></td>
+          <td>—</td>
+          <td><b style="color:#33b1ff;">20,366 TPS / 109,612 TPS</b></td>
+          <td><b>Core payment scale</b></td>
+        </tr>
+      </table>
+    </div>
+    <div class="panel cyan">
+      <h3>Why HopStop Beats Static Velocity Rules</h3>
+      <ul>
+        <li><b>Disentangles Benign Bursts from Mule Layering:</b> Corporate payroll fan-outs have high <code>fan_out_1h</code>, which triggers false positives in static velocity rules. HopStop combines <code>pass_through_ratio_15m</code> (22.9% importance weight), <code>time_since_last_credit_log</code> (17.4%), and <code>counterparty_novelty</code> (13.9%) to isolate true rapid pass-through mules.</li>
+        <li><b>Early Chain Interdiction Across All 8 Typologies:</b> Interrupts <b>94.0%</b> of multi-hop laundering chains (Fan-Out, Gather-Scatter, Scatter-Gather, Simple-Cycle, Fan-In, Bipartite, Stack, Random-Walk) at Hop 1 or Hop 2—preventing downstream dispersal to cash-out accounts.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Dataset: IBM Transactions for Anti-Money Laundering (AMLworld schema, Altman et al., NeurIPS 2023, CDLA-Sharing-1.0)</span>
+    <span>Reproducible via `python -m hopstop.train_and_benchmark`</span>
+  </div>
+</div>
+
+<!-- SLIDE 6: VALUE, STAKEHOLDERS & LIVE DEMO -->
+<div class="slide">
+  <div class="top-bar">
+    <span class="tag">5. PRACTICAL VALUE, BENEFICIARIES &amp; LIVE CONSOLE</span>
+    <span class="slide-num">Slide 6 / 6</span>
+  </div>
+  <h2>Who Benefits &amp; What Value HopStop Delivers</h2>
+  <div class="grid-3">
+    <div class="panel green">
+      <h3>1. Fraud Ops &amp; Risk Teams</h3>
+      <p><b>Fraud Operations Analysts:</b> Receive a live queue of held/step-up payments with Top-3 human-readable reason codes instead of next-day batch alerts.</p>
+      <p><b>Bank Risk Heads:</b> Dial the alert budget (e.g., 1.0%) to match analyst headcount while capturing +19.8% more laundering transfers than static rules.</p>
+    </div>
+    <div class="panel cyan">
+      <h3>2. Law Enforcement &amp; Regulators</h3>
+      <p><b>1930 Cybercrime Helpline &amp; Police Cyber Cells:</b> Because 94% of mule chains are paused by Hop 2, stolen victim funds are still sitting in the account when the freeze notice arrives.</p>
+      <p><b>AML Compliance Officers (FIU-IND):</b> Get time-stamped, SHA-256 hash-chained audit logs with reason codes for Suspicious Transaction Reports (STRs).</p>
+    </div>
+    <div class="panel">
+      <h3>3. Core Banking &amp; Retail Users</h3>
+      <p><b>IBM Z / LinuxONE Platform Teams:</b> Deploy a containerized (<code>s390x</code>) scoring engine achieving 0.202 ms p99 latency with zero external data egress.</p>
+      <p><b>Retail Banking Customers:</b> Protected from losing life savings to cyber scams, while middle-risk transfers trigger lightweight <code>STEP_UP</code> verification instead of wrongful account freezes.</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:8px;">
+    <h3>Reproducible Open-Source Repository &amp; Live Demo Verification</h3>
+    <p style="margin:0;">
+      <b>1-Command Benchmark:</b> <code>python -m hopstop.train_and_benchmark</code> &nbsp;|&nbsp;
+      <b>1-Command Live Console:</b> <code>python -m hopstop.server</code> (opens at <code>http://127.0.0.1:8080</code>) &nbsp;|&nbsp;
+      <b>LinuxONE Container:</b> <code>docker build -f Dockerfile.s390x -t hopstop-ibmz .</code>
+    </p>
+  </div>
+  <div class="footer">
+    <span>Thank You! &bull; HopStop: Real-Time Money-Mule Interdiction on IBM Z &amp; LinuxONE</span>
+    <span>Kabir Roy (VIT Bhopal) &bull; rakeshkabir@gmail.com</span>
+  </div>
+</div>
+
+</body>
+</html>
