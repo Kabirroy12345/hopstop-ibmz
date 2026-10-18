@@ -69,7 +69,7 @@ def score_preset_scenario(scenario: str) -> dict:
             "format": "Wire",
             "typology": "Fan-Out",
             "hop": 1,
-            "features": [2.0, 5.0, 3.0, 6.0, 0.96, 0.95, 4.78, 1.0, 1.0, 4.2, 5.0, 1.0],
+            "features": [2.0, 5.0, 3.0, 6.0, 0.96, 0.95, 4.78, 1.0, 1.0, 6.2, 5.0, 1.0],
         },
         "gather_scatter_mule": {
             "title": "Gather-Scatter Aggregator Mule Drain (INR 240,000 ACH)",
@@ -81,7 +81,7 @@ def score_preset_scenario(scenario: str) -> dict:
             "format": "ACH",
             "typology": "Gather-Scatter",
             "hop": 2,
-            "features": [4.0, 4.0, 5.0, 4.0, 0.94, 0.92, 5.10, 1.0, 1.0, 3.8, 4.0, 0.75],
+            "features": [4.0, 4.0, 5.0, 4.0, 0.94, 0.92, 5.10, 1.0, 1.0, 6.15, 4.0, 0.75],
         },
         "step_up_borderline": {
             "title": "Unusual First-Time High-Value Transfer (INR 48,500 ACH)",

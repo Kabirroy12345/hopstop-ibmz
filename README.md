@@ -103,9 +103,9 @@ Because TreeSHAP is signed, it explains **both** why a money-mule fan-out is fro
 | **`fan_out_1h`** | `5.0` distinct payees | `5.0` distinct payees *(triggers static velocity rules!)* |
 | **`pass_through_ratio_15m`** | **`0.96`** *(15m outflow / 15m inflow)* | **`0.00`** *(funded from reserve balance, zero 15m inflow)* |
 | **`counterparty_novelty`** | **`1.0`** *(unseen recipient account)* | **`0.0`** *(known recurring employee account)* |
-| **Static Velocity-Rules Baseline** | `0.99` → **FLAGGED** | `0.45` → **FLAGGED (False Positive — Freezes Payroll)** |
-| **HopStop GBDT Score & Action** | **`0.994` → `HOLD`** | **`0.008` → `ALLOW`** |
-| **Exact TreeSHAP Top Attributions** | Positive log-odds contributions (`+` from `rapid_turnover_flag`, `pass_through_ratio_15m`, `amount_zscore`) | Negative log-odds contributions (`-` from `rapid_turnover_flag=0`, `pass_through_ratio_15m=0`, `counterparty_novelty=0`) |
+| **Static Velocity-Rules Baseline** | `0.99` → **FLAGGED** | `0.60` → **FLAGGED (False Positive — Freezes Payroll)** |
+| **HopStop GBDT Score & Action** | **`0.9938` → `HOLD`** | **`0.0183` → `ALLOW`** |
+| **Exact TreeSHAP Top Attributions** | `amount_zscore (+1.828)`, `time_since_last_credit_log (+1.635)`, `payment_format_risk (+1.333)` | `counterparty_novelty (-1.552)`, `time_since_last_credit_log (-0.314)`, `amount_zscore (-0.249)` |
 
 ---
 
