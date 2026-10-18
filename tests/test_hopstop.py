@@ -330,3 +330,142 @@ def test_audit_chain_single_byte_tamper_detection(tamper_field: str) -> None:
 
     ok, _ = PolicyEngine.verify_chain(chain, audit_hmac_key="unit-test-hmac-secret")
     assert not ok, f"Tampering with {tamper_field} was not detected!"
+
+
+def test_bloom_filter_exact_fpr_math_and_60day_dormancy() -> None:
+    """Verifies single- and dual-generation Bloom filter FPR formulas (for both 64KB/gen and 32KB/gen)
+    and verifies that a payee dormant past LRU + 2 rotations (>60 days) looks new again."""
+    # 1. Exact 64 KB / generation (m = 524,288 bits per gen, 128 KB total across 2 gens, k = 4):
+    assert PayeeBloomFilter.single_generation_fpr(10000, m_bits=524288, k=4) == pytest.approx(0.0000291, rel=0.02)
+    assert PayeeBloomFilter.single_generation_fpr(25000, m_bits=524288, k=4) == pytest.approx(0.000910, rel=0.02)
+    assert PayeeBloomFilter.dual_generation_fpr(25000, 25000, m_bits=524288, k=4) == pytest.approx(0.001819, rel=0.02)
+
+    # 2. Exact 32 KB / generation (m = 262,144 bits per gen, 64 KB total across 2 gens, k = 4):
+    assert PayeeBloomFilter.single_generation_fpr(10000, m_bits=262144, k=4) == pytest.approx(0.000401, rel=0.02)
+    assert PayeeBloomFilter.single_generation_fpr(25000, m_bits=262144, k=4) == pytest.approx(0.01012, rel=0.02)
+    assert PayeeBloomFilter.dual_generation_fpr(25000, 25000, m_bits=262144, k=4) == pytest.approx(0.02014, rel=0.02)
+
+    # 3. Annual vendor dormant past two 30-day rotations (>60 days) after LRU eviction looks new again:
+    bf = PayeeBloomFilter(max_generation_items=25000, rotation_sec=30 * 86400.0)
+    bf.add("ACCT_ANNUAL_VENDOR_01", current_ts=1000.0)
+    assert bf.contains("ACCT_ANNUAL_VENDOR_01")
+    bf.add("ACCT_MONTH2_PEER", current_ts=1000.0 + 31 * 86400.0)  # Rotation 1 (>30d): moves to prev_bits
+    assert bf.contains("ACCT_ANNUAL_VENDOR_01")
+    bf.add("ACCT_MONTH3_PEER", current_ts=1000.0 + 63 * 86400.0)  # Rotation 2 (>60d): evicted from prev_bits
+    assert not bf.contains("ACCT_ANNUAL_VENDOR_01")
+
+
+def test_tie_invariance_and_paired_bootstrap_delta_consistency() -> None:
+    """Verifies that compute_roc_and_pr_auc and recall_at_alert_rate are 100% invariant to input ordering under tied scores."""
+    from hopstop.train_and_benchmark import compute_roc_and_pr_auc, recall_at_alert_rate
+
+    # Construct tied scores where positives and negatives share identical thresholds
+    pairs_pos_first = [(0.9, 1), (0.9, 1), (0.9, 0), (0.6, 1), (0.6, 0), (0.6, 0), (0.1, 0), (0.1, 0)]
+    pairs_neg_first = [(0.9, 0), (0.9, 1), (0.9, 1), (0.6, 0), (0.6, 0), (0.6, 1), (0.1, 0), (0.1, 0)]
+
+    roc1, pr1 = compute_roc_and_pr_auc([y for _, y in pairs_pos_first], [s for s, _ in pairs_pos_first])
+    roc2, pr2 = compute_roc_and_pr_auc([y for _, y in pairs_neg_first], [s for s, _ in pairs_neg_first])
+    assert roc1 == roc2 and pr1 == pr2
+
+    rec1, prec1, _ = recall_at_alert_rate([y for _, y in pairs_pos_first], [s for s, _ in pairs_pos_first], 0.25)
+    rec2, prec2, _ = recall_at_alert_rate([y for _, y in pairs_neg_first], [s for s, _ in pairs_neg_first], 0.25)
+    assert rec1 == rec2 and prec1 == prec2
+
+
+def test_alert_budget_recall_ceiling_and_dashboard_sync() -> None:
+    """Asserts recall <= alerts / positives across all alert budgets in benchmark_results.json and dashboard.html."""
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    bench_file = root / "artifacts" / "benchmark_results.json"
+    if bench_file.exists():
+        bench = json.loads(bench_file.read_text(encoding="utf-8"))
+        for pt in bench.get("alert_budget_curve", []):
+            k_alerts = pt["alerts_count"]
+            n_pos = pt["positives_count"]
+            ceiling = min(1.0, k_alerts / float(n_pos))
+            assert pt["theoretical_max_recall"] <= ceiling + 1e-4
+            assert pt["hopstop_recall"] <= ceiling + 1e-4
+            assert pt["logreg_recall"] <= ceiling + 1e-4
+            assert pt["rules_recall"] <= ceiling + 1e-4
+
+        # Check paired bootstrap point delta matches headline PR-AUC difference
+        mm = bench["model_metrics"]
+        p_gbdt = mm["hopstop_gbdt"]["pr_auc"]
+        p_lr = mm["logistic_regression_12feat"]["pr_auc"]
+        p_ru = mm["velocity_rules_baseline"]["pr_auc"]
+        comp = mm["paired_bootstrap_comparisons"]
+        assert comp["gbdt_minus_logreg"]["point_delta_pr_auc"] == pytest.approx(p_gbdt - p_lr, abs=1e-4)
+        assert comp["gbdt_minus_rules"]["point_delta_pr_auc"] == pytest.approx(p_gbdt - p_ru, abs=1e-4)
+
+    dash_html = (root / "hopstop" / "dashboard.html").read_text(encoding="utf-8")
+    assert '"0.5": { hopRecall: "41.2%"' not in dash_html
+    assert "{ r: 0.5, hop: 41.2" not in dash_html
+
+
+def test_day7_isotonic_calibration_and_percentile_rank() -> None:
+    """Verifies that calibrate_on_validation produces strictly monotone calibrated probabilities and percentiles."""
+    scorer = _build_trained_scorer()
+    rng = random.Random(123)
+    X_val = []
+    y_val = []
+    for _ in range(300):
+        if rng.random() < 0.05:
+            X_val.append(
+                [
+                    2.0 + rng.random(),
+                    4.0 + rng.random() * 2.0,
+                    3.0,
+                    5.0 + rng.random() * 2.0,
+                    0.92 + rng.random() * 0.07,
+                    0.90 + rng.random() * 0.08,
+                    4.5 + rng.random() * 0.5,
+                    1.0,
+                    1.0,
+                    3.0 + rng.random() * 3.0,
+                    4.0 + rng.random() * 2.0,
+                    1.0,
+                ]
+            )
+            y_val.append(1)
+        else:
+            X_val.append(
+                [
+                    0.0,
+                    1.0 + rng.random() * 5.0,
+                    1.0,
+                    1.0 + rng.random() * 5.0,
+                    0.0,
+                    0.0,
+                    10.5 + rng.random() * 1.5,
+                    0.0,
+                    0.0,
+                    -0.2 + rng.random() * 0.8,
+                    1.0 + rng.random() * 5.0,
+                    0.75,
+                ]
+            )
+            y_val.append(0)
+    scorer.calibrate_on_validation(X_val, y_val)
+
+    payroll_vec = [0.0, 5.0, 1.0, 5.0, 0.0, 0.0, 11.36, 0.0, 0.0, 0.25, 5.0, 0.75]
+    mule_vec = [2.0, 5.0, 3.0, 6.0, 0.96, 0.95, 4.78, 1.0, 1.0, 4.2, 5.0, 1.0]
+
+    p_pay = scorer.score_one(payroll_vec)
+    p_mule = scorer.score_one(mule_vec)
+    assert p_pay < 0.05
+    assert p_mule > 0.70
+    assert scorer.score_percentile(payroll_vec) < scorer.score_percentile(mule_vec)
+
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    model_path = root / "artifacts" / "hopstop_model.json"
+    if model_path.exists():
+        prod_scorer = SnapMLAcceleratedScorer.load_json(model_path)
+        assert prod_scorer.score_one(payroll_vec) < 0.01
+        assert prod_scorer.score_percentile(payroll_vec) < 60.0
+        assert prod_scorer.score_percentile(mule_vec) > 99.0
+
+

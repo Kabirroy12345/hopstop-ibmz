@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18 15:23:18 IST",
+  "generated_at": "2026-10-18 16:22:47 IST",
   "environment": {
     "architecture": "amd64",
     "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
@@ -31,92 +31,209 @@
     "train_laundering": 494,
     "val_laundering": 114,
     "test_laundering": 272,
+    "test_prevalence_rate": 0.017857,
     "test_chains": 50
   },
   "model_metrics": {
     "hopstop_gbdt": {
       "backend": "portable_python_depth2_gbdt (snapml package not installed on host)",
-      "roc_auc": 0.9837,
-      "pr_auc": 0.8122,
+      "calibration": "Day-7 PAVA Isotonic + Prior-Shift Calibration",
+      "roc_auc": 0.9833,
+      "pr_auc": 0.81,
       "pr_auc_95ci": [
-        0.7941,
-        0.8708
+        0.772,
+        0.8513
       ],
-      "recall_at_1pct_alert_rate": 0.5368,
+      "theoretical_max_recall_at_1pct": 0.5588,
+      "recall_at_1pct_alert_rate": 0.5375,
       "recall_1pct_95ci": [
-        0.5147,
+        0.5156,
         0.5515
       ],
-      "precision_at_1pct_alert_rate": 0.9605,
-      "recall_at_2pct_alert_rate": 0.7794,
-      "val_calibrated_hold_threshold": 0.993063,
-      "val_calibrated_step_up_threshold": 0.987287,
+      "precision_at_1pct_alert_rate": 0.9618,
+      "precision_at_1pct_10bps_prior": 0.5812,
+      "precision_at_1pct_5bps_prior": 0.4095,
+      "recall_at_prevalence_budget_179bps": 0.7402,
+      "precision_at_prevalence_budget_179bps": 0.7402,
+      "recall_at_2pct_alert_rate": 0.7829,
+      "val_calibrated_hold_threshold": 0.939048,
+      "val_calibrated_step_up_threshold": 0.879651,
       "target_alert_budget_rate": 0.01,
       "realized_test_alert_rate": 0.0083,
       "realized_test_alerts_count": 127,
       "realized_test_holds_count": 58,
-      "train_time_sec": 4.596
+      "train_time_sec": 6.431
     },
     "logistic_regression_12feat": {
       "roc_auc": 0.9804,
       "pr_auc": 0.8059,
       "pr_auc_95ci": [
-        0.7688,
-        0.8523
+        0.7685,
+        0.8521
       ],
+      "theoretical_max_recall_at_1pct": 0.5588,
       "recall_at_1pct_alert_rate": 0.5257,
       "recall_1pct_95ci": [
-        0.511,
-        0.5515
+        0.5074,
+        0.5478
       ],
       "precision_at_1pct_alert_rate": 0.9408,
+      "precision_at_1pct_10bps_prior": 0.4663,
+      "precision_at_1pct_5bps_prior": 0.3039,
+      "recall_at_prevalence_budget_179bps": 0.7697,
+      "precision_at_prevalence_budget_179bps": 0.7697,
       "recall_at_2pct_alert_rate": 0.7868
     },
     "velocity_rules_baseline": {
-      "roc_auc": 0.9148,
-      "pr_auc": 0.4484,
+      "roc_auc": 0.8957,
+      "pr_auc": 0.4471,
       "pr_auc_95ci": [
-        0.4912,
-        0.6109
+        0.3903,
+        0.5098
       ],
+      "theoretical_max_recall_at_1pct": 0.5588,
       "recall_at_1pct_alert_rate": 0.3566,
       "recall_1pct_95ci": [
-        0.3088,
-        0.4081
+        0.311,
+        0.4118
       ],
       "precision_at_1pct_alert_rate": 0.6382,
+      "precision_at_1pct_10bps_prior": 0.0885,
+      "precision_at_1pct_5bps_prior": 0.0463,
+      "recall_at_prevalence_budget_179bps": 0.489,
+      "precision_at_prevalence_budget_179bps": 0.489,
       "recall_at_2pct_alert_rate": 0.489
     },
     "paired_bootstrap_comparisons": {
       "gbdt_minus_logreg": {
-        "delta_pr_auc_mean": 0.0224,
+        "resampling_unit": "stratified_paired_transactions (n=15,232, tie-invariant AP & Recall@1%)",
+        "point_delta_pr_auc": 0.0041,
+        "bootstrap_mean_delta_pr_auc": 0.0018,
         "delta_pr_auc_95ci": [
-          0.0038,
-          0.041
+          -0.0158,
+          0.0213
         ],
+        "point_delta_recall_1pct": 0.0118,
+        "bootstrap_mean_delta_recall_1pct": 0.0072,
         "delta_recall_1pct_95ci": [
-          -0.0037,
+          -0.0074,
           0.0294
         ]
       },
       "gbdt_minus_rules": {
-        "delta_pr_auc_mean": 0.2797,
+        "resampling_unit": "stratified_paired_transactions (n=15,232, tie-invariant AP & Recall@1%)",
+        "point_delta_pr_auc": 0.3629,
+        "bootstrap_mean_delta_pr_auc": 0.3604,
         "delta_pr_auc_95ci": [
-          0.2383,
-          0.3267
+          0.3081,
+          0.4064
         ],
+        "point_delta_recall_1pct": 0.1809,
+        "bootstrap_mean_delta_recall_1pct": 0.1778,
         "delta_recall_1pct_95ci": [
-          0.1434,
-          0.239
+          0.1287,
+          0.2298
         ]
       }
     },
     "relative_lift": {
-      "recall_lift_vs_rules_at_1pct": 50.5,
-      "pr_auc_lift_vs_rules_pct": 81.1,
-      "pr_auc_lift_vs_logreg_pct": 0.8
+      "recall_lift_vs_rules_at_1pct": 50.7,
+      "pr_auc_lift_vs_rules_pct": 81.2,
+      "pr_auc_lift_vs_logreg_pct": 0.5
     }
   },
+  "alert_budget_curve": [
+    {
+      "alert_budget_pct": 0.5,
+      "alerts_count": 76,
+      "positives_count": 272,
+      "theoretical_max_recall": 0.2794,
+      "hopstop_recall": 0.2794,
+      "hopstop_pct_of_ceiling": 100.0,
+      "logreg_recall": 0.2794,
+      "rules_recall": 0.2155,
+      "hopstop_precision_test_179bps": 1.0,
+      "hopstop_precision_10bps_prior": 0.9992,
+      "hopstop_precision_5bps_prior": 0.9985,
+      "hopstop_chains_stopped_hop2": 23,
+      "hopstop_chains_stopped_hop2_pct": 46.0
+    },
+    {
+      "alert_budget_pct": 1.0,
+      "alerts_count": 152,
+      "positives_count": 272,
+      "theoretical_max_recall": 0.5588,
+      "hopstop_recall": 0.5375,
+      "hopstop_pct_of_ceiling": 96.2,
+      "logreg_recall": 0.5257,
+      "rules_recall": 0.3566,
+      "hopstop_precision_test_179bps": 0.9618,
+      "hopstop_precision_10bps_prior": 0.5812,
+      "hopstop_precision_5bps_prior": 0.4095,
+      "hopstop_chains_stopped_hop2": 42,
+      "hopstop_chains_stopped_hop2_pct": 84.0
+    },
+    {
+      "alert_budget_pct": 1.5,
+      "alerts_count": 228,
+      "positives_count": 272,
+      "theoretical_max_recall": 0.8382,
+      "hopstop_recall": 0.6693,
+      "hopstop_pct_of_ceiling": 79.8,
+      "logreg_recall": 0.7096,
+      "rules_recall": 0.489,
+      "hopstop_precision_test_179bps": 0.7984,
+      "hopstop_precision_10bps_prior": 0.1791,
+      "hopstop_precision_5bps_prior": 0.0983,
+      "hopstop_chains_stopped_hop2": 50,
+      "hopstop_chains_stopped_hop2_pct": 100.0
+    },
+    {
+      "alert_budget_pct": 1.79,
+      "alerts_count": 272,
+      "positives_count": 272,
+      "theoretical_max_recall": 1.0,
+      "hopstop_recall": 0.7402,
+      "hopstop_pct_of_ceiling": 74.0,
+      "logreg_recall": 0.7697,
+      "rules_recall": 0.489,
+      "hopstop_precision_test_179bps": 0.7402,
+      "hopstop_precision_10bps_prior": 0.1356,
+      "hopstop_precision_5bps_prior": 0.0727,
+      "hopstop_chains_stopped_hop2": 50,
+      "hopstop_chains_stopped_hop2_pct": 100.0
+    },
+    {
+      "alert_budget_pct": 2.0,
+      "alerts_count": 304,
+      "positives_count": 272,
+      "theoretical_max_recall": 1.0,
+      "hopstop_recall": 0.7829,
+      "hopstop_pct_of_ceiling": 78.3,
+      "logreg_recall": 0.7868,
+      "rules_recall": 0.489,
+      "hopstop_precision_test_179bps": 0.7005,
+      "hopstop_precision_10bps_prior": 0.1141,
+      "hopstop_precision_5bps_prior": 0.0605,
+      "hopstop_chains_stopped_hop2": 50,
+      "hopstop_chains_stopped_hop2_pct": 100.0
+    },
+    {
+      "alert_budget_pct": 2.5,
+      "alerts_count": 380,
+      "positives_count": 272,
+      "theoretical_max_recall": 1.0,
+      "hopstop_recall": 0.8271,
+      "hopstop_pct_of_ceiling": 82.7,
+      "logreg_recall": 0.8199,
+      "rules_recall": 0.5603,
+      "hopstop_precision_test_179bps": 0.592,
+      "hopstop_precision_10bps_prior": 0.074,
+      "hopstop_precision_5bps_prior": 0.0384,
+      "hopstop_chains_stopped_hop2": 50,
+      "hopstop_chains_stopped_hop2_pct": 100.0
+    }
+  ],
   "chain_interruption": {
     "test_chains_total": 50,
     "hopstop_stopped_by_hop1": 0,
@@ -192,26 +309,26 @@
     "records_verified": 15232,
     "includes_allow_decisions": true,
     "message": "Verified 15232 hash-chained audit records from genesis.",
-    "head_sha256": "273b9ead430976cc898543751deac60636e0ba2efcd2871fa8d564383da19ec8"
+    "head_sha256": "bf5d1cd00788cb9d4b5a1c75e531b7fe9b2931933768269b7d6d2a5a9b10ef9e"
   },
   "latency_benchmark": {
     "measured_on_hardware": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel (amd64, Windows 11)",
     "active_backend": "portable_python_depth2_gbdt (snapml package not installed on host)",
     "includes_stages": "O(1) Feature Extraction + GBDT Scoring (100% of tx) + TreeSHAP (on flagged alerts) + Policy & 64-Hex SHA-256/HMAC Audit (100% of tx)",
     "component_p50_ms": {
-      "feature_extraction_ms": 0.0315,
-      "gbdt_scoring_only_ms": 0.0073,
-      "policy_and_audit_ms": 0.0319,
-      "treeshap_explanation_on_alert_p50_ms": 0.1124,
-      "treeshap_explanation_on_alert_p99_ms": 0.2587
+      "feature_extraction_ms": 0.0616,
+      "gbdt_scoring_only_ms": 0.0134,
+      "policy_and_audit_ms": 0.0727,
+      "treeshap_explanation_on_alert_p50_ms": 0.1816,
+      "treeshap_explanation_on_alert_p99_ms": 0.2465
     },
-    "batch_1_end_to_end_p50_ms": 0.0717,
-    "batch_1_end_to_end_p95_ms": 0.183,
-    "batch_1_end_to_end_p99_ms": 0.3174,
-    "batch_1_end_to_end_mean_ms": 0.1216,
+    "batch_1_end_to_end_p50_ms": 0.1509,
+    "batch_1_end_to_end_p95_ms": 0.2033,
+    "batch_1_end_to_end_p99_ms": 0.3946,
+    "batch_1_end_to_end_mean_ms": 0.1642,
     "target_p99_ms": 10.0,
-    "single_worker_stream_tps": 8223,
-    "microbatch_64_scoring_tps": 147938
+    "single_worker_stream_tps": 6090,
+    "microbatch_64_scoring_tps": 92660
   },
   "feature_importances": [
     {
@@ -298,7 +415,9 @@
         1.0,
         0.75
       ],
-      "hopstop_score": 0.987027,
+      "hopstop_score": 0.877348,
+      "hopstop_val_percentile": 98.99,
+      "hopstop_raw_uncalibrated_score": 0.987027,
       "hopstop_action": "ALLOW",
       "rules_baseline_score": 0.4,
       "rules_would_flag": false,
@@ -347,7 +466,9 @@
         0.0,
         1.0
       ],
-      "hopstop_score": 0.993063,
+      "hopstop_score": 0.939048,
+      "hopstop_val_percentile": 99.5,
+      "hopstop_raw_uncalibrated_score": 0.993063,
       "hopstop_action": "HOLD",
       "rules_baseline_score": 0.63,
       "rules_would_flag": true,
@@ -396,7 +517,9 @@
         4.0,
         0.75
       ],
-      "hopstop_score": 0.015904,
+      "hopstop_score": 5.9e-05,
+      "hopstop_val_percentile": 43.72,
+      "hopstop_raw_uncalibrated_score": 0.015904,
       "hopstop_action": "ALLOW",
       "rules_baseline_score": 0.6,
       "rules_would_flag": true,
@@ -445,7 +568,9 @@
         0.0,
         1.0
       ],
-      "hopstop_score": 0.9938,
+      "hopstop_score": 0.943093,
+      "hopstop_val_percentile": 99.95,
+      "hopstop_raw_uncalibrated_score": 0.9938,
       "hopstop_action": "HOLD",
       "rules_baseline_score": 0.63,
       "rules_would_flag": true,
@@ -478,18 +603,18 @@
     {
       "tx_id": 35746,
       "timestamp": "2026/09/08 02:50:13",
-      "from_account_hash": "ACCT_25075A183A899380AF3E679D561C903F",
-      "to_account_hash": "ACCT_2D235D49FFA2112530F14E10CA0C398D",
+      "from_account_hash": "ACCT_EF7D14B7F25B14CFC362CB4BD80DA09A",
+      "to_account_hash": "ACCT_F8E360A42957937FBA873904F5CF9DBC",
       "from_bank": 21,
       "to_bank": 28,
       "amount": 67214.5,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.99005,
+      "risk_score": 0.907602,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -513,25 +638,25 @@
           "impact": "+1.586"
         }
       ],
-      "prev_audit_hash": "488d4dd49f3f1ccee459322f647da9960f56565712948cd39740285ddb3fc66c",
-      "audit_hash": "95c5ba3a34cc6b6af2f2de564dc6f2f59c73470b373387c7a4380dafd0f82283",
-      "hmac_signature": "bdae4c4a2432ae19a520d301f7d1f46c0d383075dd909f5ab08c7f4a101bf9eb"
+      "prev_audit_hash": "94985bca9364da8182d8fa4b63f4844965de5d85e94072a61c56039f8ba81c2b",
+      "audit_hash": "6b0a8a0b169d4bddf448ef6f906a90cf1202ddd5c193bc97fbd42c52b0f5618d",
+      "hmac_signature": "5e973fdadca3dbe0dcb67dea6b45af1ebd45210eb036ba582cc711b01f91c414"
     },
     {
       "tx_id": 35749,
       "timestamp": "2026/09/08 02:52:23",
-      "from_account_hash": "ACCT_25075A183A899380AF3E679D561C903F",
-      "to_account_hash": "ACCT_70E10AC8865F2CD33F39E4368763E191",
+      "from_account_hash": "ACCT_EF7D14B7F25B14CFC362CB4BD80DA09A",
+      "to_account_hash": "ACCT_716B627EBF76FA765F9D8492908ADF11",
       "from_bank": 21,
       "to_bank": 17,
       "amount": 67214.5,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -555,25 +680,25 @@
           "impact": "+1.081"
         }
       ],
-      "prev_audit_hash": "a80a9a0a85916b5da4882e99cbb293b6e8de6417393f6781adde682f383e6eb1",
-      "audit_hash": "a0c48815cff0d85d77315aa8339a7b35f362e3227562f3db0eb203fbe1ec55ae",
-      "hmac_signature": "e29598d3eec7ac6dc4666f067b1f0008969d844d3e1d0a65954d4eb43e51aa3b"
+      "prev_audit_hash": "38547be5d87139cc0a9d3f5f06dcb6e0d185983e4500874f50c300a1edb0d6c3",
+      "audit_hash": "6fc1bd206a542bbf0f92527724c0feddad42356b35d46a867c57bfa8f1674d9d",
+      "hmac_signature": "5817a27e0bf1b1c6bd4a9567d25aeec4b1bb83401cf1df8964a9a435fb29b549"
     },
     {
       "tx_id": 35886,
       "timestamp": "2026/09/08 05:32:05",
-      "from_account_hash": "ACCT_21A578849E7C06D72C8DAD7D440D82E4",
-      "to_account_hash": "ACCT_F8CFF88D8CC22FAA59976E1A86FC280B",
+      "from_account_hash": "ACCT_A5C9F683DE9D7D07955F25F3FA44468A",
+      "to_account_hash": "ACCT_C5A62D5628627908DD2DEAE8D8D55F06",
       "from_bank": 22,
       "to_bank": 32,
       "amount": 49848.99,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.993043,
+      "risk_score": 0.938944,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -597,25 +722,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "cab69303cc21c5eb4630610353c6e222fa95a5d60619f8f4f3716f30343be3a1",
-      "audit_hash": "69ffdb5d69f0b6a8850415d93fe3877710f5132723ecd3c358f42e2aa55eef25",
-      "hmac_signature": "376391b3e583b44ece8a0dc657d0a1a14fb3e46ed4d7cfd8b879fd6e71ae0875"
+      "prev_audit_hash": "2db3f536f36d584eb02c23816df060477ccef444a1e589d5cd7a6876609f67cd",
+      "audit_hash": "682507e755a019ca3d3528e4ee89d7c1aac1489461c0b5c3d3c53d1ec1d512b1",
+      "hmac_signature": "a2d516183d5180e973adb270afa2c60241605d7c3c28e723938eb3976a86b539"
     },
     {
       "tx_id": 35893,
       "timestamp": "2026/09/08 05:33:15",
-      "from_account_hash": "ACCT_006997EAE9DDD32701C1BD39E8017024",
-      "to_account_hash": "ACCT_F8CFF88D8CC22FAA59976E1A86FC280B",
+      "from_account_hash": "ACCT_1E1024C2181D49B769045A11710E8495",
+      "to_account_hash": "ACCT_C5A62D5628627908DD2DEAE8D8D55F06",
       "from_bank": 23,
       "to_bank": 32,
       "amount": 49848.99,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.993063,
+      "risk_score": 0.939048,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -639,25 +764,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "4663340b141740193af1952be3e6f354997d2eed4cb1c115eb25753b8ea7c1da",
-      "audit_hash": "b70e691d4d98532933903a3ac4fee9c1aaabff8acef374d1880061ba28fd297f",
-      "hmac_signature": "65a2c0abd22b81c6aa8547f6dd2628da173fe2b571e6547750951080a5de4771"
+      "prev_audit_hash": "c4bd6dad047690b3ba47defc2c674e80e9b272436c101ddee0dd4c4211bcfe1b",
+      "audit_hash": "3c1af0dcb5e19a59b10b05e09f2b5ee673a77036153c5909f42df6467c600cd7",
+      "hmac_signature": "a2ab8192fa7b00447ed5ec09dce1ca9f4c013dfa69f0ade27e07be995bb06b76"
     },
     {
       "tx_id": 35896,
       "timestamp": "2026/09/08 05:34:25",
-      "from_account_hash": "ACCT_5F5E998B407C47ADEFFF092D6F5E66BA",
-      "to_account_hash": "ACCT_F8CFF88D8CC22FAA59976E1A86FC280B",
+      "from_account_hash": "ACCT_82BEE24113470F788CA8666DEA82A4BB",
+      "to_account_hash": "ACCT_C5A62D5628627908DD2DEAE8D8D55F06",
       "from_bank": 26,
       "to_bank": 32,
       "amount": 49848.99,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -681,25 +806,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "d3c1031efa0a7f865c34056e460b1da61c248714bebfc91d1a78b4dd2db1f52f",
-      "audit_hash": "8c7a2cfe2ce3f1eba8fcb3692721f3f4be2d66a3f0895108e26507b33025f7eb",
-      "hmac_signature": "b2b18205996e059fdb06743298d95ee00ae046bdc0b12635033bd182caf35c76"
+      "prev_audit_hash": "1e12d70d1e85213ada27caee3b49399b981b342d67411085b4843e6954bf1fa1",
+      "audit_hash": "bc72e8962a98916d642b6a949118ac5902b4ee4dd3e6985fd08b2d4fa5c6c4e1",
+      "hmac_signature": "753e90fc863f61647d55f6a6f8bb7c5e60d9860bfce1abcc50419cc06b8ebbf1"
     },
     {
       "tx_id": 35917,
       "timestamp": "2026/09/08 05:49:00",
-      "from_account_hash": "ACCT_B1C5C6ECA75CB230C459A89486159F02",
-      "to_account_hash": "ACCT_5C52A99B7162754A9BCFA2FF9176F1B5",
+      "from_account_hash": "ACCT_4564981D9023CDFFA1D1A7B72D7E34F4",
+      "to_account_hash": "ACCT_F14428F16E6B43037D112C60C8263267",
       "from_bank": 15,
       "to_bank": 32,
       "amount": 157460.41,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -723,25 +848,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "23a51d2dcac50f6aa5d1a9f98f99cc89e58ea51043cc8c8c27f50f25e5b64e49",
-      "audit_hash": "d9383ea9706dcebbbc08a5e32af150858db784821265ff45abcd945d9e4a5e19",
-      "hmac_signature": "ce151ab996dfcde91076f33ea4971d84148656d4564862a1480dd347e740fe7d"
+      "prev_audit_hash": "a2fe8a9a66604dc45906e09546a4a19d029752bb402f9159e16497772be57572",
+      "audit_hash": "713f50a1a8c15fe93dbd18d94e43e6bd648591d9827922a97c4dffd78d890705",
+      "hmac_signature": "257e99a0dca0ec74b69d379817e813bef42b79368ac1584e87e000e901bd86ba"
     },
     {
       "tx_id": 35919,
       "timestamp": "2026/09/08 05:51:20",
-      "from_account_hash": "ACCT_5C52A99B7162754A9BCFA2FF9176F1B5",
-      "to_account_hash": "ACCT_25658AA23238EA7871B05E304D84E618",
+      "from_account_hash": "ACCT_F14428F16E6B43037D112C60C8263267",
+      "to_account_hash": "ACCT_898DF5B2D0FF76064F58E1EA23B9045E",
       "from_bank": 32,
       "to_bank": 17,
       "amount": 152736.6,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -765,25 +890,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "f3e105ffd23ac0347eef486b7b55fe6718199eb0e0953c71b00f05d348a2b3f8",
-      "audit_hash": "fbff449a71055585e003d40c7243c79a9ae9f7c3aeb827ed46f5ea891fa6ded9",
-      "hmac_signature": "e0691e6d6d7ada98be3d054b03441efe1f8d12f8e0bff0309a008b2a91ed5224"
+      "prev_audit_hash": "fa6bfe7789277c6ffd8be0986c8108283b9ee6cb9509122fcd7764250f64c8b6",
+      "audit_hash": "f44e31335441f3c98ef7bb79de075de92f2d09b7346c033e59ee3be6e955dd45",
+      "hmac_signature": "da95b85dcef038242d67582e5918064888b1f03f934bd26de639813d8d1a9165"
     },
     {
       "tx_id": 35928,
       "timestamp": "2026/09/08 05:56:08",
-      "from_account_hash": "ACCT_A10E821BAF3EB07CC97AF9BE31308247",
-      "to_account_hash": "ACCT_7650BF0A148F8910CC0A289E94076501",
+      "from_account_hash": "ACCT_49B1887E62765EEFE1EFACAB151901CC",
+      "to_account_hash": "ACCT_7D070BFA62EA382A7A9EE1C8E49DDA2B",
       "from_bank": 20,
       "to_bank": 16,
       "amount": 118189.64,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -807,25 +932,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "c9476f2ee4e34d3635b845c4606037e506126ccef133d9623193b253c1532a98",
-      "audit_hash": "46752960a6d5cbf2c854a266cbe7603aa97b3a0e18feeea52ddbf4fff404a5ac",
-      "hmac_signature": "a17f7f19b45364ff3cbfeaa876a0d650567329fae8c8afb66f6021d2ca1e85bd"
+      "prev_audit_hash": "ee3ea19f56373436c6f386fa9faaa25c41a95f9c73a917e8aefcdde9c63df58e",
+      "audit_hash": "bd536cbafd45cdbea62f649a5afa9fdcde942d0fba9135e5471af9cb9ca7c4be",
+      "hmac_signature": "c9272c55a426aceac2a0486d455528fa191bb9a02ec6e363a30e22320eeb4aee"
     },
     {
       "tx_id": 35932,
       "timestamp": "2026/09/08 05:58:38",
-      "from_account_hash": "ACCT_7650BF0A148F8910CC0A289E94076501",
-      "to_account_hash": "ACCT_910521DFB60C8A853EBC33272506385A",
+      "from_account_hash": "ACCT_7D070BFA62EA382A7A9EE1C8E49DDA2B",
+      "to_account_hash": "ACCT_3819FB9782606B90B2FC3991B13F5EFA",
       "from_bank": 16,
       "to_bank": 15,
       "amount": 114534.29,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -849,25 +974,25 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "14db35389c5220aa272c8038e8c475cad4b9be4a3858a3a1b015869cb10dd387",
-      "audit_hash": "56b3818388c763f7bcd78fcf5a44eceeb7ed44272748078bb9005fddbbb5efaa",
-      "hmac_signature": "3318a9c688430da4b2e14e51298eeece8a3e7e887509147afdf1fb788f9b3a4a"
+      "prev_audit_hash": "b78f2b84576f184af2da60174db6b9d9d060acdd0475434423544c8b57cc8ef1",
+      "audit_hash": "53b039e2797783fc4671a635fff5e87cb4d7e97ebe63316782defd3e1122adce",
+      "hmac_signature": "391e078d9944b9d5a5dc07ca1fec2bc2d4659e5f3fc276c33b0b59e58c780714"
     },
     {
       "tx_id": 35942,
       "timestamp": "2026/09/08 06:01:38",
-      "from_account_hash": "ACCT_910521DFB60C8A853EBC33272506385A",
-      "to_account_hash": "ACCT_79E03BB4E2B3F9B908C2A74A2EBE61BB",
+      "from_account_hash": "ACCT_3819FB9782606B90B2FC3991B13F5EFA",
+      "to_account_hash": "ACCT_53E52216044A7532C14E064A313A7367",
       "from_bank": 15,
       "to_bank": 26,
       "amount": 110878.94,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -891,25 +1016,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "6fbcb6f803de11b95c75216e01414a3cb246561835127d0a17afd52ab413b34d",
-      "audit_hash": "fa795b25c9193b5890b907b4264fd004ea799fc6773cd109c162c5233e32e5a4",
-      "hmac_signature": "ddbbde8918e3622541f5617df95abac03a74d17d3f7376492c5566bfabbed9ea"
+      "prev_audit_hash": "643d1d6d1867e99ae4acfe66d1ba67c65972fe598b9a2660c3eb20b035cd8093",
+      "audit_hash": "24090c1df04a08df754817a99363094b226d7a504446f3d04a8b5017019a3ad2",
+      "hmac_signature": "145e88cd40199a070d6879ab3bd1f4fe958767dffbe823dbee433a0baef17030"
     },
     {
       "tx_id": 36043,
       "timestamp": "2026/09/08 06:52:12",
-      "from_account_hash": "ACCT_7D650C9A3807AEFFE4A21876B1EE1BD8",
-      "to_account_hash": "ACCT_C3505CEA9FC4863B00F4F63DB373158A",
+      "from_account_hash": "ACCT_AD191061E80BF80A3A023232F8283BCB",
+      "to_account_hash": "ACCT_BD99F7CFBBA51FED43C3EFA4BD28AC8E",
       "from_bank": 26,
       "to_bank": 22,
       "amount": 14446.61,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -933,25 +1058,25 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "26183e7cafe14e9501acf18aa9f25d5d8886633612b580e48dde837e2a3ee5e8",
-      "audit_hash": "f357562a5a44a4727e267c427171b92e621986746c5a0d1944d3d28d4b65e961",
-      "hmac_signature": "5eb008d9c3fd1bf8c2a19228d8dca95edb9f93d12a76312cdafb2dacbe71b6f0"
+      "prev_audit_hash": "d7d5b74cbc84d942fa84842289c89712d5c3b7d0c5ee23bc00335d5a83643c3f",
+      "audit_hash": "cce20a5555dd14fec6ef4513581efc11d34fbfabcbe9c56ed2d17dcf2369e373",
+      "hmac_signature": "9a99e150fdfe0704e29e98f4038b5e4e53156e756d5bf5faebc955a7cbc02dc7"
     },
     {
       "tx_id": 36048,
       "timestamp": "2026/09/08 06:53:22",
-      "from_account_hash": "ACCT_E1DAA28BD5D96B8E6B4F3307CD63866A",
-      "to_account_hash": "ACCT_C3505CEA9FC4863B00F4F63DB373158A",
+      "from_account_hash": "ACCT_BD147EDCD097450D5C57FFF55E8A4770",
+      "to_account_hash": "ACCT_BD99F7CFBBA51FED43C3EFA4BD28AC8E",
       "from_bank": 31,
       "to_bank": 22,
       "amount": 14446.61,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.993043,
+      "risk_score": 0.938944,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -975,25 +1100,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "8db85954a0582cf022c51043a51a18ba4ea1f6f10e7bd8edade7dd5708c57e24",
-      "audit_hash": "1c957c5166b3267716c056f1946581cc8565add7ba67ec2488b4d1c6e0d2865c",
-      "hmac_signature": "27c7d61b5f21588e45a9fc2a992998327ab430e0635f8819ac5bf0f33607d481"
+      "prev_audit_hash": "bf2bbe22efefd485dd247a0d0675dcd5491b2b258a28964033c6ae80b8416dcc",
+      "audit_hash": "046895322c81a015c6e177049749e89156d311be99f7b6b49cb47d5cf72c82e5",
+      "hmac_signature": "2f22950162cd18c8da35d6283f8301a788ad4d5410c10c2f5396a2dfcd7b5133"
     },
     {
       "tx_id": 36053,
       "timestamp": "2026/09/08 06:54:32",
-      "from_account_hash": "ACCT_2E892041452A06A940B3166771F258B4",
-      "to_account_hash": "ACCT_C3505CEA9FC4863B00F4F63DB373158A",
+      "from_account_hash": "ACCT_9A6636D313E154599CAE3ACED63FAF65",
+      "to_account_hash": "ACCT_BD99F7CFBBA51FED43C3EFA4BD28AC8E",
       "from_bank": 24,
       "to_bank": 22,
       "amount": 14446.61,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.993063,
+      "risk_score": 0.939048,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -1017,25 +1142,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "a47b133d476b00dae3bcc04ea78459512b7730644cc879aa1e3c2cf82060f49b",
-      "audit_hash": "db3b9478e205269532a8b1be7ca8443f92cf80290b996fb5f4f81e1471013000",
-      "hmac_signature": "ac7eab4690be25d0a505b4fe810e561f11230622fcb8d36209694ad31bde7816"
+      "prev_audit_hash": "9c2472f2903f759bc0a93da2063cbc809e3eee77eae01af6f42233b9bdff2fe6",
+      "audit_hash": "35985d6e1e9d298963fe4915d07b3e4d6e59e07619809b8433453c29821e78f8",
+      "hmac_signature": "c4ebb0a8c582ecd05ed9ccbabf54f4aa4aa76aa8e2283df833cedc1f599ed864"
     },
     {
       "tx_id": 36472,
       "timestamp": "2026/09/08 09:16:17",
-      "from_account_hash": "ACCT_5558E734BCC9DCCFAD2495AC89011805",
-      "to_account_hash": "ACCT_C82E559E1371F6BB15B7D39DF8F30B00",
+      "from_account_hash": "ACCT_5DCA820BB2E97898238C2E98C41B1AC4",
+      "to_account_hash": "ACCT_66E2466A14DA9497B2271732D9FF5389",
       "from_bank": 23,
       "to_bank": 32,
       "amount": 147354.43,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.992216,
+      "risk_score": 0.934811,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -1059,25 +1184,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "7458de34916495878facf1192cc0b95764d37298206e02ffa1ec58e5fafebca5",
-      "audit_hash": "c64964c079e1ef032f25d6bd2ed801201dc9621ba8532b6a324515a8ff11d12e",
-      "hmac_signature": "df4e4edcaa509872df6f3fbd08e723db7fe595c2f8b91b657e4b1872686ab8e0"
+      "prev_audit_hash": "8e0abbd7aa6ee3d7d04d0e9ded6f48662bb4c9832d44e6a36e84c241e1332f18",
+      "audit_hash": "76e8ac3d25302f6fd8dd3490c8f3e81c21bf486b95d433b02f05cd69bd5c9c2b",
+      "hmac_signature": "17eb567b1e7045b819a2103f35da36b6827ea89731294a396e589eccc4ed4bc7"
     },
     {
       "tx_id": 36486,
       "timestamp": "2026/09/08 09:19:17",
-      "from_account_hash": "ACCT_C82E559E1371F6BB15B7D39DF8F30B00",
-      "to_account_hash": "ACCT_4B23B80DDBD919787F6AAA4A3AF07A77",
+      "from_account_hash": "ACCT_66E2466A14DA9497B2271732D9FF5389",
+      "to_account_hash": "ACCT_C51662C03C0F74F9221BC89E216C8C0F",
       "from_bank": 32,
       "to_bank": 19,
       "amount": 142651.63,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.992216,
+      "risk_score": 0.934811,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -1101,25 +1226,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "7d2f309c068e4b9d92aafcbf6967c5c570896c50b9d6420b1f5aaa8d7d471dfc",
-      "audit_hash": "fdfadcb8619ef95a906695fa68ddcace0797f3b6a5767bac6cf04e7278622a0d",
-      "hmac_signature": "1bf9d94e7a09271a8456fd050669f2afc178552ba76b44cb40f79e017cfa883a"
+      "prev_audit_hash": "741cdebb08f6b4f731365d98712feae6cf1f9293709a666afcad21207bce04f1",
+      "audit_hash": "c61c000f46088a7c10819716e3400fdb6271ecc69c9c8baac74910bf670370f4",
+      "hmac_signature": "a9b924ec394ba9a52a439d863c0664b218a08fdd7019986640fabfe9f54d6085"
     },
     {
       "tx_id": 36973,
       "timestamp": "2026/09/08 10:47:35",
-      "from_account_hash": "ACCT_F271C8DF95377F4E50F4057EE7C5C090",
-      "to_account_hash": "ACCT_78AAB171227C2B20B05F4A8AB07DA1CF",
+      "from_account_hash": "ACCT_7B41A9146C962FF93810A7CD0E7A6C83",
+      "to_account_hash": "ACCT_3D8CC3E7E8FFC81FFDBCA9723CB29859",
       "from_bank": 14,
       "to_bank": 26,
       "amount": 39442.29,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1143,25 +1268,25 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "63c08c8ef04a856113c8ef18c4369fde4365efc4b76254c05405d5ebf0fee8ed",
-      "audit_hash": "76c0e3399c94e1a2d07096b0c7576f4b84eeaa585f96db87fe53b265e5409dfe",
-      "hmac_signature": "c7bc952478e6d69213ac1e83a0d9c80af93d603cabed366129b3702d0b790526"
+      "prev_audit_hash": "eee097617026395230144b8471f03d9267ad0a8a26e3da9767d46b9fb101efbf",
+      "audit_hash": "1c938b867c03b6daa8959bd2c1f3a1db8a793f8252086c1b49afbe35752a54b1",
+      "hmac_signature": "c454728d31eed2d3e36a5a967a00ff1290547936424ed931c5d44c39023cf6be"
     },
     {
       "tx_id": 36987,
       "timestamp": "2026/09/08 10:50:05",
-      "from_account_hash": "ACCT_78AAB171227C2B20B05F4A8AB07DA1CF",
-      "to_account_hash": "ACCT_D3AFB318533B6E4B4E85D479FDD67D58",
+      "from_account_hash": "ACCT_3D8CC3E7E8FFC81FFDBCA9723CB29859",
+      "to_account_hash": "ACCT_936020E48C5C50EF3E0EE4306BF54B18",
       "from_bank": 26,
       "to_bank": 16,
       "amount": 38222.42,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.992216,
+      "risk_score": 0.934811,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -1185,25 +1310,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "053094e9bee059a4eac3850246cf5393af537f0b4bd0ac042167a0db6f01ab00",
-      "audit_hash": "9f0665e86485e431e5bf75e6aea844490c8d7cab037aaee82b50ea79b51480e1",
-      "hmac_signature": "cf9878bfe4420ec6eff5dd9c77a39f0c597d5bc49cbc4751fac0c25fc434c0f0"
+      "prev_audit_hash": "a653cae9e456901848db61f74012e8ed54167503e0ecf8def36673b2611fb518",
+      "audit_hash": "34f9f3dc75dd442b9a0a4fe763057e3e54cea47ed23bfb3bf8dbbb6394b492fc",
+      "hmac_signature": "293e4e3b53b17d767e0ad1eedefb80b39bbe6b35e41af545a53890f294dc7ce7"
     },
     {
       "tx_id": 37004,
       "timestamp": "2026/09/08 10:53:05",
-      "from_account_hash": "ACCT_D3AFB318533B6E4B4E85D479FDD67D58",
-      "to_account_hash": "ACCT_AEE8CD0F9E37B2B6F4622B6A16A15465",
+      "from_account_hash": "ACCT_936020E48C5C50EF3E0EE4306BF54B18",
+      "to_account_hash": "ACCT_6F2131CE22892D940A15F057C0EE4A2B",
       "from_bank": 16,
       "to_bank": 21,
       "amount": 37002.56,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.993043,
+      "risk_score": 0.938944,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1227,25 +1352,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "5e0d8d027c2659d653f6efed16d2c08767afc54b43b536680863ac96b8e7936e",
-      "audit_hash": "a33ae03e2ef3eb5574e87be1becfda7b4cfefe08fb99d32c1b3ce5037013beba",
-      "hmac_signature": "fb746252a283d9a007102497f5a04427e85e3dad399cae4294a2f5532898d1a6"
+      "prev_audit_hash": "a5d6e643e7082570e3c8e1c428ac8c33812d2d1feaf5be1f14fd97383beb3dba",
+      "audit_hash": "e3056e259d6bf04e859f88039172dcd592c1b7011d7eef7e11639f793522b35a",
+      "hmac_signature": "5d701ecd14dd6212817a568c4918e6eb2d070397a19146f411eb4ee015987479"
     },
     {
       "tx_id": 37281,
       "timestamp": "2026/09/08 11:40:54",
-      "from_account_hash": "ACCT_56BD2835DE3FE0E75CC8AB86C2434DD3",
-      "to_account_hash": "ACCT_2677660262AC1E85A649287C7C3938CB",
+      "from_account_hash": "ACCT_F700CF13E25DD21D65F2ADFF21EDF2A9",
+      "to_account_hash": "ACCT_B53E2FE5C15736D1ED51C0B5D489E150",
       "from_bank": 23,
       "to_bank": 29,
       "amount": 118447.25,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1269,25 +1394,25 @@
           "impact": "+1.081"
         }
       ],
-      "prev_audit_hash": "cfd22f22d857cfe80cf111dd3b4a22d25fc3d0b05dfb79c67c14deae4db8307a",
-      "audit_hash": "00f5397d5171690d30999e0e49a0afd101cea53fd68a29bdf0fa7e0fd02e76d5",
-      "hmac_signature": "5a212583fcb624e724b734e2769acebbcf87dca221eff5d941b7abf12f8550ad"
+      "prev_audit_hash": "f2a846b1fad2a930c572686247ee67d026febc7533f553728d68afcbf58720dd",
+      "audit_hash": "9d940bc7a85f6bf42fe157a813d4a7340c2b52f03a94235620d617643f41dc34",
+      "hmac_signature": "db6bf9ccac7da4ddb0f1f8eed1c6baa5de156ad2361f1f8ca7b07989f64a1677"
     },
     {
       "tx_id": 37319,
       "timestamp": "2026/09/08 11:45:14",
-      "from_account_hash": "ACCT_2677660262AC1E85A649287C7C3938CB",
-      "to_account_hash": "ACCT_B29A5FA70F13777304FD1419E265E4A3",
+      "from_account_hash": "ACCT_B53E2FE5C15736D1ED51C0B5D489E150",
+      "to_account_hash": "ACCT_05D9A5230CF789C238ECAD4EAF50CD64",
       "from_bank": 29,
       "to_bank": 32,
       "amount": 114745.77,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -1311,25 +1436,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "76f38600f4b98c3671db2bbc42aaf1d2484bd8e4df5c997b91870a5fef4ddc44",
-      "audit_hash": "3e1bdaf3c18d0c5c726268cd6a4f32cec4ca2d103d45d59f97c86084be771d12",
-      "hmac_signature": "fa24d1fac0ed8fd104b5387d0c7e9697a25f3bbdde25fd5dcc48b482afb24edd"
+      "prev_audit_hash": "aae8e1ff927f595cf49f79ed4e7b296ead4e67e6c90502214e561e31b4238ecc",
+      "audit_hash": "36810947b473f6d835326ede3e6cfc79d847f35f89e41691e82beb5cc763ced3",
+      "hmac_signature": "eaa3cf162ba68e120dfcfac5d4bc94b67e08fc7efbccc9e025f4e642c81be6cd"
     },
     {
       "tx_id": 38561,
       "timestamp": "2026/09/08 14:38:59",
-      "from_account_hash": "ACCT_492DE4B982DAD28B9945F0B34EB818BA",
-      "to_account_hash": "ACCT_2825905223611D5BE18D455782A2E940",
+      "from_account_hash": "ACCT_BCFB85967A97E322810C0142B0D7232B",
+      "to_account_hash": "ACCT_1C9E9C3A4EF88CD73CBCC7DBE8B3A039",
       "from_bank": 16,
       "to_bank": 14,
       "amount": 106858.81,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.993043,
+      "risk_score": 0.938944,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1353,25 +1478,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "5f204dc9390bae904a024a3a3779a48c583d95a88cac95e349132241ff4984da",
-      "audit_hash": "8ab60629cb5401c9f4fd4821894709eb52153b645421e37b21c90bf465e0e175",
-      "hmac_signature": "af0d60fd298ffbf98b83a0fcb649d8071d3ac3d31424f8737c3719151c5c41d0"
+      "prev_audit_hash": "8e80fd34a7807dc8fd417812aaaea181a41c9fca100b34a15bc7b3180dfc895b",
+      "audit_hash": "461a9270c68ff3045e13bc8749d3ccc4ded841e0e942ead218b88470893f78a1",
+      "hmac_signature": "6f8f520addeb23b2f38ad93c61e20594899706b1115558ed0655595df5284e17"
     },
     {
       "tx_id": 39434,
       "timestamp": "2026/09/08 16:50:25",
-      "from_account_hash": "ACCT_C2EFCEFB177B2050FA78982E4F137BF7",
-      "to_account_hash": "ACCT_4632AC5E0C41C3D8883FC10A687C0BA0",
+      "from_account_hash": "ACCT_8EB0197BD26CE2A5EDFF75F0646A2385",
+      "to_account_hash": "ACCT_F8D5B9ED6E786CA8946B4628B531BDB2",
       "from_bank": 31,
       "to_bank": 12,
       "amount": 7231.43,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1395,25 +1520,25 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "df571ffe023adad91fc6215adda55360707788d12be93d34aac9849bfb0b42f1",
-      "audit_hash": "1e9c4a40bf34a0a7f00fad6522e07b81ce5e291b3736121af30b63a97ea53c0b",
-      "hmac_signature": "c9869b44a54c7e8238c1d1da5f9f5ce062b4e8473d0c6a8fb78c923a763906bc"
+      "prev_audit_hash": "b30ce3696ad2f4d2f305538e0123343831e5d85d722e9c079d77490a2431f743",
+      "audit_hash": "891c52e438ce939b4a77f09ccb4055a0d55e356cc64941a901107c3005cd7492",
+      "hmac_signature": "24f04fb615111d579dc1d0e4c8a926e466b703a29996afc8920705c6b6193382"
     },
     {
       "tx_id": 39620,
       "timestamp": "2026/09/08 17:16:56",
-      "from_account_hash": "ACCT_7201C0EA86F87A04FD657B4C31EC7097",
-      "to_account_hash": "ACCT_224BE47C92FE79C300C21A34FEC63189",
+      "from_account_hash": "ACCT_02ED804177362237F9FF78CDC5C62EA5",
+      "to_account_hash": "ACCT_00C2A7E85F594C4CFE99C5261C841320",
       "from_bank": 24,
       "to_bank": 31,
       "amount": 66482.21,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.993043,
+      "risk_score": 0.938944,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1437,25 +1562,25 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "af0cb22b1b147daff90dc0e7e2258f1149d615504371fea4554335b694e8655f",
-      "audit_hash": "b0c45dbf3f0690846b24ff6535159a35cfeb857e529875a067dbb299682cf612",
-      "hmac_signature": "79b95e117dbcd3733704894fb019d884bfff022137804426f41cc532a2078c06"
+      "prev_audit_hash": "edc90e6feb3664a933b3c332166e22ac2116ece3722dcee0b8ae09b8d2cba3a9",
+      "audit_hash": "f2afde6b540206201a74704a10b914b0ee3abbe34c2da016c97fb367fab703b1",
+      "hmac_signature": "0e69aa609aca095b020459f5d79a5408f707d39cd88390017019365d1a3ad421"
     },
     {
       "tx_id": 39645,
       "timestamp": "2026/09/08 17:21:16",
-      "from_account_hash": "ACCT_224BE47C92FE79C300C21A34FEC63189",
-      "to_account_hash": "ACCT_EF97D4D0B569B233990CA4883179B43B",
+      "from_account_hash": "ACCT_00C2A7E85F594C4CFE99C5261C841320",
+      "to_account_hash": "ACCT_E66DBD4129AE7DEDC47EE017673A1775",
       "from_bank": 31,
       "to_bank": 10,
       "amount": 64404.64,
       "currency": "INR",
       "payment_format": "Wire",
-      "risk_score": 0.9938,
+      "risk_score": 0.943093,
       "action": "HOLD",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "amount_zscore",
@@ -1479,25 +1604,25 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "bc7a09d08f6e3c6fe468371588e5ffb7be2ebe667863d02359cfd3e85023758a",
-      "audit_hash": "1645876de838f42d6c26971b79f0377e187d4114f49fdbef7c5965b13b55f05e",
-      "hmac_signature": "34552c41691837584074ff9bd18f642b8b7b914b35ee7f44b2a5fb6e44deb7c5"
+      "prev_audit_hash": "00ff7b624ecac510576ea7004e0ab245d4e1098a3fdd9c5b7291f88bf7f99a2f",
+      "audit_hash": "13b5fe609969145702b847d51fafc121bd147cb1cd65da866f07b8da3b95ba64",
+      "hmac_signature": "3d17d14852af66a69a6a186cec631de730c71fc297eedb2e120df8dd4160c6f4"
     },
     {
       "tx_id": 39664,
       "timestamp": "2026/09/08 17:24:34",
-      "from_account_hash": "ACCT_A8773535E05CDBB00EAA115721A2130B",
-      "to_account_hash": "ACCT_AF883FA19B35AF185FDE7E13266A6061",
+      "from_account_hash": "ACCT_3C80B7F1DDC63CB65DE5446ED5F3D411",
+      "to_account_hash": "ACCT_A069BD5C2304279C857114476B6D5300",
       "from_bank": 16,
       "to_bank": 28,
       "amount": 76403.82,
       "currency": "INR",
       "payment_format": "ACH",
-      "risk_score": 0.987287,
+      "risk_score": 0.879651,
       "action": "STEP_UP",
-      "model_version": "hopstop-gbdt-v2.1",
-      "hold_threshold": 0.993063,
-      "step_up_threshold": 0.987287,
+      "model_version": "hopstop-gbdt-v2.2-calibrated",
+      "hold_threshold": 0.939048,
+      "step_up_threshold": 0.879651,
       "reason_codes": [
         {
           "feature": "time_since_last_credit_log",
@@ -1521,9 +1646,9 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "85a16a1c301b5c75aa7c1f55db5237fe6c6b4b3aa33d10731fc882f8874f9ce6",
-      "audit_hash": "e85d2c34d8b302c9e43465a882a46a6999bafbb3c717841edb6b1bbab194ec62",
-      "hmac_signature": "f1f63882b03c842adc17f8ccf5a5cd4b7586b966f688dc2afb7775345e2322de"
+      "prev_audit_hash": "b4e8aedb36eda2b764894f1bc7ae6ce5a61913f11864e2b986caff9ee66c3e4f",
+      "audit_hash": "918e7e94b4e25c6c21885eb2c4c46f3f5ca60724ae6158685d13ce092b12cfdb",
+      "hmac_signature": "788a8a1143b7bbc26c26937d6887708013922831649100ed4baa28efb86d2631"
     }
   ],
   "sample_interrupted_chains": [
@@ -1542,7 +1667,7 @@
           "from_bank": 18,
           "to_bank": 32,
           "amount": 246146.31,
-          "risk_score": 0.8872,
+          "risk_score": 0.2339,
           "decision": "ALLOW"
         },
         {
@@ -1554,7 +1679,7 @@
           "from_bank": 32,
           "to_bank": 16,
           "amount": 79587.31,
-          "risk_score": 0.9413,
+          "risk_score": 0.4463,
           "decision": "ALLOW"
         },
         {
@@ -1566,7 +1691,7 @@
           "from_bank": 32,
           "to_bank": 21,
           "amount": 79587.31,
-          "risk_score": 0.9828,
+          "risk_score": 0.8186,
           "decision": "ALLOW"
         },
         {
@@ -1578,7 +1703,7 @@
           "from_bank": 32,
           "to_bank": 25,
           "amount": 79587.31,
-          "risk_score": 0.9828,
+          "risk_score": 0.8186,
           "decision": "ALLOW"
         },
         {
@@ -1590,7 +1715,7 @@
           "from_bank": 16,
           "to_bank": 28,
           "amount": 76403.82,
-          "risk_score": 0.9873,
+          "risk_score": 0.8797,
           "decision": "ALLOW"
         },
         {
@@ -1602,7 +1727,7 @@
           "from_bank": 21,
           "to_bank": 28,
           "amount": 76403.82,
-          "risk_score": 0.993,
+          "risk_score": 0.9389,
           "decision": "STEP_UP"
         },
         {
@@ -1614,7 +1739,7 @@
           "from_bank": 25,
           "to_bank": 28,
           "amount": 76403.82,
-          "risk_score": 0.9938,
+          "risk_score": 0.9431,
           "decision": "HOLD"
         }
       ]
@@ -1634,7 +1759,7 @@
           "from_bank": 25,
           "to_bank": 19,
           "amount": 101785.51,
-          "risk_score": 0.898,
+          "risk_score": 0.281,
           "decision": "ALLOW"
         },
         {
@@ -1646,7 +1771,7 @@
           "from_bank": 14,
           "to_bank": 19,
           "amount": 101785.51,
-          "risk_score": 0.1125,
+          "risk_score": 0.0035,
           "decision": "ALLOW"
         },
         {
@@ -1658,7 +1783,7 @@
           "from_bank": 22,
           "to_bank": 19,
           "amount": 101785.51,
-          "risk_score": 0.1125,
+          "risk_score": 0.0035,
           "decision": "ALLOW"
         },
         {
@@ -1670,7 +1795,7 @@
           "from_bank": 19,
           "to_bank": 26,
           "amount": 97714.09,
-          "risk_score": 0.9839,
+          "risk_score": 0.8526,
           "decision": "ALLOW"
         },
         {
@@ -1682,7 +1807,7 @@
           "from_bank": 19,
           "to_bank": 26,
           "amount": 97714.09,
-          "risk_score": 0.979,
+          "risk_score": 0.7131,
           "decision": "ALLOW"
         },
         {
@@ -1694,7 +1819,7 @@
           "from_bank": 19,
           "to_bank": 14,
           "amount": 97714.09,
-          "risk_score": 0.9873,
+          "risk_score": 0.8797,
           "decision": "ALLOW"
         }
       ]
@@ -1714,7 +1839,7 @@
           "from_bank": 29,
           "to_bank": 15,
           "amount": 275010.12,
-          "risk_score": 0.8872,
+          "risk_score": 0.2339,
           "decision": "ALLOW"
         },
         {
@@ -1726,8 +1851,8 @@
           "from_bank": 15,
           "to_bank": 16,
           "amount": 266759.82,
-          "risk_score": 0.9931,
-          "decision": "STEP_UP"
+          "risk_score": 0.939,
+          "decision": "HOLD"
         },
         {
           "tx_id": 50676,
@@ -1738,7 +1863,7 @@
           "from_bank": 16,
           "to_bank": 12,
           "amount": 258757.02,
-          "risk_score": 0.9938,
+          "risk_score": 0.9431,
           "decision": "BLOCKED_UPSTREAM"
         },
         {
@@ -1750,7 +1875,7 @@
           "from_bank": 12,
           "to_bank": 29,
           "amount": 250994.31,
-          "risk_score": 0.9931,
+          "risk_score": 0.939,
           "decision": "BLOCKED_UPSTREAM"
         }
       ]
@@ -1770,7 +1895,7 @@
           "from_bank": 15,
           "to_bank": 11,
           "amount": 156760.03,
-          "risk_score": 0.8297,
+          "risk_score": 0.0433,
           "decision": "ALLOW"
         },
         {
@@ -1782,7 +1907,7 @@
           "from_bank": 11,
           "to_bank": 23,
           "amount": 152057.23,
-          "risk_score": 0.9849,
+          "risk_score": 0.86,
           "decision": "ALLOW"
         },
         {
@@ -1794,7 +1919,7 @@
           "from_bank": 23,
           "to_bank": 32,
           "amount": 147354.43,
-          "risk_score": 0.9922,
+          "risk_score": 0.9348,
           "decision": "STEP_UP"
         },
         {
@@ -1806,7 +1931,7 @@
           "from_bank": 32,
           "to_bank": 19,
           "amount": 142651.63,
-          "risk_score": 0.9922,
+          "risk_score": 0.9348,
           "decision": "BLOCKED_UPSTREAM"
         }
       ]
@@ -1826,7 +1951,7 @@
           "from_bank": 12,
           "to_bank": 26,
           "amount": 49119.87,
-          "risk_score": 0.8872,
+          "risk_score": 0.2339,
           "decision": "ALLOW"
         },
         {
@@ -1838,7 +1963,7 @@
           "from_bank": 26,
           "to_bank": 21,
           "amount": 47646.27,
-          "risk_score": 0.9938,
+          "risk_score": 0.9431,
           "decision": "HOLD"
         },
         {
@@ -1850,7 +1975,7 @@
           "from_bank": 21,
           "to_bank": 11,
           "amount": 46172.68,
-          "risk_score": 0.9931,
+          "risk_score": 0.939,
           "decision": "BLOCKED_UPSTREAM"
         },
         {
@@ -1862,7 +1987,7 @@
           "from_bank": 11,
           "to_bank": 19,
           "amount": 44699.08,
-          "risk_score": 0.9931,
+          "risk_score": 0.939,
           "decision": "BLOCKED_UPSTREAM"
         }
       ]
@@ -1882,7 +2007,7 @@
           "from_bank": 20,
           "to_bank": 23,
           "amount": 34832.1,
-          "risk_score": 0.8872,
+          "risk_score": 0.2339,
           "decision": "ALLOW"
         },
         {
@@ -1894,7 +2019,7 @@
           "from_bank": 18,
           "to_bank": 23,
           "amount": 34832.1,
-          "risk_score": 0.898,
+          "risk_score": 0.281,
           "decision": "ALLOW"
         },
         {
@@ -1906,7 +2031,7 @@
           "from_bank": 28,
           "to_bank": 23,
           "amount": 34832.1,
-          "risk_score": 0.1273,
+          "risk_score": 0.0037,
           "decision": "ALLOW"
         },
         {
@@ -1918,7 +2043,7 @@
           "from_bank": 26,
           "to_bank": 23,
           "amount": 34832.1,
-          "risk_score": 0.2928,
+          "risk_score": 0.0156,
           "decision": "ALLOW"
         },
         {
@@ -1930,7 +2055,7 @@
           "from_bank": 23,
           "to_bank": 19,
           "amount": 133755.25,
-          "risk_score": 0.9938,
+          "risk_score": 0.9431,
           "decision": "HOLD"
         },
         {
@@ -1942,7 +2067,7 @@
           "from_bank": 19,
           "to_bank": 27,
           "amount": 129575.4,
-          "risk_score": 0.9828,
+          "risk_score": 0.8186,
           "decision": "BLOCKED_UPSTREAM"
         }
       ]
@@ -1962,7 +2087,7 @@
           "from_bank": 17,
           "to_bank": 18,
           "amount": 76053.16,
-          "risk_score": 0.8451,
+          "risk_score": 0.0477,
           "decision": "ALLOW"
         },
         {
@@ -1974,7 +2099,7 @@
           "from_bank": 18,
           "to_bank": 32,
           "amount": 73771.57,
-          "risk_score": 0.993,
+          "risk_score": 0.9389,
           "decision": "STEP_UP"
         },
         {
@@ -1986,7 +2111,7 @@
           "from_bank": 32,
           "to_bank": 28,
           "amount": 71489.97,
-          "risk_score": 0.9889,
+          "risk_score": 0.8955,
           "decision": "BLOCKED_UPSTREAM"
         },
         {
@@ -1998,7 +2123,7 @@
           "from_bank": 28,
           "to_bank": 26,
           "amount": 69208.38,
-          "risk_score": 0.9938,
+          "risk_score": 0.9431,
           "decision": "BLOCKED_UPSTREAM"
         }
       ]
@@ -2018,7 +2143,7 @@
           "from_bank": 19,
           "to_bank": 24,
           "amount": 17313.08,
-          "risk_score": 0.8872,
+          "risk_score": 0.2339,
           "decision": "ALLOW"
         },
         {
@@ -2030,7 +2155,7 @@
           "from_bank": 33,
           "to_bank": 24,
           "amount": 17313.08,
-          "risk_score": 0.1469,
+          "risk_score": 0.0052,
           "decision": "ALLOW"
         },
         {
@@ -2042,7 +2167,7 @@
           "from_bank": 30,
           "to_bank": 24,
           "amount": 17313.08,
-          "risk_score": 0.8297,
+          "risk_score": 0.0433,
           "decision": "ALLOW"
         },
         {
@@ -2054,7 +2179,7 @@
           "from_bank": 28,
           "to_bank": 24,
           "amount": 17313.08,
-          "risk_score": 0.3482,
+          "risk_score": 0.0181,
           "decision": "ALLOW"
         },
         {
@@ -2066,7 +2191,7 @@
           "from_bank": 24,
           "to_bank": 31,
           "amount": 66482.21,
-          "risk_score": 0.993,
+          "risk_score": 0.9389,
           "decision": "STEP_UP"
         },
         {
@@ -2078,7 +2203,7 @@
           "from_bank": 31,
           "to_bank": 10,
           "amount": 64404.64,
-          "risk_score": 0.9938,
+          "risk_score": 0.9431,
           "decision": "BLOCKED_UPSTREAM"
         }
       ]
@@ -2089,14 +2214,40 @@
     "python_version": "3.12.3",
     "snapml_version": "1.17.2",
     "active_backend": "snapml.BoostingMachineClassifier(tree_format='auto')",
-    "fit_and_optimize_trees_sec": 0.0178,
-    "test_pr_auc": 0.843,
-    "test_roc_auc": 0.9846,
-    "test_recall_at_1pct": 0.5551,
-    "test_precision_at_1pct": 0.9934,
-    "single_tx_predict_proba_p50_ms": 0.0087,
-    "single_tx_predict_proba_p99_ms": 0.0362,
-    "batch_64_scoring_tps": 5201772,
-    "batch_64_per_tx_us": 0.192
+    "protocol": "Identical 3-way split (Days 1-6 Train, Day 7 Val early-stopping & threshold calibration, Days 8-10 Unseen Test)",
+    "fit_and_optimize_trees_sec": 0.0311,
+    "test_pr_auc": 0.834,
+    "test_pr_auc_95ci": [
+      0.7933,
+      0.8696
+    ],
+    "test_roc_auc": 0.9837,
+    "theoretical_max_recall_at_1pct": 0.5588,
+    "test_recall_at_1pct": 0.5478,
+    "test_recall_1pct_95ci": [
+      0.5257,
+      0.5551
+    ],
+    "test_precision_at_1pct": 0.9803,
+    "test_precision_at_1pct_10bps_prior": 0.7323,
+    "test_precision_at_1pct_5bps_prior": 0.5776,
+    "test_recall_at_prevalence_budget_179bps": 0.8015,
+    "test_precision_at_prevalence_budget_179bps": 0.8015,
+    "test_recall_at_2pct": 0.8083,
+    "val_calibrated_hold_threshold": 0.995172,
+    "val_calibrated_step_up_threshold": 0.990533,
+    "realized_test_alert_rate": 0.0068,
+    "chains_stopped_by_hop2": 42,
+    "chains_stopped_by_hop2_pct": 84.0,
+    "fast_chains_stopped_by_hop2": 38,
+    "fast_chains_total": 38,
+    "fast_chains_stopped_pct": 100.0,
+    "delayed_evasion_chains_stopped": 4,
+    "delayed_evasion_chains_total": 12,
+    "delayed_evasion_chains_stopped_pct": 33.3,
+    "single_tx_predict_proba_p50_ms": 0.0082,
+    "single_tx_predict_proba_p99_ms": 0.0512,
+    "model_only_x86_cpu_batch_64_scoring_tps": 6245645,
+    "model_only_x86_cpu_batch_64_per_tx_us": 0.16
   }
 }

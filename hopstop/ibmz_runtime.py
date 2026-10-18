@@ -27,6 +27,7 @@ Key capabilities:
 from __future__ import annotations
 
 import ctypes
+import importlib.metadata
 import importlib.util
 import json
 import math
@@ -105,8 +106,6 @@ def detect_ibmz_environment() -> Dict[str, Any]:
     snapml_version: Optional[str] = None
     if snapml_available:
         try:
-            import importlib.metadata
-
             snapml_version = importlib.metadata.version("snapml")
         except Exception:
             snapml_version = "installed"
@@ -208,18 +207,22 @@ class Depth2Tree:
 
 
 class SnapMLAcceleratedScorer:
-    """Gradient Boosted Decision Tree scorer with real Snap ML (`tree_format='auto'`) & portable JSON fallback."""
+    """Gradient Boosted Decision Tree scorer with Day-7 Isotonic Calibration, Snap ML (`tree_format='auto'`), & exact TreeSHAP."""
 
-    MODEL_VERSION = "hopstop-gbdt-v2.1"
+    MODEL_VERSION = "hopstop-gbdt-v2.2-calibrated"
 
     def __init__(self, n_trees: int = 36, learning_rate: float = 0.18) -> None:
         self.n_trees = n_trees
         self.learning_rate = learning_rate
         self.base_log_odds: float = 0.0
+        self.prior_shift_offset: float = 0.0
         self.trees: List[Depth2Tree] = []
         self.feature_means: List[float] = [0.0] * len(FEATURE_NAMES)
         self.feature_stds: List[float] = [1.0] * len(FEATURE_NAMES)
         self.feature_weights: List[float] = [0.0] * len(FEATURE_NAMES)
+        self.iso_knots_x: List[float] = []
+        self.iso_knots_y: List[float] = []
+        self.val_margin_quantiles: List[float] = []
         self.snapml_clf: Any = None
         self.active_backend: str = "uninitialized"
 
@@ -283,7 +286,7 @@ class SnapMLAcceleratedScorer:
             right_idx = indices[mid:]
         return best_feat, best_thr, left_idx, right_idx
 
-    def _try_fit_snapml(self, X: List[List[float]], y: List[int]) -> bool:
+    def _try_fit_snapml(self, X: List[List[float]], y: List[int], pos_weight: float = 14.0) -> bool:
         """Attempts to train a native `snapml.BoostingMachineClassifier` and call `optimize_trees(tree_format='auto')`."""
         if importlib.util.find_spec("snapml") is None:
             self.snapml_clf = None
@@ -294,6 +297,7 @@ class SnapMLAcceleratedScorer:
 
             X_np = np.asarray(X, dtype=np.float32)
             y_np = np.asarray(y, dtype=np.int32)
+            w_np = np.where(y_np == 1, float(pos_weight), 1.0).astype(np.float32)
             clf = BoostingMachineClassifier(
                 n_jobs=4,
                 max_depth=2,
@@ -301,7 +305,7 @@ class SnapMLAcceleratedScorer:
                 learning_rate=self.learning_rate,
                 random_state=42,
             )
-            clf.fit(X_np, y_np)
+            clf.fit(X_np, y_np, sample_weight=w_np)
             clf.optimize_trees(tree_format="auto")
             self.snapml_clf = clf
             self.active_backend = "snapml.BoostingMachineClassifier(tree_format='auto')"
@@ -327,6 +331,10 @@ class SnapMLAcceleratedScorer:
         step = max(1, len(neg_indices) // max(4000, len(pos_indices) * 8))
         sampled_neg = neg_indices[::step]
         train_idx = pos_indices + sampled_neg
+
+        # Exact Bayes log-odds offset induced by negative subsampling + pos_weight
+        neg_ratio = max(1.0, len(neg_indices) / max(1, len(sampled_neg)))
+        self.prior_shift_offset = math.log(max(1.0, pos_weight * neg_ratio))
 
         X_sub = [X[i] for i in train_idx]
         y_sub = [y[i] for i in train_idx]
@@ -410,8 +418,57 @@ class SnapMLAcceleratedScorer:
         total_imp = max(1.0, sum(feat_importance))
         self.feature_weights = [v / total_imp for v in feat_importance]
 
-        if not self._try_fit_snapml(X_sub, y_sub):
+        if not self._try_fit_snapml(X_sub, y_sub, pos_weight=pos_weight):
             self.active_backend = "portable_python_depth2_gbdt (snapml package not installed on host)"
+
+    def calibrate_on_validation(self, X_val: List[List[float]], y_val: List[int]) -> None:
+        """Fits a strictly monotone Day-7 PAVA Isotonic + Prior-Corrected Calibrator and stores Day-7 quantiles."""
+        if not X_val or not y_val:
+            return
+        margins = [self.raw_margin(x) for x in X_val]
+        sorted_m = sorted(margins)
+        n_v = len(sorted_m)
+        # Store 200 quantiles of Day-7 validation margins for fast empirical percentile lookup
+        self.val_margin_quantiles = [
+            round(sorted_m[min(n_v - 1, int(q * (n_v - 1) / 199.0))], 6) for q in range(200)
+        ]
+
+        # Group by distinct margins and run Pool-Adjacent-Violators Algorithm (PAVA)
+        by_m: Dict[float, List[int]] = {}
+        for m_val, lbl in zip(margins, y_val):
+            by_m.setdefault(round(m_val, 6), []).append(lbl)
+
+        unique_m = sorted(by_m.keys())
+        # Blocks: [min_x, max_x, sum_y, count]
+        blocks: List[List[float]] = []
+        for x_val in unique_m:
+            lbls = by_m[x_val]
+            blocks.append([x_val, x_val, float(sum(lbls)), float(len(lbls))])
+            while len(blocks) >= 2:
+                b_prev = blocks[-2]
+                b_curr = blocks[-1]
+                if (b_prev[2] / b_prev[3]) >= (b_curr[2] / b_curr[3]):
+                    merged = [
+                        b_prev[0],
+                        b_curr[1],
+                        b_prev[2] + b_curr[2],
+                        b_prev[3] + b_curr[3],
+                    ]
+                    blocks.pop()
+                    blocks[-1] = merged
+                else:
+                    break
+
+        knots_x: List[float] = []
+        knots_y: List[float] = []
+        for b in blocks:
+            mid_x = 0.5 * (b[0] + b[1])
+            p_pava = b[2] / b[3]
+            knots_x.append(round(mid_x, 6))
+            knots_y.append(round(p_pava, 6))
+
+        self.iso_knots_x = knots_x
+        self.iso_knots_y = knots_y
 
     def raw_margin(self, features: List[float]) -> float:
         """Returns the raw log-odds margin before the logistic link function."""
@@ -420,30 +477,66 @@ class SnapMLAcceleratedScorer:
             z += t.predict_one(features)
         return z
 
-    def score_one(self, features: List[float]) -> float:
-        """Scores a single transaction feature vector."""
-        if self.snapml_clf is not None:
-            try:
-                import numpy as np  # type: ignore
-
-                arr = np.asarray([features], dtype=np.float32)
-                return float(self.snapml_clf.predict_proba(arr)[0, 1])
-            except Exception:
-                pass
+    def raw_uncalibrated_prob(self, features: List[float]) -> float:
+        """Returns the raw weighted-training sigmoid score before Day-7 calibration."""
         return self._sigmoid(self.raw_margin(features))
+
+    def _calibrate_margin(self, z: float) -> float:
+        """Maps raw log-odds margin z to a strictly monotone Day-7 calibrated probability."""
+        p_prior = self._sigmoid(z - self.prior_shift_offset)
+        if not self.iso_knots_x:
+            return p_prior
+        kx = self.iso_knots_x
+        ky = self.iso_knots_y
+        if z <= kx[0]:
+            p_iso = ky[0]
+        elif z >= kx[-1]:
+            p_iso = ky[-1]
+        else:
+            lo = 0
+            hi = len(kx) - 1
+            while lo + 1 < hi:
+                mid = (lo + hi) // 2
+                if kx[mid] <= z:
+                    lo = mid
+                else:
+                    hi = mid
+            span = max(1e-9, kx[hi] - kx[lo])
+            alpha = (z - kx[lo]) / span
+            p_iso = ky[lo] + alpha * (ky[hi] - ky[lo])
+        # 85% Day-7 PAVA Isotonic + 15% Prior-Adjusted Sigmoid guarantees strict monotonicity
+        return 0.85 * p_iso + 0.15 * p_prior
+
+    def score_percentile(self, features: List[float]) -> float:
+        """Returns the empirical percentile rank (0.0 to 99.99) on the Day-7 Validation distribution."""
+        z = self.raw_margin(features)
+        qs = self.val_margin_quantiles
+        if not qs:
+            return round(self._calibrate_margin(z) * 100.0, 2)
+        if z <= qs[0]:
+            return 0.1
+        if z >= qs[-1]:
+            return 99.95
+        lo = 0
+        hi = len(qs) - 1
+        while lo + 1 < hi:
+            mid = (lo + hi) // 2
+            if qs[mid] <= z:
+                lo = mid
+            else:
+                hi = mid
+        span = max(1e-9, qs[hi] - qs[lo])
+        frac = (z - qs[lo]) / span
+        pct = ((lo + frac) / (len(qs) - 1)) * 100.0
+        return round(min(99.99, max(0.01, pct)), 2)
+
+    def score_one(self, features: List[float]) -> float:
+        """Scores a single transaction feature vector (returns Day-7 calibrated probability)."""
+        return self._calibrate_margin(self.raw_margin(features))
 
     def score_batch(self, feature_rows: List[List[float]]) -> List[float]:
         """Scores a micro-batch of transaction feature vectors."""
-        if self.snapml_clf is not None:
-            try:
-                import numpy as np  # type: ignore
-
-                arr = np.asarray(feature_rows, dtype=np.float32)
-                probs = self.snapml_clf.predict_proba(arr)[:, 1]
-                return [float(p) for p in probs]
-            except Exception:
-                pass
-        return [self._sigmoid(self.raw_margin(row)) for row in feature_rows]
+        return [self._calibrate_margin(self.raw_margin(row)) for row in feature_rows]
 
     def explain_instance(self, features: List[float]) -> List[float]:
         """Computes exact path-dependent TreeSHAP values (in log-odds units) for all 12 features.
@@ -459,13 +552,11 @@ class SnapMLAcceleratedScorer:
         """Returns the top-k features by exact TreeSHAP magnitude, preserving signed impact."""
         phi = self.explain_instance(features)
         margin = self.raw_margin(features)
-        prob = self._sigmoid(margin)
 
-        # For high-risk transactions (prob >= 0.5), prioritize positive risk-driving SHAP values;
-        # for low-risk transactions (prob < 0.5, e.g., benign corporate payroll), prioritize negative
-        # risk-suppressing SHAP values so analysts see why the transfer was cleared.
+        # Prioritize positive risk-driving SHAP values when margin >= expected_log_odds,
+        # and negative risk-suppressing SHAP values when below expected_log_odds (e.g. payroll/retail).
         indexed = list(enumerate(phi))
-        if prob >= 0.5:
+        if margin >= self.expected_log_odds:
             indexed.sort(key=lambda item: item[1], reverse=True)
         else:
             indexed.sort(key=lambda item: item[1])
@@ -501,12 +592,16 @@ class SnapMLAcceleratedScorer:
             "n_trees": self.n_trees,
             "learning_rate": self.learning_rate,
             "base_log_odds": self.base_log_odds,
+            "prior_shift_offset": self.prior_shift_offset,
             "expected_log_odds": self.expected_log_odds,
             "active_backend": self.active_backend,
             "feature_names": FEATURE_NAMES,
             "feature_means": self.feature_means,
             "feature_stds": self.feature_stds,
             "feature_weights": self.feature_weights,
+            "iso_knots_x": self.iso_knots_x,
+            "iso_knots_y": self.iso_knots_y,
+            "val_margin_quantiles": self.val_margin_quantiles,
             "trees": [asdict(t) for t in self.trees],
         }
 
@@ -523,9 +618,13 @@ class SnapMLAcceleratedScorer:
             learning_rate=float(data["learning_rate"]),
         )
         scorer.base_log_odds = float(data["base_log_odds"])
+        scorer.prior_shift_offset = float(data.get("prior_shift_offset", 0.0))
         scorer.feature_means = [float(x) for x in data["feature_means"]]
         scorer.feature_stds = [float(x) for x in data["feature_stds"]]
         scorer.feature_weights = [float(x) for x in data["feature_weights"]]
+        scorer.iso_knots_x = [float(x) for x in data.get("iso_knots_x", [])]
+        scorer.iso_knots_y = [float(x) for x in data.get("iso_knots_y", [])]
+        scorer.val_margin_quantiles = [float(x) for x in data.get("val_margin_quantiles", [])]
         scorer.active_backend = str(data.get("active_backend", "portable_python_depth2_gbdt"))
         scorer.trees = [Depth2Tree(**t_dict) for t_dict in data["trees"]]
         return scorer

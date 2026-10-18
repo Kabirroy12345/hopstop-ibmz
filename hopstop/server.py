@@ -151,6 +151,8 @@ def score_preset_scenario(scenario: str) -> dict:
     t1 = time.perf_counter_ns()
     reasons = scorer.top_reason_codes(feats, top_k=3)
     t2 = time.perf_counter_ns()
+    val_pct = scorer.score_percentile(feats)
+    raw_uncal = round(scorer.score_one_uncalibrated(feats), 4)
     rules_score = VelocityRulesBaseline.score_one(feats)
     gbdt_scoring_ms = round((t1 - t0) / 1_000_000.0, 4)
     treeshap_ms = round((t2 - t1) / 1_000_000.0, 4)
@@ -174,6 +176,8 @@ def score_preset_scenario(scenario: str) -> dict:
     res = decision.to_dict()
     res["title"] = p["title"]
     res["scenario_source"] = p["scenario_source"]
+    res["val_percentile"] = val_pct
+    res["raw_uncalibrated_score"] = raw_uncal
     res["latency_ms"] = elapsed_ms
     res["gbdt_scoring_only_ms"] = gbdt_scoring_ms
     res["treeshap_explanation_ms"] = treeshap_ms

@@ -90,26 +90,55 @@ def hash_account_id(raw_id: str, secret_key: Optional[str] = None) -> str:
 
 
 class PayeeBloomFilter:
-    """Dual-generation rotating Bloom filter (64 KB / 524,288 bits per generation, k=4 probes).
+    """Dual-generation rotating Bloom filter (`64 KB = 524,288 bits` per generation, `128 KB` total across both generations, `k=4` probes).
 
-    Capacity & False-Positive Rate (FPR) guarantees:
-    - Each generation holds 524,288 bits (64 KB) with k=4 independent 19-bit probes.
-    - At n = 10,000 evicted payees: FPR = (1 - exp(-4 * 10000 / 524288))^4 = 0.0029% (2.9e-5).
-    - At n = 25,000 evicted payees (rotation threshold): FPR = 0.091% (< 0.1%).
-    - When `active_count >= max_generation_items` (25,000) or `ts - last_rotation_ts >= rotation_sec`,
-      `active_bits` rotates to `prev_bits` and a fresh `active_bits` generation starts, preventing
-      saturation and aging out stale payees while preserving recent recurring payroll recipients.
+    Exact Capacity, Single- vs. Dual-Generation FPR & Dormant-Payee Horizon:
+    - Each generation allocates `65,536 bytes = 524,288 bits` (`64 KB`) with `k=4` independent 19-bit probes (`0 .. 524,287`).
+      When `prev_bits` is also active after rotation, total memory is `128 KB` (`1,048,576 bits` across the two generations).
+    - Single-generation formula (`m = 524,288 bits`, `k = 4`):
+        `FPR_1(n) = (1 - exp(-4 * n / 524288)) ** 4`
+        * `n = 10,000` evicted payees: `0.00291%` (`2.91e-5`)
+        * `n = 25,000` evicted payees (rotation limit): `0.0910%` (`9.10e-4`)
+      (Note: if sized at half-width `m = 262,144 bits = 32 KB/gen` (`64 KB` total), `FPR_1(10,000) = 0.0401%`,
+       `FPR_1(25,000) = 1.012%`, and dual-generation pre-rotation `FPR_2(25,000, 25,000) = 2.014%`.)
+    - Dual-generation combined formula (`contains` queries `active_bits OR prev_bits`):
+        `FPR_2(n_act, n_prev) = 1 - (1 - FPR_1(n_act)) * (1 - FPR_1(n_prev))`
+        * At `n_act = 10,000, n_prev = 25,000` (`m = 524,288/gen`): `0.0939%`
+        * Worst-case just before rotation (`n_act = 25,000, n_prev = 25,000`, `m = 524,288/gen`): `0.1819%` (`< 0.2%`)
+    - Dormant-Payee Horizon (`> 60 days`):
+      Because at most two 30-day (`2,592,000s`) / `25,000`-item generations (`active_bits` and `prev_bits`) are retained,
+      a recurring payee who is both evicted from the `2,048`-entry LRU and dormant across two full rotations (`> 60 days`,
+      such as a quarterly or annual vendor) ages out of both generations and is scored as novel (`counterparty_novelty = 1.0`)
+      on their next transfer.
     """
 
-    __slots__ = ("active_bits", "prev_bits", "active_count", "max_generation_items", "last_rotation_ts", "rotation_sec")
+    __slots__ = ("active_bits", "prev_bits", "active_count", "prev_count", "max_generation_items", "last_rotation_ts", "rotation_sec")
+
+    BITS_PER_GEN = 524288  # 64 KB per generation (128 KB total when prev_bits is allocated)
+    NUM_PROBES = 4
 
     def __init__(self, max_generation_items: int = 25000, rotation_sec: float = 2592000.0) -> None:
-        self.active_bits = bytearray(65536)  # 524,288 bits = 64 KB
+        self.active_bits = bytearray(65536)  # 524,288 bits = 64 KB per generation
         self.prev_bits: Optional[bytearray] = None
         self.active_count: int = 0
+        self.prev_count: int = 0
         self.max_generation_items: int = max_generation_items
         self.last_rotation_ts: float = 0.0
         self.rotation_sec: float = rotation_sec
+
+    @staticmethod
+    def single_generation_fpr(n_items: int, m_bits: int = 524288, k: int = 4) -> float:
+        """Exact theoretical false-positive probability `(1 - exp(-k * n / m)) ** k` for a single generation."""
+        if n_items <= 0:
+            return 0.0
+        return (1.0 - math.exp((-k * n_items) / float(m_bits))) ** k
+
+    @classmethod
+    def dual_generation_fpr(cls, n_active: int, n_prev: int = 0, m_bits: int = 524288, k: int = 4) -> float:
+        """Exact combined false-positive probability when querying both `active_bits` and `prev_bits`."""
+        p_act = cls.single_generation_fpr(n_active, m_bits=m_bits, k=k)
+        p_prv = cls.single_generation_fpr(n_prev, m_bits=m_bits, k=k)
+        return 1.0 - (1.0 - p_act) * (1.0 - p_prv)
 
     @staticmethod
     def _probes(acct_token: str) -> Tuple[int, int, int, int]:
@@ -127,6 +156,7 @@ class PayeeBloomFilter:
 
     def _rotate(self, current_ts: float) -> None:
         self.prev_bits = self.active_bits
+        self.prev_count = self.active_count
         self.active_bits = bytearray(65536)
         self.active_count = 0
         self.last_rotation_ts = current_ts

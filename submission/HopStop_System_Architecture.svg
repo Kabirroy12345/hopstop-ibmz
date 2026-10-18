@@ -50,11 +50,11 @@
   <!-- KPI Badges in Header -->
   <rect x="1115" y="38" width="140" height="42" rx="8" fill="rgba(16,185,129,0.12)" stroke="#10b981" stroke-width="1"/>
   <text x="1185" y="56" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">E2E P50 / P99</text>
-  <text x="1185" y="72" fill="#ffffff" font-size="13.5" font-weight="700" text-anchor="middle" font-family="monospace">0.06 / 0.19 ms</text>
+  <text x="1185" y="72" fill="#ffffff" font-size="13.5" font-weight="700" text-anchor="middle" font-family="monospace">0.15 / 0.39 ms</text>
 
   <rect x="1268" y="38" width="140" height="42" rx="8" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1"/>
   <text x="1338" y="56" fill="#7dd3fc" font-size="10" font-weight="700" text-anchor="middle">TEST PR-AUC</text>
-  <text x="1338" y="72" fill="#ffffff" font-size="13.5" font-weight="700" text-anchor="middle" font-family="monospace">0.8122 (+81.1%)</text>
+  <text x="1338" y="72" fill="#ffffff" font-size="13.5" font-weight="700" text-anchor="middle" font-family="monospace">0.810 / 0.834</text>
 
   <rect x="1421" y="38" width="132" height="42" rx="8" fill="rgba(244,63,94,0.14)" stroke="#f43f5e" stroke-width="1"/>
   <text x="1487" y="56" fill="#fda4af" font-size="10" font-weight="700" text-anchor="middle">CHAINS STOPPED ≤H2</text>
@@ -103,7 +103,7 @@
   <rect x="322" y="116" width="945" height="535" rx="14" fill="url(#enclaveGrad)" stroke="#6366f1" stroke-width="2"/>
   <rect x="338" y="130" width="913" height="36" rx="7" fill="rgba(99,102,241,0.16)" stroke="rgba(99,102,241,0.4)"/>
   <text x="354" y="153" fill="#e0e7ff" font-size="13" font-weight="700" letter-spacing="0.6">2. IBM Z / LINUXONE (s390x) ON-PLATFORM CO-LOCATED INFERENCE &amp; CRYPTO ENCLAVE</text>
-  <text x="1235" y="153" fill="#38bdf8" font-size="11.5" font-weight="700" text-anchor="end" font-family="monospace">SLA &lt; 10 ms • E2E p50: 0.064 ms | p99: 0.167 ms</text>
+  <text x="1235" y="153" fill="#38bdf8" font-size="11.5" font-weight="700" text-anchor="end" font-family="monospace">SLA &lt; 10 ms • E2E p50: 0.151 ms | p99: 0.395 ms</text>
 
   <!-- STAGE 2A: CPACF HMAC-SHA256 PII Anonymizer -->
   <rect x="340" y="182" width="265" height="215" rx="10" fill="url(#stageBlue)" stroke="#06b6d4" stroke-width="1.5"/>
@@ -125,14 +125,14 @@
   <rect x="639" y="182" width="305" height="215" rx="10" fill="url(#stageBlue)" stroke="#3b82f6" stroke-width="1.5"/>
   <text x="655" y="206" fill="#60a5fa" font-size="11" font-weight="700">STAGE 2B • CAUSAL O(1) FEATURE ENGINE</text>
   <text x="655" y="226" fill="#ffffff" font-size="15" font-weight="700">12 Graph-Velocity Features</text>
-  <text x="655" y="244" fill="#94a3b8" font-size="11">O(1) SlidingWindow + LRU + 64KB Rotating Bloom</text>
+  <text x="655" y="244" fill="#94a3b8" font-size="11">O(1) SlidingWindow + LRU + 128KB Dual-Gen Bloom</text>
 
   <rect x="653" y="256" width="277" height="128" rx="6" fill="#06080e" stroke="#1e293b"/>
   <text x="665" y="275" fill="#38bdf8" font-size="10.5" font-weight="700" font-family="monospace">1. pass_through_ratio_15m  (out15/in15)</text>
   <text x="665" y="291" fill="#38bdf8" font-size="10.5" font-weight="700" font-family="monospace">2. rapid_turnover_flag     (15m/1h tier)</text>
   <text x="665" y="307" fill="#e2e8f0" font-size="10.5" font-family="monospace">3. fan_in_1h / fan_out_1h  (O(1) cnt)</text>
   <text x="665" y="323" fill="#e2e8f0" font-size="10.5" font-family="monospace">4. fan_in_24h / fan_out_24h</text>
-  <text x="665" y="339" fill="#e2e8f0" font-size="10.5" font-family="monospace">5. counterparty_novelty    (64KB Bloom)</text>
+  <text x="665" y="339" fill="#e2e8f0" font-size="10.5" font-family="monospace">5. counterparty_novelty    (128KB Bloom)</text>
   <text x="665" y="355" fill="#e2e8f0" font-size="10.5" font-family="monospace">6. amount_zscore           (Welford O(1))</text>
   <text x="665" y="371" fill="#e2e8f0" font-size="10.5" font-family="monospace">7. time_since_last_credit_log &amp; rail</text>
 
@@ -142,44 +142,44 @@
   <!-- STAGE 2C: Depth-2 GBDT + s390x Snap ML Scorer -->
   <rect x="978" y="182" width="272" height="215" rx="10" fill="url(#telumGrad)" stroke="#818cf8" stroke-width="2"/>
   <text x="994" y="206" fill="#a5b4fc" font-size="11" font-weight="700">STAGE 2C • GBDT + SNAP ML RUNTIME</text>
-  <text x="994" y="226" fill="#ffffff" font-size="15" font-weight="700">Depth-2 Tensor-Tree Scorer</text>
+  <text x="994" y="226" fill="#ffffff" font-size="15" font-weight="700">Calibrated Tensor-Tree Scorer</text>
   <text x="994" y="244" fill="#c7d2fe" font-size="11" font-family="monospace">JSON Trees + snapml tree_format='auto'</text>
 
   <rect x="992" y="256" width="244" height="78" rx="6" fill="#06080e" stroke="#4f46e5"/>
-  <text x="1004" y="275" fill="#38bdf8" font-size="10.5" font-weight="700">Dual Runtime Architecture:</text>
-  <text x="1004" y="292" fill="#e2e8f0" font-size="10" font-family="monospace">• Portable JSON Depth-2 GBDT (Local)</text>
-  <text x="1004" y="308" fill="#e2e8f0" font-size="10" font-family="monospace">• Linux/s390x: Snap ML + NNPA Fac 165</text>
-  <text x="1004" y="324" fill="#34d399" font-size="10" font-family="monospace">• TreeSHAP runs on-alert (0.112 ms)</text>
+  <text x="1004" y="275" fill="#38bdf8" font-size="10.5" font-weight="700">Unified 3-Way Protocol:</text>
+  <text x="1004" y="292" fill="#e2e8f0" font-size="10" font-family="monospace">• Portable JSON GBDT (PR-AUC 0.810)</text>
+  <text x="1004" y="308" fill="#e2e8f0" font-size="10" font-family="monospace">• WSL2 Snap ML 1.17.2 (PR-AUC 0.834)</text>
+  <text x="1004" y="324" fill="#34d399" font-size="10" font-family="monospace">• TreeSHAP runs on-alert (0.182 ms)</text>
 
-  <text x="994" y="354" fill="#f8fafc" font-size="10.5" font-weight="600">GBDT p50: 0.0073 ms | E2E p50: 0.064 ms</text>
-  <text x="994" y="373" fill="#38bdf8" font-size="10.5" font-weight="600">Batch=64 Throughput: 155,759 TPS</text>
+  <text x="994" y="354" fill="#f8fafc" font-size="10.5" font-weight="600">Score p50: 0.013 ms (Snap ML 0.0082 ms)</text>
+  <text x="994" y="373" fill="#38bdf8" font-size="10.5" font-weight="600">Batch=64: 92.7K TPS (Snap ML 6.25M TPS)</text>
 
   <!-- Arrow 2C Down to 2D -->
   <path d="M 1114 397 L 1114 422 L 945 422 L 945 436" fill="none" stroke="#38bdf8" stroke-width="2.2" marker-end="url(#arrowCyan)"/>
 
   <!-- STAGE 2D: Alert-Budget Policy & Exact TreeSHAP Engine -->
   <rect x="639" y="438" width="611" height="195" rx="10" fill="url(#stageBlue)" stroke="#10b981" stroke-width="1.5"/>
-  <text x="655" y="462" fill="#34d399" font-size="11" font-weight="700">STAGE 2D • DAY-7 CALIBRATED POLICY &amp; EXACT TREESHAP (hopstop/policy_engine.py)</text>
-  <text x="655" y="483" fill="#ffffff" font-size="13.5" font-weight="700">Validation-Calibrated Thresholds (0.83% Realized Test Alert Rate) + Signed TreeSHAP</text>
+  <text x="655" y="462" fill="#34d399" font-size="11" font-weight="700">STAGE 2D • DAY-7 PAVA ISOTONIC CALIBRATED POLICY &amp; EXACT TREESHAP (hopstop/policy_engine.py)</text>
+  <text x="655" y="483" fill="#ffffff" font-size="13.5" font-weight="700">Day-7 Calibrated Probabilities &amp; Percentiles (0.83% Realized Test Alert Rate)</text>
 
   <!-- 3 Tier Boxes inside Stage 2D -->
   <rect x="655" y="497" width="186" height="74" rx="7" fill="rgba(244,63,94,0.12)" stroke="#f43f5e"/>
-  <text x="667" y="517" fill="#fda4af" font-size="12" font-weight="700">HOLD (p ≥ 0.9931)</text>
+  <text x="667" y="517" fill="#fda4af" font-size="12" font-weight="700">HOLD (p ≥ 0.9390 / P99.5)</text>
   <text x="667" y="534" fill="#f8fafc" font-size="10.5">Freeze transfer pre-settlement</text>
   <text x="667" y="550" fill="#cbd5e1" font-size="10">Severs Hop 1 / Hop 2 mule chain</text>
 
   <rect x="852" y="497" width="186" height="74" rx="7" fill="rgba(245,158,11,0.12)" stroke="#f59e0b"/>
-  <text x="864" y="517" fill="#fcd34d" font-size="12" font-weight="700">STEP_UP (p ≥ 0.9873)</text>
+  <text x="864" y="517" fill="#fcd34d" font-size="12" font-weight="700">STEP_UP (p ≥ 0.8797 / P99)</text>
   <text x="864" y="534" fill="#f8fafc" font-size="10.5">Biometric / OTP + 15m Cool-Off</text>
   <text x="864" y="550" fill="#cbd5e1" font-size="10">Stops APP scam social engineering</text>
 
   <rect x="1049" y="497" width="186" height="74" rx="7" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
-  <text x="1061" y="517" fill="#6ee7b7" font-size="12" font-weight="700">ALLOW (p &lt; 0.9873)</text>
-  <text x="1061" y="534" fill="#f8fafc" font-size="10.5">Instant settlement (&lt;0.07 ms)</text>
+  <text x="1061" y="517" fill="#6ee7b7" font-size="12" font-weight="700">ALLOW (p &lt; 0.8797)</text>
+  <text x="1061" y="534" fill="#f8fafc" font-size="10.5">Instant settlement (&lt;0.16 ms)</text>
   <text x="1061" y="550" fill="#cbd5e1" font-size="10">Payroll safe (pass_through=0.0)</text>
 
   <text x="655" y="592" fill="#93c5fd" font-size="10" font-family="monospace">Exact TreeSHAP: Σ φ_i + E[f(X)] = raw_margin(x) • Signed (+) Mule &amp; (−) Payroll Log-Odds</text>
-  <text x="655" y="612" fill="#34d399" font-size="10.2" font-weight="600">Unseen Test Split (#35895 Payroll): Rules → FLAGGED (0.60) | HopStop → ALLOW (0.0159, φ_novelty=−1.552)</text>
+  <text x="655" y="612" fill="#34d399" font-size="10.2" font-weight="600">Unseen Test Split (#35895 Payroll): Rules → FLAGGED (0.60) | HopStop → ALLOW (0.000059, P43.72, φ_novelty=−1.552)</text>
 
   <!-- Arrow 2D Left to 2E -->
   <line x1="639" y1="535" x2="609" y2="535" stroke="#10b981" stroke-width="2.2" marker-end="url(#arrowGreen)"/>
@@ -211,12 +211,12 @@
   <text x="1340" y="228" fill="#60a5fa" font-size="12" font-weight="700">Interactive Payment Sandbox</text>
   <text x="1340" y="246" fill="#cbd5e1" font-size="11">• 4 Real Test Cases + 5 Presets</text>
   <text x="1340" y="263" fill="#cbd5e1" font-size="11">• Includes Missed Mule (FN #35747)</text>
-  <text x="1340" y="280" fill="#cbd5e1" font-size="11">• Signed TreeSHAP Attributions</text>
+  <text x="1340" y="280" fill="#cbd5e1" font-size="11">• Signed TreeSHAP + Val Percentiles</text>
 
   <rect x="1326" y="315" width="228" height="95" rx="8" fill="#090d16" stroke="#1e293b"/>
   <text x="1340" y="337" fill="#34d399" font-size="12" font-weight="700">Alert-Budget Calibrator</text>
-  <text x="1340" y="355" fill="#cbd5e1" font-size="11">• Slider: 0.5% to 2.5% Budget</text>
-  <text x="1340" y="372" fill="#cbd5e1" font-size="11">• Paired Bootstrap CIs Reported</text>
+  <text x="1340" y="355" fill="#cbd5e1" font-size="11">• Slider: 0.5% (27.9%) to 2.5% (82.7%)</text>
+  <text x="1340" y="372" fill="#cbd5e1" font-size="11">• Tie-Invariant Bootstrap CIs</text>
   <text x="1340" y="389" fill="#cbd5e1" font-size="11">• 84.0% Overall (94.7% Fast / 50% Evasion)</text>
 
   <rect x="1326" y="424" width="228" height="95" rx="8" fill="#090d16" stroke="#1e293b"/>
@@ -227,7 +227,7 @@
 
   <rect x="1326" y="533" width="228" height="98" rx="8" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
   <text x="1340" y="555" fill="#6ee7b7" font-size="12" font-weight="700">Container &amp; CI Ready</text>
-  <text x="1340" y="574" fill="#e2e8f0" font-size="10.5" font-family="monospace">Dockerfile.s390x + 18 Pytests</text>
+  <text x="1340" y="574" fill="#e2e8f0" font-size="10.5" font-family="monospace">Dockerfile.s390x + 22 Pytests</text>
   <text x="1340" y="592" fill="#94a3b8" font-size="10.5" font-family="monospace">icr.io/ibmz/python:3.11</text>
   <text x="1340" y="610" fill="#38bdf8" font-size="10.5">Apache-2.0 • JSON Model Format</text>
 

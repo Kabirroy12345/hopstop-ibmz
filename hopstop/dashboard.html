@@ -651,38 +651,38 @@
   <section class="kpi-grid">
     <div class="glass-card kpi-card">
       <div class="kpi-label"><span>END-TO-END P99 LATENCY</span><span class="mono" style="color:#38bdf8;">&lt;10ms SLA</span></div>
-      <div class="kpi-val tracking-tight"><span class="mono" id="kpiP99">0.202</span><span style="font-size:13px;color:var(--text-secondary);font-weight:500;">ms</span></div>
-      <div class="kpi-tag">50x faster &bull; p50: 0.040 ms</div>
+      <div class="kpi-val tracking-tight"><span class="mono" id="kpiP99">0.395</span><span style="font-size:13px;color:var(--text-secondary);font-weight:500;">ms</span></div>
+      <div class="kpi-tag">25x faster &bull; p50: 0.151 ms</div>
     </div>
 
     <div class="glass-card kpi-card">
       <div class="kpi-label"><span>PR-AUC (DAYS 8–10 TEST)</span><span class="mono">UNSEEN</span></div>
-      <div class="kpi-val tracking-tight mono" id="kpiPrauc">0.8317</div>
-      <div class="kpi-tag">+56.7% vs Rules (0.5306)</div>
+      <div class="kpi-val tracking-tight mono" id="kpiPrauc">0.8100</div>
+      <div class="kpi-tag">+81.2% vs Rules (0.4471) &bull; Snap ML: 0.8340</div>
     </div>
 
     <div class="glass-card kpi-card">
       <div class="kpi-label"><span>RECALL @ 1.0% ALERT RATE</span><span class="mono" id="kpiBudgetTag">1.0% CAP</span></div>
-      <div class="kpi-val tracking-tight mono" id="kpiRecall">53.3%</div>
-      <div class="kpi-tag" id="kpiRecallSub">+19.8% lift over Rules (44.5%)</div>
+      <div class="kpi-val tracking-tight mono" id="kpiRecall">53.8%</div>
+      <div class="kpi-tag" id="kpiRecallSub">+50.7% lift over Rules (35.7%) &bull; 96.2% of ceiling</div>
     </div>
 
     <div class="glass-card kpi-card">
       <div class="kpi-label"><span>CHAINS FROZEN &le; HOP 2</span><span class="mono">1930 SAFE</span></div>
-      <div class="kpi-val tracking-tight mono" id="kpiHop2">94.0%</div>
-      <div class="kpi-tag" id="kpiHop2Sub">47/50 test chains interdicted</div>
+      <div class="kpi-val tracking-tight mono" id="kpiHop2">84.0%</div>
+      <div class="kpi-tag" id="kpiHop2Sub">42/50 overall (36/38 fast, 6/12 delayed)</div>
     </div>
 
     <div class="glass-card kpi-card">
       <div class="kpi-label"><span>SUSTAINED THROUGHPUT</span><span class="mono">BATCH=64</span></div>
-      <div class="kpi-val tracking-tight"><span class="mono" id="kpiTps">109,612</span><span style="font-size:12px;color:var(--text-secondary);">TPS</span></div>
-      <div class="kpi-tag cyan">20,366 TPS single-worker</div>
+      <div class="kpi-val tracking-tight"><span class="mono" id="kpiTps">92,660</span><span style="font-size:12px;color:var(--text-secondary);">TPS</span></div>
+      <div class="kpi-tag cyan">6,090 TPS single-worker</div>
     </div>
 
     <div class="glass-card kpi-card">
       <div class="kpi-label"><span>AUDIT &amp; PRIVACY ENGINE</span><span class="mono">s390x</span></div>
       <div class="kpi-val tracking-tight" style="font-size:17px;">CPACF SHA-256</div>
-      <div class="kpi-tag cyan">Salted PII + Hash-Chained Log</div>
+      <div class="kpi-tag cyan">HMAC-SHA256 + 15,232 Chained Records</div>
     </div>
   </section>
 
@@ -768,22 +768,22 @@
           <span class="mono" style="color:#38bdf8;font-weight:700;font-size:12px;" id="sliderRateBadge">1.0% Alert Budget</span>
         </div>
         <p style="font-size:11.5px;color:var(--text-secondary);margin-bottom:8px;">
-          Slide to scale daily analyst alert capacity and compare HopStop ML recall vs. Static Velocity Rules in real time:
+          Slide to scale daily analyst alert capacity and compare HopStop ML recall vs. Static Velocity Rules (1.79% test prevalence ceiling enforced):
         </p>
         <input type="range" id="policyBudgetSlider" min="0.5" max="2.5" step="0.5" value="1.0" oninput="onBudgetSliderChange(this.value)" />
 
         <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin:10px 0;">
           <div class="inset-panel" style="padding:8px 10px;">
             <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">HopStop ML Recall</span>
-            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#34d399;" id="sliderHopRecall">53.3%</span>
+            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#34d399;" id="sliderHopRecall">53.8%</span>
           </div>
           <div class="inset-panel" style="padding:8px 10px;">
             <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">Static Rules Recall</span>
-            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#94a3b8;" id="sliderRulesRecall">44.5%</span>
+            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#94a3b8;" id="sliderRulesRecall">35.7%</span>
           </div>
           <div class="inset-panel" style="padding:8px 10px;">
             <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">Chains Frozen &le; Hop 2</span>
-            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#38bdf8;" id="sliderChainsFrozen">94.0%</span>
+            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#38bdf8;" id="sliderChainsFrozen">84.0%</span>
           </div>
         </div>
 
@@ -1022,13 +1022,13 @@ const SCENARIO_STATES = {
   }
 };
 
-// 2. Alert-Budget Scaling Table (0.5% to 2.5%)
+// 2. Alert-Budget Scaling Table (0.5% to 2.5%, strictly respecting the 1.79% test prevalence recall ceiling)
 const BUDGET_SCALING = {
-  "0.5": { hopRecall: "41.2%", rulesRecall: "31.6%", lift: "+30.4%", chainsFrozen: "88.0%", chainsCount: "44/50" },
-  "1.0": { hopRecall: "53.3%", rulesRecall: "44.5%", lift: "+19.8%", chainsFrozen: "94.0%", chainsCount: "47/50" },
-  "1.5": { hopRecall: "64.7%", rulesRecall: "54.0%", lift: "+19.8%", chainsFrozen: "96.0%", chainsCount: "48/50" },
-  "2.0": { hopRecall: "72.8%", rulesRecall: "62.9%", lift: "+15.7%", chainsFrozen: "98.0%", chainsCount: "49/50" },
-  "2.5": { hopRecall: "79.4%", rulesRecall: "68.4%", lift: "+16.1%", chainsFrozen: "98.0%", chainsCount: "49/50" }
+  "0.5": { hopRecall: "27.9%", rulesRecall: "21.6%", lift: "+29.2%", chainsFrozen: "46.0%", chainsCount: "23/50" },
+  "1.0": { hopRecall: "53.8%", rulesRecall: "35.7%", lift: "+50.7%", chainsFrozen: "84.0%", chainsCount: "42/50" },
+  "1.5": { hopRecall: "66.9%", rulesRecall: "48.9%", lift: "+36.8%", chainsFrozen: "100.0%", chainsCount: "50/50" },
+  "2.0": { hopRecall: "78.3%", rulesRecall: "48.9%", lift: "+60.1%", chainsFrozen: "100.0%", chainsCount: "50/50" },
+  "2.5": { hopRecall: "82.7%", rulesRecall: "56.0%", lift: "+47.7%", chainsFrozen: "100.0%", chainsCount: "50/50" }
 };
 
 // 3. Multi-Hop Laundering Chains for Topology Stage
@@ -1038,10 +1038,10 @@ const TOPOLOGY_CHAINS = [
     typology: "Fan-Out Dispersal",
     interrupted_at_hop: 1,
     hops: [
-      { hop: 1, from: "ACC104821", to: "ACC109312", banks: "14→27", amount: 185000, score: "0.9940", decision: "HOLD" },
-      { hop: 2, from: "ACC109312", to: "ACC102410", banks: "27→19", amount: 61000, score: "0.9912", decision: "BLOCKED_UPSTREAM" },
-      { hop: 2, from: "ACC109312", to: "ACC103881", banks: "27→22", amount: 61000, score: "0.9895", decision: "BLOCKED_UPSTREAM" },
-      { hop: 3, from: "ACC102410", to: "ACC107901", banks: "19→31", amount: 59500, score: "0.9840", decision: "BLOCKED_UPSTREAM" }
+      { hop: 1, from: "ACC104821", to: "ACC109312", banks: "14→27", amount: 185000, score: "0.9431", decision: "HOLD" },
+      { hop: 2, from: "ACC109312", to: "ACC102410", banks: "27→19", amount: 61000, score: "0.9410", decision: "BLOCKED_UPSTREAM" },
+      { hop: 2, from: "ACC109312", to: "ACC103881", banks: "27→22", amount: 61000, score: "0.9390", decision: "BLOCKED_UPSTREAM" },
+      { hop: 3, from: "ACC102410", to: "ACC107901", banks: "19→31", amount: 59500, score: "0.9120", decision: "BLOCKED_UPSTREAM" }
     ]
   },
   {
@@ -1049,10 +1049,10 @@ const TOPOLOGY_CHAINS = [
     typology: "Simple-Cycle Layering",
     interrupted_at_hop: 2,
     hops: [
-      { hop: 1, from: "ACC101140", to: "ACC103299", banks: "11→16", amount: 142000, score: "0.9904", decision: "STEP_UP" },
-      { hop: 2, from: "ACC103299", to: "ACC104512", banks: "16→24", amount: 138000, score: "0.9944", decision: "HOLD" },
-      { hop: 3, from: "ACC104512", to: "ACC108119", banks: "24→12", amount: 134000, score: "0.9918", decision: "BLOCKED_UPSTREAM" },
-      { hop: 4, from: "ACC108119", to: "ACC101140", banks: "12→11", amount: 130000, score: "0.9890", decision: "BLOCKED_UPSTREAM" }
+      { hop: 1, from: "ACC101140", to: "ACC103299", banks: "11→16", amount: 142000, score: "0.9104", decision: "STEP_UP" },
+      { hop: 2, from: "ACC103299", to: "ACC104512", banks: "16→24", amount: 138000, score: "0.9431", decision: "HOLD" },
+      { hop: 3, from: "ACC104512", to: "ACC108119", banks: "24→12", amount: 134000, score: "0.9410", decision: "BLOCKED_UPSTREAM" },
+      { hop: 4, from: "ACC108119", to: "ACC101140", banks: "12→11", amount: 130000, score: "0.9050", decision: "BLOCKED_UPSTREAM" }
     ]
   },
   {
@@ -1060,10 +1060,10 @@ const TOPOLOGY_CHAINS = [
     typology: "Gather-Scatter Aggregator",
     interrupted_at_hop: 2,
     hops: [
-      { hop: 1, from: "ACC100912", to: "ACC102190", banks: "13→11", amount: 80000, score: "0.9899", decision: "STEP_UP" },
-      { hop: 2, from: "ACC102190", to: "ACC108841", banks: "11→19", amount: 240000, score: "0.9942", decision: "HOLD" },
-      { hop: 3, from: "ACC108841", to: "ACC109440", banks: "19→28", amount: 118000, score: "0.9910", decision: "BLOCKED_UPSTREAM" },
-      { hop: 3, from: "ACC108841", to: "ACC109712", banks: "19→30", amount: 118000, score: "0.9905", decision: "BLOCKED_UPSTREAM" }
+      { hop: 1, from: "ACC100912", to: "ACC102190", banks: "13→11", amount: 80000, score: "0.9080", decision: "STEP_UP" },
+      { hop: 2, from: "ACC102190", to: "ACC108841", banks: "11→19", amount: 240000, score: "0.9431", decision: "HOLD" },
+      { hop: 3, from: "ACC108841", to: "ACC109440", banks: "19→28", amount: 118000, score: "0.9390", decision: "BLOCKED_UPSTREAM" },
+      { hop: 3, from: "ACC108841", to: "ACC109712", banks: "19→30", amount: 118000, score: "0.9390", decision: "BLOCKED_UPSTREAM" }
     ]
   },
   {
@@ -1071,10 +1071,10 @@ const TOPOLOGY_CHAINS = [
     typology: "Scatter-Gather Funnel",
     interrupted_at_hop: 1,
     hops: [
-      { hop: 1, from: "ACC101802", to: "ACC105019", banks: "15→21", amount: 210000, score: "0.9948", decision: "HOLD" },
-      { hop: 2, from: "ACC105019", to: "ACC106331", banks: "21→18", amount: 69000, score: "0.9921", decision: "BLOCKED_UPSTREAM" },
-      { hop: 2, from: "ACC105019", to: "ACC106890", banks: "21→25", amount: 69000, score: "0.9915", decision: "BLOCKED_UPSTREAM" },
-      { hop: 3, from: "ACC106331", to: "ACC109904", banks: "18→33", amount: 136000, score: "0.9882", decision: "BLOCKED_UPSTREAM" }
+      { hop: 1, from: "ACC101802", to: "ACC105019", banks: "15→21", amount: 210000, score: "0.9431", decision: "HOLD" },
+      { hop: 2, from: "ACC105019", to: "ACC106331", banks: "21→18", amount: 69000, score: "0.9410", decision: "BLOCKED_UPSTREAM" },
+      { hop: 2, from: "ACC105019", to: "ACC106890", banks: "21→25", amount: 69000, score: "0.9390", decision: "BLOCKED_UPSTREAM" },
+      { hop: 3, from: "ACC106331", to: "ACC109904", banks: "18→33", amount: 136000, score: "0.9020", decision: "BLOCKED_UPSTREAM" }
     ]
   }
 ];
@@ -1085,7 +1085,7 @@ const STREAM_ALERTS = [
     tx_id: 35861, timestamp: "2026/09/08 05:11:55",
     from_hash: "ACCT_1E0121085B98", to_hash: "ACCT_8E7D38C59B78",
     amount: 49848.99, currency: "INR", format: "Wire", typology: "Scatter-Gather", hop: 1,
-    score: 0.9944, action: "HOLD",
+    score: 0.9431, action: "HOLD",
     prev_hash: "41fe823e5fae9644", audit_hash: "05cd88d9553492d8",
     reasons: [
       { label: "Rapid Credit-to-Debit Drain", value: "Yes" },
@@ -1097,7 +1097,7 @@ const STREAM_ALERTS = [
     tx_id: 35855, timestamp: "2026/09/08 05:09:35",
     from_hash: "ACCT_B030C907DC92", to_hash: "ACCT_8E7D38C59B78",
     amount: 67214.50, currency: "INR", format: "ACH", typology: "Gather-Scatter", hop: 2,
-    score: 0.9940, action: "HOLD",
+    score: 0.9431, action: "HOLD",
     prev_hash: "05cd88d9553492d8", audit_hash: "7a19c4e82b01f63d",
     reasons: [
       { label: "Rapid 15m Pass-Through Ratio", value: "0.96x inflow" },
@@ -1109,7 +1109,7 @@ const STREAM_ALERTS = [
     tx_id: 35848, timestamp: "2026/09/08 05:05:45",
     from_hash: "ACCT_5DA0359FB154", to_hash: "ACCT_B030C907DC92",
     amount: 51926.03, currency: "INR", format: "Wire", typology: "Scatter-Gather", hop: 1,
-    score: 0.9935, action: "STEP_UP",
+    score: 0.9167, action: "STEP_UP",
     prev_hash: "7a19c4e82b01f63d", audit_hash: "9e42b108c73a519f",
     reasons: [
       { label: "First-Time Counterparty Transfer", value: "Yes" },
@@ -1121,7 +1121,7 @@ const STREAM_ALERTS = [
     tx_id: 35749, timestamp: "2026/09/08 02:52:23",
     from_hash: "ACCT_E178CF7EA414", to_hash: "ACCT_DD95AE01CA42",
     amount: 185000.00, currency: "INR", format: "Wire", typology: "Fan-Out", hop: 1,
-    score: 0.9942, action: "HOLD",
+    score: 0.9431, action: "HOLD",
     prev_hash: "9e42b108c73a519f", audit_hash: "3c80d174e92a604b",
     reasons: [
       { label: "Rapid Credit-to-Debit Drain", value: "Yes" },
@@ -1133,7 +1133,7 @@ const STREAM_ALERTS = [
     tx_id: 35712, timestamp: "2026/09/08 02:18:10",
     from_hash: "ACCT_44C91E02A71B", to_hash: "ACCT_91F02D88E31C",
     amount: 44200.00, currency: "INR", format: "ACH", typology: "Simple-Cycle", hop: 1,
-    score: 0.9908, action: "STEP_UP",
+    score: 0.8920, action: "STEP_UP",
     prev_hash: "3c80d174e92a604b", audit_hash: "6b21f904d83e712a",
     reasons: [
       { label: "Immediate Post-Credit Dispersal", value: "210s" },
@@ -1145,7 +1145,7 @@ const STREAM_ALERTS = [
     tx_id: 35690, timestamp: "2026/09/08 01:49:02",
     from_hash: "ACCT_72A81D39F04E", to_hash: "ACCT_19C40B77E82D",
     amount: 128400.00, currency: "INR", format: "Wire", typology: "Fan-In", hop: 2,
-    score: 0.9946, action: "HOLD",
+    score: 0.9431, action: "HOLD",
     prev_hash: "6b21f904d83e712a", audit_hash: "d410e829a73c501f",
     reasons: [
       { label: "Inbound Fan-In Burst (1h)", value: "4 peers" },
@@ -1156,13 +1156,13 @@ const STREAM_ALERTS = [
 ];
 
 const FEATURE_IMPORTANCES = [
-  { label: "Rapid Credit-to-Debit Drain", pct: 25.0 },
-  { label: "Anomalous Transfer Size (Z-Score)", pct: 24.3 },
-  { label: "High-Risk Instant Rail (Wire/ACH)", pct: 23.6 },
-  { label: "First-Time Counterparty Transfer", pct: 12.5 },
-  { label: "Inbound Fan-In Burst (1h)", pct: 8.3 },
-  { label: "Immediate Post-Credit Dispersal", pct: 3.5 },
-  { label: "Rapid 15m Pass-Through Ratio", pct: 2.8 }
+  { label: "Anomalous Transfer Size (Z-Score)", pct: 25.0 },
+  { label: "High-Risk Instant Rail (Wire/ACH)", pct: 21.5 },
+  { label: "Immediate Post-Credit Dispersal", pct: 9.7 },
+  { label: "Rapid Credit-to-Debit Drain", pct: 8.3 },
+  { label: "First-Time Counterparty Transfer", pct: 8.3 },
+  { label: "Rapid 15m Pass-Through Ratio", pct: 7.6 },
+  { label: "High 1h Pass-Through Ratio", pct: 6.9 }
 ];
 
 const TELEMETRY_ROWS = [
@@ -1200,6 +1200,7 @@ async function selectScenario(key) {
       const live = await resp.json();
       s.decision = live.action;
       s.score = live.risk_score;
+      s.val_percentile = live.val_percentile;
       s.latency_ms = `${live.latency_ms} ms`;
       s.from_hash = live.from_account_hash.slice(0, 17);
       s.to_hash = live.to_account_hash.slice(0, 17);
@@ -1222,6 +1223,7 @@ async function selectScenario(key) {
     const scoreColor = s.decision === "HOLD" ? "#f43f5e" : (s.decision === "STEP_UP" ? "#f59e0b" : "#10b981");
     const barWidth = Math.max(3, Math.min(100, s.score * 100)).toFixed(1);
     const rulesClass = s.static_rules_flagged ? "STEP_UP" : "ALLOW";
+    const pctTag = (typeof s.val_percentile === "number") ? ` <span style="font-size:11px;color:#93c5fd;">(Val P${s.val_percentile.toFixed(2)})</span>` : "";
 
     const shapHtml = s.shap_reasons.map((r) => `
       <div class="shap-row">
@@ -1294,8 +1296,8 @@ async function selectScenario(key) {
       <div class="inset-panel">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;">
-            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">HopStop ML Probability</span>
-            <span class="mono tracking-tight" style="font-size:21px;font-weight:700;color:${scoreColor};">${s.score.toFixed(3)}</span>
+            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Calibrated ML Probability</span>
+            <span class="mono tracking-tight" style="font-size:21px;font-weight:700;color:${scoreColor};">${s.score.toFixed(4)}${pctTag}</span>
           </div>
           <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:9999px;overflow:hidden;margin:6px 0 10px;">
             <div style="height:100%;width:${barWidth}%;background:${scoreColor};box-shadow:0 0 12px ${scoreColor};transition:width 0.35s var(--ease-morph);"></div>
@@ -1373,16 +1375,16 @@ function onBudgetSliderChange(val) {
 
 function renderSvgBudgetChart(activeRate) {
   const pts = [
-    { r: 0.5, hop: 41.2, rules: 31.6 },
-    { r: 1.0, hop: 53.3, rules: 44.5 },
-    { r: 1.5, hop: 64.7, rules: 54.0 },
-    { r: 2.0, hop: 72.8, rules: 62.9 },
-    { r: 2.5, hop: 79.4, rules: 68.4 }
+    { r: 0.5, hop: 27.9, rules: 21.6 },
+    { r: 1.0, hop: 53.8, rules: 35.7 },
+    { r: 1.5, hop: 66.9, rules: 48.9 },
+    { r: 2.0, hop: 78.3, rules: 48.9 },
+    { r: 2.5, hop: 82.7, rules: 56.0 }
   ];
   const w = 440, h = 110, padL = 32, padR = 16, padT = 12, padB = 22;
   const pw = w - padL - padR, ph = h - padT - padB;
   const xOf = (r) => padL + ((r - 0.5) / 2.0) * pw;
-  const yOf = (v) => padT + ph - ((v - 25) / 60.0) * ph;
+  const yOf = (v) => padT + ph - ((v - 15) / 75.0) * ph;
 
   const hopLine = pts.map(p => `${xOf(p.r).toFixed(1)},${yOf(p.hop).toFixed(1)}`).join(" ");
   const rulesLine = pts.map(p => `${xOf(p.r).toFixed(1)},${yOf(p.rules).toFixed(1)}`).join(" ");
