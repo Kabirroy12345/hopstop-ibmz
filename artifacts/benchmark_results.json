@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18 11:47:59 IST",
+  "generated_at": "2026-10-18 12:29:18 IST",
   "environment": {
     "architecture": "amd64",
     "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
@@ -12,7 +12,7 @@
     "secure_execution_facility_158": false,
     "snapml_installed": false,
     "snapml_version": null,
-    "hmac_pseudonymization": "HMAC-SHA256 (Development fallback key; set HOPSTOP_HMAC_KEY in production)",
+    "hmac_pseudonymization": "HMAC-SHA256 (Per-process 256-bit CSPRNG ephemeral key; set HOPSTOP_HMAC_KEY for cross-restart persistence)",
     "active_scoring_backend": "portable_python_depth2_gbdt (snapml package not installed on host)"
   },
   "dataset": {
@@ -55,7 +55,7 @@
       "realized_test_alert_rate": 0.0083,
       "realized_test_alerts_count": 127,
       "realized_test_holds_count": 58,
-      "train_time_sec": 5.875
+      "train_time_sec": 3.523
     },
     "logistic_regression_12feat": {
       "roc_auc": 0.9804,
@@ -163,24 +163,24 @@
     "verified": true,
     "records_verified": 127,
     "message": "Verified 127 hash-chained audit records from genesis.",
-    "head_sha256": "b4efee55d93b8d6570930df61e738d9f4073515ca1b0e7701b7d563ecbba4e3d"
+    "head_sha256": "1e662e50e03741b1cc0ce791662d844eed1c9c791a6c2444d2ee35b46845a293"
   },
   "latency_benchmark": {
     "measured_on_hardware": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel (amd64, Windows 11)",
     "active_backend": "portable_python_depth2_gbdt (snapml package not installed on host)",
     "includes_stages": "O(1) Feature Extraction + GBDT Scoring + TreeSHAP + Policy & SHA-256 Audit",
     "component_p50_ms": {
-      "feature_extraction_ms": 0.0551,
-      "model_and_treeshap_ms": 0.0111,
-      "policy_and_audit_ms": 0.0668
+      "feature_extraction_ms": 0.0256,
+      "model_and_treeshap_ms": 0.0059,
+      "policy_and_audit_ms": 0.027
     },
-    "batch_1_end_to_end_p50_ms": 0.1341,
-    "batch_1_end_to_end_p95_ms": 0.2948,
-    "batch_1_end_to_end_p99_ms": 0.4999,
-    "batch_1_end_to_end_mean_ms": 0.1617,
+    "batch_1_end_to_end_p50_ms": 0.0589,
+    "batch_1_end_to_end_p95_ms": 0.1145,
+    "batch_1_end_to_end_p99_ms": 0.1881,
+    "batch_1_end_to_end_mean_ms": 0.0673,
     "target_p99_ms": 10.0,
-    "single_worker_stream_tps": 6184,
-    "microbatch_64_scoring_tps": 105077
+    "single_worker_stream_tps": 14858,
+    "microbatch_64_scoring_tps": 174828
   },
   "feature_importances": [
     {
@@ -244,12 +244,112 @@
       "weight": 0.0
     }
   ],
+  "real_test_case_examples": {
+    "real_test_mule_hold": {
+      "tx_id": 35893,
+      "timestamp": "2026/09/08 05:33:15",
+      "typology": "Scatter-Gather",
+      "hop_number": 3,
+      "amount": 49848.99,
+      "payment_format": "Wire",
+      "features": [
+        1.0,
+        0.0,
+        1.0,
+        3.0,
+        0.96,
+        0.96,
+        5.5053,
+        1.0,
+        1.0,
+        10.0,
+        0.0,
+        1.0
+      ],
+      "hopstop_score": 0.993063,
+      "hopstop_action": "HOLD",
+      "rules_baseline_score": 0.63,
+      "rules_would_flag": true,
+      "reason_codes": [
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.00",
+          "shap_log_odds": 1.9236,
+          "impact": "+1.924"
+        },
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "244s after credit",
+          "shap_log_odds": 1.6349,
+          "impact": "+1.635"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "1.00",
+          "shap_log_odds": 1.5031,
+          "impact": "+1.503"
+        }
+      ]
+    },
+    "real_test_payroll_allow": {
+      "tx_id": 35895,
+      "timestamp": "2026/09/08 05:33:33",
+      "typology": "Legitimate",
+      "hop_number": 0,
+      "amount": 33622.83,
+      "payment_format": "ACH",
+      "features": [
+        0.0,
+        4.0,
+        0.0,
+        5.0,
+        0.0,
+        0.0,
+        11.3668,
+        0.0,
+        0.0,
+        0.6528,
+        4.0,
+        0.75
+      ],
+      "hopstop_score": 0.015904,
+      "hopstop_action": "ALLOW",
+      "rules_baseline_score": 0.6,
+      "rules_would_flag": true,
+      "reason_codes": [
+        {
+          "feature": "counterparty_novelty",
+          "label": "First-Time Counterparty Transfer",
+          "value": "No",
+          "shap_log_odds": -1.552,
+          "impact": "-1.552"
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "0.65",
+          "shap_log_odds": -0.3896,
+          "impact": "-0.390"
+        },
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "No recent credit",
+          "shap_log_odds": -0.3138,
+          "impact": "-0.314"
+        }
+      ]
+    }
+  },
   "sample_held_alerts": [
     {
       "tx_id": 35746,
       "timestamp": "2026/09/08 02:50:13",
-      "from_account_hash": "ACCT_94B85BC09E69630D7B1BDA7146C3D312",
-      "to_account_hash": "ACCT_2B1C729D375C4F6C99B23C3E126ABC91",
+      "from_account_hash": "ACCT_008D9EC47D3BF6A2C99AB299BC60FDC2",
+      "to_account_hash": "ACCT_B12ECF5CE0052775947B70A956511098",
       "from_bank": 21,
       "to_bank": 28,
       "amount": 67214.5,
@@ -284,14 +384,14 @@
         }
       ],
       "prev_audit_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-      "audit_hash": "9c8be9f1d1b596c36d407c6add49fcbd9eef60c5cb58dd7c7c134082df63f575",
-      "hmac_signature": "9a18e6b1a1145158c6c9050f5d1f6220d8e7cc86d2718d1cc828c2fc4c472389"
+      "audit_hash": "2e7a87e00d5a99ab50a100b556979664739b897d4596b0591d02350268524c85",
+      "hmac_signature": "48d6c198963717b9343ce982c2531eba3fcc58c97757d16a08635da849762ff5"
     },
     {
       "tx_id": 35749,
       "timestamp": "2026/09/08 02:52:23",
-      "from_account_hash": "ACCT_94B85BC09E69630D7B1BDA7146C3D312",
-      "to_account_hash": "ACCT_6ACBF3A116CE462E30CD854F78977508",
+      "from_account_hash": "ACCT_008D9EC47D3BF6A2C99AB299BC60FDC2",
+      "to_account_hash": "ACCT_95D66F78D527D31FEF5DDC5C93753983",
       "from_bank": 21,
       "to_bank": 17,
       "amount": 67214.5,
@@ -302,16 +402,38 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "9c8be9f1d1b596c36d407c6add49fcbd9eef60c5cb58dd7c7c134082df63f575",
-      "audit_hash": "6896d4e82f3dc697980756a50b0070af18cf055fbbc5434440bdcf5f73d51f0b",
-      "hmac_signature": "f19f0bdf2be460a2cd22ceff8a959069686ab1ac9ead31bc359788fcac13dd29"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "229s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "0.75",
+          "shap_log_odds": 1.2085,
+          "impact": "+1.208"
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.96x inflow",
+          "shap_log_odds": 1.0813,
+          "impact": "+1.081"
+        }
+      ],
+      "prev_audit_hash": "2e7a87e00d5a99ab50a100b556979664739b897d4596b0591d02350268524c85",
+      "audit_hash": "4376c604128005bfaf829a6eb80478e84cc245e9f5491e9926754c8b666cd6c0",
+      "hmac_signature": "bad774286223046c125fcb270182dbcce126ebaacda1014877999a47c01004f8"
     },
     {
       "tx_id": 35886,
       "timestamp": "2026/09/08 05:32:05",
-      "from_account_hash": "ACCT_4D10BDD8AC6F3229F455B724412A071E",
-      "to_account_hash": "ACCT_0EF01358F116C1E8E1BCBDE77B784053",
+      "from_account_hash": "ACCT_3762B906FE51D34EE30AAE4A7D217356",
+      "to_account_hash": "ACCT_D5EA5BD08E68905FC8EB24439FB73A98",
       "from_bank": 22,
       "to_bank": 32,
       "amount": 49848.99,
@@ -345,15 +467,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "6896d4e82f3dc697980756a50b0070af18cf055fbbc5434440bdcf5f73d51f0b",
-      "audit_hash": "61e0ed4522079d3c570cdec8114e662032d34e336f087abcdb9d5a024f71497f",
-      "hmac_signature": "bde5ac07f3e5ac0398fcf8997b138cb4d640caf4c088ea8a6705dacedf2b4bc3"
+      "prev_audit_hash": "4376c604128005bfaf829a6eb80478e84cc245e9f5491e9926754c8b666cd6c0",
+      "audit_hash": "5234510e86dd1470d43d57b7bfd8a90e6ab805c9543eeb821ecb686d950c5b26",
+      "hmac_signature": "170631ec402573d061ec185b24351e214c7c515d4d35b45a5f07f08e29ed3410"
     },
     {
       "tx_id": 35893,
       "timestamp": "2026/09/08 05:33:15",
-      "from_account_hash": "ACCT_CC51639778E5FFEE9FDF9B17A64D486B",
-      "to_account_hash": "ACCT_0EF01358F116C1E8E1BCBDE77B784053",
+      "from_account_hash": "ACCT_0729AFEE5479472621523336C2AB5FD0",
+      "to_account_hash": "ACCT_D5EA5BD08E68905FC8EB24439FB73A98",
       "from_bank": 23,
       "to_bank": 32,
       "amount": 49848.99,
@@ -387,15 +509,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "61e0ed4522079d3c570cdec8114e662032d34e336f087abcdb9d5a024f71497f",
-      "audit_hash": "45aebd3eb95bd48189ab9fdb96c4cebc4a6daef9e092a78449ccbc9142030b43",
-      "hmac_signature": "21b4847afd09c5670f0d52f3aebea2be5d74ec1db5b70ea802bde45e16f2ffda"
+      "prev_audit_hash": "5234510e86dd1470d43d57b7bfd8a90e6ab805c9543eeb821ecb686d950c5b26",
+      "audit_hash": "49dc0a6a9f1b3c56a60d7d1ac2fe7540638f2d387da7c522f7a7adb100c5af08",
+      "hmac_signature": "258cf34cd8940831ffd22926b60e14e80a762af07e0404d4242459651d448eb2"
     },
     {
       "tx_id": 35896,
       "timestamp": "2026/09/08 05:34:25",
-      "from_account_hash": "ACCT_5861AD7376B2EA3ACFEBEAE36D4B517C",
-      "to_account_hash": "ACCT_0EF01358F116C1E8E1BCBDE77B784053",
+      "from_account_hash": "ACCT_B6E165504C915990A8844BD53FB1DCD3",
+      "to_account_hash": "ACCT_D5EA5BD08E68905FC8EB24439FB73A98",
       "from_bank": 26,
       "to_bank": 32,
       "amount": 49848.99,
@@ -429,15 +551,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "45aebd3eb95bd48189ab9fdb96c4cebc4a6daef9e092a78449ccbc9142030b43",
-      "audit_hash": "0fde0128d3b5b4a255c2dfda489ef4a894d57759f7d2870c50d5154c5ddd3668",
-      "hmac_signature": "f0f0774f435f40f17bebc00a6e5cd2d30158865291a197d4725017893a0e0231"
+      "prev_audit_hash": "49dc0a6a9f1b3c56a60d7d1ac2fe7540638f2d387da7c522f7a7adb100c5af08",
+      "audit_hash": "5c0818c94c8f0faed164b316131d6daa8a73a1b7707a1dbb54b020af1397dbc9",
+      "hmac_signature": "910b01554bed561bee2b9b5d01f57f7d5abec1c7b841a02e1cb1f2d5c3a31fca"
     },
     {
       "tx_id": 35917,
       "timestamp": "2026/09/08 05:49:00",
-      "from_account_hash": "ACCT_33D616810A1C49EA6F1254136A56A071",
-      "to_account_hash": "ACCT_A89EF3DFF291E62734011D1157839AE9",
+      "from_account_hash": "ACCT_8C099D33C1FF4E87104CFC115E3D49EE",
+      "to_account_hash": "ACCT_0295811E92CD738A439325A95D7DE1F6",
       "from_bank": 15,
       "to_bank": 32,
       "amount": 157460.41,
@@ -471,15 +593,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "0fde0128d3b5b4a255c2dfda489ef4a894d57759f7d2870c50d5154c5ddd3668",
-      "audit_hash": "4a60bc233c2b8616a1acaed90147c00f18aaa51323c80d63bba0cf03c9c19c52",
-      "hmac_signature": "870ca7c81ebde16a0d0f6c74fa5715a1aad356c18ba7b82e2b2171dd2cc19022"
+      "prev_audit_hash": "5c0818c94c8f0faed164b316131d6daa8a73a1b7707a1dbb54b020af1397dbc9",
+      "audit_hash": "c4a5e87d23ca26c1a05d0aacf1d09a6ad84fd648fac7e5d54a50dc5e525bb02f",
+      "hmac_signature": "673e532dc117a0fc644360a56a2d0a7247605b6b10dcca8a0e7d333897be5dbb"
     },
     {
       "tx_id": 35919,
       "timestamp": "2026/09/08 05:51:20",
-      "from_account_hash": "ACCT_A89EF3DFF291E62734011D1157839AE9",
-      "to_account_hash": "ACCT_8CFE0E5E755C0B84C3C366AE30EC67BF",
+      "from_account_hash": "ACCT_0295811E92CD738A439325A95D7DE1F6",
+      "to_account_hash": "ACCT_39CFE55B13946CBD5AC70AC1BC6C6F69",
       "from_bank": 32,
       "to_bank": 17,
       "amount": 152736.6,
@@ -513,15 +635,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "4a60bc233c2b8616a1acaed90147c00f18aaa51323c80d63bba0cf03c9c19c52",
-      "audit_hash": "a87dfcea1e22c5f3ebbf1a164696fddd919a7d8e0215ccd1e510e032d11a453a",
-      "hmac_signature": "8870ec00a9e268a315e9f78e468da701b8651528fe57a34442343c875bf670f4"
+      "prev_audit_hash": "c4a5e87d23ca26c1a05d0aacf1d09a6ad84fd648fac7e5d54a50dc5e525bb02f",
+      "audit_hash": "009844bd0213fdfb2acbe0185052249b3b0bc0b005f38337f6fa48d41cba8e3a",
+      "hmac_signature": "fa9cd5d2bd2bf22fc118f3d44e56ac3bfd4e051301720c95842e4692444e50c9"
     },
     {
       "tx_id": 35928,
       "timestamp": "2026/09/08 05:56:08",
-      "from_account_hash": "ACCT_EE25E7BCB6C7C05B6E7DF58660882017",
-      "to_account_hash": "ACCT_12E500C803DC116972A950942C1E83F2",
+      "from_account_hash": "ACCT_2A139FCDD040380726995A895F89D66E",
+      "to_account_hash": "ACCT_FF3A2837230A1B7236F3B73B620AE7B7",
       "from_bank": 20,
       "to_bank": 16,
       "amount": 118189.64,
@@ -555,15 +677,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "a87dfcea1e22c5f3ebbf1a164696fddd919a7d8e0215ccd1e510e032d11a453a",
-      "audit_hash": "e24fd56997e5c897742d3a3f7523272f2b8570a457accb684cdd27b221249197",
-      "hmac_signature": "99ac8ee26cc9faac6f1cf5c4d72b972811149f1c553f25b77175d7ef74873f83"
+      "prev_audit_hash": "009844bd0213fdfb2acbe0185052249b3b0bc0b005f38337f6fa48d41cba8e3a",
+      "audit_hash": "1d49fbded13a8f2d967b493c3271484ee1e70f9ca2d5f5c0aceae531178c9951",
+      "hmac_signature": "284d8db117850c3c6fb0c66ff7cdc444b8171d7cc1bec083f9e45252d1569609"
     },
     {
       "tx_id": 35932,
       "timestamp": "2026/09/08 05:58:38",
-      "from_account_hash": "ACCT_12E500C803DC116972A950942C1E83F2",
-      "to_account_hash": "ACCT_175FDD288327843DE02DBA7336B4F07D",
+      "from_account_hash": "ACCT_FF3A2837230A1B7236F3B73B620AE7B7",
+      "to_account_hash": "ACCT_1243BBF875A70ABDB79BF443807C6512",
       "from_bank": 16,
       "to_bank": 15,
       "amount": 114534.29,
@@ -574,16 +696,38 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "e24fd56997e5c897742d3a3f7523272f2b8570a457accb684cdd27b221249197",
-      "audit_hash": "1ad0dcab523337a3d9c3ecbb7f05a94df7ecb3c4d1a16bb80ca5b906063628db",
-      "hmac_signature": "4ff226e4e17a8eefcf51516975c2ff37d793bd90582917cd4821810b42b18c1d"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "150s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "1.00",
+          "shap_log_odds": 1.2609,
+          "impact": "+1.261"
+        },
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "shap_log_odds": 1.2057,
+          "impact": "+1.206"
+        }
+      ],
+      "prev_audit_hash": "1d49fbded13a8f2d967b493c3271484ee1e70f9ca2d5f5c0aceae531178c9951",
+      "audit_hash": "537d3b6a7931335dce87b2a12f6ebf8f14073c1d631b8949dcc4b2adee33bdf5",
+      "hmac_signature": "7e417e99de36a9e5e6fcaf54b4a3ce62991f9a927b839c5f81b51d514d128d87"
     },
     {
       "tx_id": 35942,
       "timestamp": "2026/09/08 06:01:38",
-      "from_account_hash": "ACCT_175FDD288327843DE02DBA7336B4F07D",
-      "to_account_hash": "ACCT_86364DCE0DC43F487C7736D6C64A55D6",
+      "from_account_hash": "ACCT_1243BBF875A70ABDB79BF443807C6512",
+      "to_account_hash": "ACCT_187E98ACC85D3754868EE1FF0428F239",
       "from_bank": 15,
       "to_bank": 26,
       "amount": 110878.94,
@@ -617,15 +761,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "1ad0dcab523337a3d9c3ecbb7f05a94df7ecb3c4d1a16bb80ca5b906063628db",
-      "audit_hash": "a8d96d8c6520ae090921fe07f67b9de72faaf3901a11a14090e6cfb9a3bc9c18",
-      "hmac_signature": "320932ba3dd94333f128a8723c245a1ce6e83b827d3bd5f2d93bc984cfcf0227"
+      "prev_audit_hash": "537d3b6a7931335dce87b2a12f6ebf8f14073c1d631b8949dcc4b2adee33bdf5",
+      "audit_hash": "10ecb45b567dfb92b497897f7f9a007d44592067cc58fc8d32fbab2a2dde7de6",
+      "hmac_signature": "612d91010168cb0b97cbe0e99a9f93772e31ac658834f1919f49e4adf9cdd0b7"
     },
     {
       "tx_id": 36043,
       "timestamp": "2026/09/08 06:52:12",
-      "from_account_hash": "ACCT_702A0555696499902B097313088AD44F",
-      "to_account_hash": "ACCT_3FC07133F2F6D54567F3D7BA39A87FAF",
+      "from_account_hash": "ACCT_CA814A5C75717244BC2C560A44C8D241",
+      "to_account_hash": "ACCT_1C98F8E1612FDB1582CF4417823852F5",
       "from_bank": 26,
       "to_bank": 22,
       "amount": 14446.61,
@@ -636,16 +780,38 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "a8d96d8c6520ae090921fe07f67b9de72faaf3901a11a14090e6cfb9a3bc9c18",
-      "audit_hash": "7dfcf8bf8ec7cd9f73f425311d53b1ff15402617572e83e033be8e920f5b9664",
-      "hmac_signature": "b9b7fcf82176f9cb68e22781b870999dc86e644e6c60dd1990c9b058a5169a80"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "229s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "0.75",
+          "shap_log_odds": 1.2609,
+          "impact": "+1.261"
+        },
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "shap_log_odds": 1.2057,
+          "impact": "+1.206"
+        }
+      ],
+      "prev_audit_hash": "10ecb45b567dfb92b497897f7f9a007d44592067cc58fc8d32fbab2a2dde7de6",
+      "audit_hash": "c2d8c49f1a0c9fc9738a4404468768d90c8824ff8592d4f4943cb49b30020424",
+      "hmac_signature": "3cad6e1f03c3095866ce04d7f6e8da02a7a6bd628cc1afe8821862041f51126d"
     },
     {
       "tx_id": 36048,
       "timestamp": "2026/09/08 06:53:22",
-      "from_account_hash": "ACCT_7B1AB5162751B05C14B16F9F78A18944",
-      "to_account_hash": "ACCT_3FC07133F2F6D54567F3D7BA39A87FAF",
+      "from_account_hash": "ACCT_30274E2A78333F35F49F9DECF459A2DA",
+      "to_account_hash": "ACCT_1C98F8E1612FDB1582CF4417823852F5",
       "from_bank": 31,
       "to_bank": 22,
       "amount": 14446.61,
@@ -679,15 +845,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "7dfcf8bf8ec7cd9f73f425311d53b1ff15402617572e83e033be8e920f5b9664",
-      "audit_hash": "592c9f2150c1f9bd4871ca8271a1a7febcf1b7ed01e458a0130bad616dc1853c",
-      "hmac_signature": "5f26dda7dc3b766dfed60204a1a868be86e31ba998ca2e9a4e98a4fb5fb3a88b"
+      "prev_audit_hash": "c2d8c49f1a0c9fc9738a4404468768d90c8824ff8592d4f4943cb49b30020424",
+      "audit_hash": "ce8c69d4106cfa85fae2a271fa88c83ccd900e9e2a238ab83ff1dc2441ab894f",
+      "hmac_signature": "a9ce8599cf03d2608931ad67a0500ddc7f0db43a60f145ecc0a8cbbe5784e6d4"
     },
     {
       "tx_id": 36053,
       "timestamp": "2026/09/08 06:54:32",
-      "from_account_hash": "ACCT_8E176112B82559C5F0124672DD2C4F4B",
-      "to_account_hash": "ACCT_3FC07133F2F6D54567F3D7BA39A87FAF",
+      "from_account_hash": "ACCT_47A29B753219F03062B512867207B3F0",
+      "to_account_hash": "ACCT_1C98F8E1612FDB1582CF4417823852F5",
       "from_bank": 24,
       "to_bank": 22,
       "amount": 14446.61,
@@ -721,15 +887,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "592c9f2150c1f9bd4871ca8271a1a7febcf1b7ed01e458a0130bad616dc1853c",
-      "audit_hash": "aeb6ec8f321f1726c19dc0d6c912079ab0033228888bf5d469d44b1b368e4861",
-      "hmac_signature": "4c055d0b7f3303efc1a0fe92af5f2bfd0839b7d8c1338229f620d4feebf3a6ae"
+      "prev_audit_hash": "ce8c69d4106cfa85fae2a271fa88c83ccd900e9e2a238ab83ff1dc2441ab894f",
+      "audit_hash": "7031230ce40dc84c1139fe48e75965fd9319de4f60d5810763688a7ca574fee4",
+      "hmac_signature": "f4a0ffe0e52aa8c507d5555f819f0fa2a8399d2837d9760234c3ade9113732e2"
     },
     {
       "tx_id": 36472,
       "timestamp": "2026/09/08 09:16:17",
-      "from_account_hash": "ACCT_CA9C410097065CB38893A68F87001765",
-      "to_account_hash": "ACCT_3D51D00ABFE5612D473D89F2CC95EC1C",
+      "from_account_hash": "ACCT_881C102DC854FAA1D679B72E939B7CE7",
+      "to_account_hash": "ACCT_E7A80E12DBB20042A2AB133EDE6736F8",
       "from_bank": 23,
       "to_bank": 32,
       "amount": 147354.43,
@@ -763,15 +929,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "aeb6ec8f321f1726c19dc0d6c912079ab0033228888bf5d469d44b1b368e4861",
-      "audit_hash": "70a62161312a7c8b55173c0f185a00fb0e91e7a494867a76531ed1fb8426a765",
-      "hmac_signature": "cf8daba6a528335c80f9ed247b4e414b15af4b747c95d098f1920234f84725b5"
+      "prev_audit_hash": "7031230ce40dc84c1139fe48e75965fd9319de4f60d5810763688a7ca574fee4",
+      "audit_hash": "d11c7e27057855cd30590fec68b24a67df942d107a6d71d393db3517ef2e962c",
+      "hmac_signature": "3b56e017d8066531106e923decb6d5f1c5a78a6bdf63304c510508957b16c726"
     },
     {
       "tx_id": 36486,
       "timestamp": "2026/09/08 09:19:17",
-      "from_account_hash": "ACCT_3D51D00ABFE5612D473D89F2CC95EC1C",
-      "to_account_hash": "ACCT_B0E33253091D2612EA637A8E3D28FE43",
+      "from_account_hash": "ACCT_E7A80E12DBB20042A2AB133EDE6736F8",
+      "to_account_hash": "ACCT_93D6C57491CDAFD40D33E34CF7DFD1A2",
       "from_bank": 32,
       "to_bank": 19,
       "amount": 142651.63,
@@ -805,15 +971,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "70a62161312a7c8b55173c0f185a00fb0e91e7a494867a76531ed1fb8426a765",
-      "audit_hash": "1ed06a2d9093057cc06903cb5ff3582c76c3ded9632d62defbc1394f3272be23",
-      "hmac_signature": "3830fc51eaf5f743b3011c7267313ac9307d4b011f5b54b2b8c3cb5b3c783f8e"
+      "prev_audit_hash": "d11c7e27057855cd30590fec68b24a67df942d107a6d71d393db3517ef2e962c",
+      "audit_hash": "65db496d3d9837cef7ddb721a3b909c8714c200fbd35b944de60868bb3c9ad9e",
+      "hmac_signature": "e067f25a41a1432daf0655e99e18e0bc0bd2bca66f059740f2c6c4accf04bb7c"
     },
     {
       "tx_id": 36973,
       "timestamp": "2026/09/08 10:47:35",
-      "from_account_hash": "ACCT_12191EADCA3D77A981533AD615A69486",
-      "to_account_hash": "ACCT_29515E3506550A504BE82E5715448FB4",
+      "from_account_hash": "ACCT_8D5660C1414B28387EF6D4A626E5AF3C",
+      "to_account_hash": "ACCT_20B21FF01169C5F123B415C04883F063",
       "from_bank": 14,
       "to_bank": 26,
       "amount": 39442.29,
@@ -824,16 +990,38 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "1ed06a2d9093057cc06903cb5ff3582c76c3ded9632d62defbc1394f3272be23",
-      "audit_hash": "a5c98ff821c1065494252544235ef8fe1d003b4e547c1077e33cd308118c8143",
-      "hmac_signature": "211a2f22f7493876249679905b74127d8cf9d5edc25f82a77856fae0801a0c63"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "120s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "0.75",
+          "shap_log_odds": 1.2609,
+          "impact": "+1.261"
+        },
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "shap_log_odds": 1.2057,
+          "impact": "+1.206"
+        }
+      ],
+      "prev_audit_hash": "65db496d3d9837cef7ddb721a3b909c8714c200fbd35b944de60868bb3c9ad9e",
+      "audit_hash": "2c4150eaf18fa970a88847344c8cf473b2937ca31ab85651b4d9021062ced79c",
+      "hmac_signature": "26e5bbaae0b1f5393ac343d7381ba349523fe06e4d99740ce265741a28881750"
     },
     {
       "tx_id": 36987,
       "timestamp": "2026/09/08 10:50:05",
-      "from_account_hash": "ACCT_29515E3506550A504BE82E5715448FB4",
-      "to_account_hash": "ACCT_D2B48ECDF03F6283B3B50A8F44C146A5",
+      "from_account_hash": "ACCT_20B21FF01169C5F123B415C04883F063",
+      "to_account_hash": "ACCT_329045A820AEE1C147B8664C1E8894E9",
       "from_bank": 26,
       "to_bank": 16,
       "amount": 38222.42,
@@ -867,15 +1055,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "a5c98ff821c1065494252544235ef8fe1d003b4e547c1077e33cd308118c8143",
-      "audit_hash": "cbba7d477c2975743b511775112b2126940c69af94ec4f6519ecb6a46414110c",
-      "hmac_signature": "0aba0b7a897bea82257d1948e17af3cdcd9d5e0fd83690cd16974de2d1fe1df9"
+      "prev_audit_hash": "2c4150eaf18fa970a88847344c8cf473b2937ca31ab85651b4d9021062ced79c",
+      "audit_hash": "ddbbffa327b46a66d2ba808a184a0e37cd902c40bd84a1927895be718099fd9f",
+      "hmac_signature": "90f55e24fde3a87a147d176aed368b086a72f29b13bfa049cdaae8e3b1545386"
     },
     {
       "tx_id": 37004,
       "timestamp": "2026/09/08 10:53:05",
-      "from_account_hash": "ACCT_D2B48ECDF03F6283B3B50A8F44C146A5",
-      "to_account_hash": "ACCT_A62B95E2C868A76ADA80DE2BDA11D733",
+      "from_account_hash": "ACCT_329045A820AEE1C147B8664C1E8894E9",
+      "to_account_hash": "ACCT_3C4FAEA32144863FB9FD7CEF82E3C124",
       "from_bank": 16,
       "to_bank": 21,
       "amount": 37002.56,
@@ -909,15 +1097,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "cbba7d477c2975743b511775112b2126940c69af94ec4f6519ecb6a46414110c",
-      "audit_hash": "41f70339e246fd0d2ab0dceb5a0a7302b7bf7d025a4fd3c04e759058f02171eb",
-      "hmac_signature": "3d91c048021aae032d4823a965253d5f05cc989bc382f27e419e9af2c75ed19d"
+      "prev_audit_hash": "ddbbffa327b46a66d2ba808a184a0e37cd902c40bd84a1927895be718099fd9f",
+      "audit_hash": "810d576a62cc03ea866befd39678815e539a342e73c96d6eb65428783968ce39",
+      "hmac_signature": "b4fbc53e81971dedfad99a87343e99bd80c25be1ad9e744b1623fa5a2f142a22"
     },
     {
       "tx_id": 37281,
       "timestamp": "2026/09/08 11:40:54",
-      "from_account_hash": "ACCT_40A2BA5E5DCE309D524B395CC7ECEBD8",
-      "to_account_hash": "ACCT_7C6B26009A368425AD27CA106A179D64",
+      "from_account_hash": "ACCT_BDD58DF6F4CF50643FC355CF1DEEABF0",
+      "to_account_hash": "ACCT_E96CE2F35E23F31FE656E920505A96A0",
       "from_bank": 23,
       "to_bank": 29,
       "amount": 118447.25,
@@ -928,16 +1116,38 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "41f70339e246fd0d2ab0dceb5a0a7302b7bf7d025a4fd3c04e759058f02171eb",
-      "audit_hash": "ba408f98814eaf1557edc8e55b6ffc17467b4513d6f2c5b6526ae648c078c75c",
-      "hmac_signature": "44e1a9534e12dd764e846ed4233276ac4657667daca140e8f52d6419559dc2ba"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "109s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "0.75",
+          "shap_log_odds": 1.2609,
+          "impact": "+1.261"
+        },
+        {
+          "feature": "pass_through_ratio_15m",
+          "label": "Rapid 15m Pass-Through Ratio",
+          "value": "0.96x inflow",
+          "shap_log_odds": 1.0813,
+          "impact": "+1.081"
+        }
+      ],
+      "prev_audit_hash": "810d576a62cc03ea866befd39678815e539a342e73c96d6eb65428783968ce39",
+      "audit_hash": "a8f8a918e15e00266b7a59a238fd2f3a0b5b927d83532be994e19cd2068336ef",
+      "hmac_signature": "b40eddd7b9d7f41c7e30e41d3a99d585da51731d095451258ce4eaf0daa5df99"
     },
     {
       "tx_id": 37319,
       "timestamp": "2026/09/08 11:45:14",
-      "from_account_hash": "ACCT_7C6B26009A368425AD27CA106A179D64",
-      "to_account_hash": "ACCT_0DFA184422B52BC57A628DAF42AE07EE",
+      "from_account_hash": "ACCT_E96CE2F35E23F31FE656E920505A96A0",
+      "to_account_hash": "ACCT_5468789107A225873C3D30B39990F56C",
       "from_bank": 29,
       "to_bank": 32,
       "amount": 114745.77,
@@ -971,15 +1181,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "ba408f98814eaf1557edc8e55b6ffc17467b4513d6f2c5b6526ae648c078c75c",
-      "audit_hash": "aaba3976646d8633a17611d6596bfe53d8334b37e3852415b5fdec06a61c682e",
-      "hmac_signature": "30c83ccf4f3173d99f4ca8638d3616d915f53fe37d903248a8534ba2c7f8e52e"
+      "prev_audit_hash": "a8f8a918e15e00266b7a59a238fd2f3a0b5b927d83532be994e19cd2068336ef",
+      "audit_hash": "8495efc825df0347622fdcaa8fe6f5ed1dfd2f198fc5b09a0a6c1f5ccca94906",
+      "hmac_signature": "e0d10b34bd7f341ba1d19f66fcbd2f3a4c90f4c8c2c47f39d6713dd7bdd7693f"
     },
     {
       "tx_id": 38561,
       "timestamp": "2026/09/08 14:38:59",
-      "from_account_hash": "ACCT_4C5852090097E2C32D720979E4BC2596",
-      "to_account_hash": "ACCT_3E2E168A4FEC3BB84A258204BA0EBB3A",
+      "from_account_hash": "ACCT_484E11D5FCFFDA7BFCCE68CBA617E525",
+      "to_account_hash": "ACCT_3D1E88A2DFA40A1830645589104873A3",
       "from_bank": 16,
       "to_bank": 14,
       "amount": 106858.81,
@@ -1013,15 +1223,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "aaba3976646d8633a17611d6596bfe53d8334b37e3852415b5fdec06a61c682e",
-      "audit_hash": "24d3da8cff5f1a06674426b369c54cdbc7e0cdd216b8b5d7b553d0d3eb573bf3",
-      "hmac_signature": "d9d98efe3d4f007f96a3e3d6a2266d292b6e06bc217b7c505cad006fbd7382ba"
+      "prev_audit_hash": "8495efc825df0347622fdcaa8fe6f5ed1dfd2f198fc5b09a0a6c1f5ccca94906",
+      "audit_hash": "c502d08a1571207322bf85457d68e0a7766b4acae56862c7dff5456ef4790c44",
+      "hmac_signature": "d0a4ad42c090f74bfa0da6f888e978fd71ee1eb5a48e8b8564ef8af65501b4fe"
     },
     {
       "tx_id": 39434,
       "timestamp": "2026/09/08 16:50:25",
-      "from_account_hash": "ACCT_B96B12C93C3EE7E2FF4358447E463E8E",
-      "to_account_hash": "ACCT_B8150714F5E2D163E3E561CAD67694A3",
+      "from_account_hash": "ACCT_A38FC0656E08676DDA1369F38546DE94",
+      "to_account_hash": "ACCT_48BA613B2CA2AD0CB5FA8C4B17F5AA6E",
       "from_bank": 31,
       "to_bank": 12,
       "amount": 7231.43,
@@ -1032,16 +1242,38 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "24d3da8cff5f1a06674426b369c54cdbc7e0cdd216b8b5d7b553d0d3eb573bf3",
-      "audit_hash": "abe9fe9e0d647a654041aedd3448fe4f661df8b8c689cdd12e52fd0d6f7d0c49",
-      "hmac_signature": "cafa1c05c2b46eb93dfb27c70e05cd130f7332e4f603df180f16bdd0a8aef1b0"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "148s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "1.00",
+          "shap_log_odds": 1.2609,
+          "impact": "+1.261"
+        },
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "shap_log_odds": 1.2057,
+          "impact": "+1.206"
+        }
+      ],
+      "prev_audit_hash": "c502d08a1571207322bf85457d68e0a7766b4acae56862c7dff5456ef4790c44",
+      "audit_hash": "e88a392a398f33788441ab82f3ec395e86c2dad67b2833a9a7b149a09d8fd101",
+      "hmac_signature": "dc6beee45cfde724f3d368a35753536e6711a12aa8b758ba59a301a18de18c70"
     },
     {
       "tx_id": 39620,
       "timestamp": "2026/09/08 17:16:56",
-      "from_account_hash": "ACCT_4A1F7F1EA50A2D2E56E88A997E70DB8C",
-      "to_account_hash": "ACCT_4526F8F012C7D9A068A4424A18410086",
+      "from_account_hash": "ACCT_2B3433750AE40B49AB0C2739DA5737C6",
+      "to_account_hash": "ACCT_10092BD4D99ED9D050C45732DE556F70",
       "from_bank": 24,
       "to_bank": 31,
       "amount": 66482.21,
@@ -1075,15 +1307,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "abe9fe9e0d647a654041aedd3448fe4f661df8b8c689cdd12e52fd0d6f7d0c49",
-      "audit_hash": "8340673dcd6fcd96d8049f95bdaa606f3c1d39a37b025f68f638891f3cb0360b",
-      "hmac_signature": "699e66f05ef8723b51af78de8acaa03e223bb5681a0bdfbb99609392b5486a18"
+      "prev_audit_hash": "e88a392a398f33788441ab82f3ec395e86c2dad67b2833a9a7b149a09d8fd101",
+      "audit_hash": "7c4e3e36c86965e7416c5c319a00153c91f0188fc673f4065479d782a5427a74",
+      "hmac_signature": "423c190b9d919b0c82c327f1a3b312f6cf3759e59ca947a4e8d2ed56fbbadba6"
     },
     {
       "tx_id": 39645,
       "timestamp": "2026/09/08 17:21:16",
-      "from_account_hash": "ACCT_4526F8F012C7D9A068A4424A18410086",
-      "to_account_hash": "ACCT_DE97EC61C55F403028EE8D993E04B3DF",
+      "from_account_hash": "ACCT_10092BD4D99ED9D050C45732DE556F70",
+      "to_account_hash": "ACCT_BBF92728C3718A453D5E2F05C0D779F7",
       "from_bank": 31,
       "to_bank": 10,
       "amount": 64404.64,
@@ -1117,15 +1349,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "8340673dcd6fcd96d8049f95bdaa606f3c1d39a37b025f68f638891f3cb0360b",
-      "audit_hash": "9d7c64a85cca0355831fe835d665efa92b1c9492e530154e789841dd4566cf06",
-      "hmac_signature": "aaa8f310ea403a7dd7eece1d866d1a25f5ca75f37aa103ffb9bff680babb5b37"
+      "prev_audit_hash": "7c4e3e36c86965e7416c5c319a00153c91f0188fc673f4065479d782a5427a74",
+      "audit_hash": "f394de7326cb8cef19672d8023b806b1d182eaa1865016664b296cfce7923033",
+      "hmac_signature": "4e4eb984f146d46a62c7b77c3342a11398dce4973c93db4a2dcfda009c3b1e7a"
     },
     {
       "tx_id": 39664,
       "timestamp": "2026/09/08 17:24:34",
-      "from_account_hash": "ACCT_3F5AEA5738EE09C3C8A1A67D9EE3AC04",
-      "to_account_hash": "ACCT_20E009A35AED0E5337140D692032986B",
+      "from_account_hash": "ACCT_F7AD666B39D7AE47A4FEDA896F61DD55",
+      "to_account_hash": "ACCT_B3FE53EBD53DECAB7FF129F93B57DECC",
       "from_bank": 16,
       "to_bank": 28,
       "amount": 76403.82,
@@ -1136,10 +1368,32 @@
       "model_version": "hopstop-gbdt-v2.1",
       "hold_threshold": 0.993063,
       "step_up_threshold": 0.987287,
-      "reason_codes": [],
-      "prev_audit_hash": "9d7c64a85cca0355831fe835d665efa92b1c9492e530154e789841dd4566cf06",
-      "audit_hash": "d5f837669849778bd184378ef812037640652fcdb43cc45c35155597c7fa03e4",
-      "hmac_signature": "c7f2551a0746fff6de3bf65e85a105d19bcf099ba8d498faf8f2b70b020b744c"
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "229s after credit",
+          "shap_log_odds": 2.6913,
+          "impact": "+2.691"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "0.75",
+          "shap_log_odds": 1.2609,
+          "impact": "+1.261"
+        },
+        {
+          "feature": "rapid_turnover_flag",
+          "label": "Rapid Credit-to-Debit Drain",
+          "value": "Yes",
+          "shap_log_odds": 1.2057,
+          "impact": "+1.206"
+        }
+      ],
+      "prev_audit_hash": "f394de7326cb8cef19672d8023b806b1d182eaa1865016664b296cfce7923033",
+      "audit_hash": "78421a3ea9e9196a51f0216a92fef34f71209ca1e320f9f4845fdb7848140f69",
+      "hmac_signature": "8f3afdf8c8631a22fd0e8c8db2b4a53c3c89a3d225e5048392dca4de0da1b553"
     }
   ],
   "sample_interrupted_chains": [

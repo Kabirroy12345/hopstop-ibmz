@@ -26,6 +26,7 @@ import hashlib
 import hmac
 import math
 import os
+import secrets
 from collections import OrderedDict, deque
 from dataclasses import dataclass, field
 from typing import Deque, Dict, List, Optional, Tuple
@@ -57,28 +58,63 @@ FORMAT_RISK_MAP: Dict[str, float] = {
     "Reinvestment": 0.15,
 }
 
-_DEFAULT_DEV_HMAC_KEY = "HOPSTOP_DEV_EPHEMERAL_KEY_OVERRIDE_IN_PROD"
+# Never store a static secret key in source control: if HOPSTOP_HMAC_KEY is not injected
+# via environment/HSM, generate a per-process 256-bit CSPRNG key via secrets.token_hex(32).
+_PROCESS_EPHEMERAL_HMAC_KEY: str = secrets.token_hex(32)
+
+
+def get_active_hmac_key(explicit_key: Optional[str] = None) -> str:
+    """Returns explicit key, HOPSTOP_HMAC_KEY from environment/HSM, or 256-bit CSPRNG process key."""
+    return explicit_key or os.environ.get("HOPSTOP_HMAC_KEY") or _PROCESS_EPHEMERAL_HMAC_KEY
 
 
 def get_hmac_key_status() -> Dict[str, str]:
-    """Reports whether HOPSTOP_HMAC_KEY is provisioned via environment/HSM."""
+    """Reports whether HOPSTOP_HMAC_KEY is provisioned via environment/HSM or per-process CSPRNG."""
     env_key = os.environ.get("HOPSTOP_HMAC_KEY")
     if env_key:
         return {"mode": "HMAC-SHA256 (Environment/HSM key provisioned)", "key_source": "env:HOPSTOP_HMAC_KEY"}
     return {
-        "mode": "HMAC-SHA256 (Development fallback key; set HOPSTOP_HMAC_KEY in production)",
-        "key_source": "dev_fallback",
+        "mode": "HMAC-SHA256 (Per-process 256-bit CSPRNG ephemeral key; set HOPSTOP_HMAC_KEY for cross-restart persistence)",
+        "key_source": "ephemeral_csprng_256bit",
     }
 
 
 def hash_account_id(raw_id: str, secret_key: Optional[str] = None) -> str:
     """Computes a 128-bit (32-hex) HMAC-SHA256 pseudonym (`ACCT_<32-hex>`) for an account ID."""
-    if raw_id.startswith("ACCT_") and len(raw_id) >= 17:
+    if raw_id.startswith("ACCT_") and len(raw_id) >= 37:
         return raw_id
-    key_str = secret_key or os.environ.get("HOPSTOP_HMAC_KEY") or _DEFAULT_DEV_HMAC_KEY
+    key_str = get_active_hmac_key(secret_key)
     digest = hmac.new(key_str.encode("utf-8"), raw_id.encode("utf-8"), hashlib.sha256).hexdigest()
     # 128-bit (32 hex chars) prevents birthday collisions up to >10^15 accounts
     return f"ACCT_{digest[:32].upper()}"
+
+
+class PayeeBloomFilter:
+    """Compact 65,536-bit (8 KB) 3-hash Bloom filter for evicted LRU payees on high-fan-out payroll accounts."""
+
+    __slots__ = ("bits",)
+
+    def __init__(self) -> None:
+        self.bits = bytearray(8192)  # 65,536 bits = 8 KB fixed memory
+
+    @staticmethod
+    def _probes(acct_token: str) -> Tuple[int, int, int]:
+        # Derive 3 independent 16-bit bit-indices from the HMAC hex suffix (or SHA-256 fallback)
+        hex_part = acct_token[5:17] if acct_token.startswith("ACCT_") and len(acct_token) >= 17 else hashlib.sha256(acct_token.encode("utf-8")).hexdigest()[:12]
+        h1 = int(hex_part[0:4], 16)
+        h2 = int(hex_part[4:8], 16)
+        h3 = int(hex_part[8:12], 16)
+        return h1, h2, h3
+
+    def add(self, acct_token: str) -> None:
+        for idx in self._probes(acct_token):
+            self.bits[idx >> 3] |= 1 << (idx & 7)
+
+    def contains(self, acct_token: str) -> bool:
+        for idx in self._probes(acct_token):
+            if not (self.bits[idx >> 3] & (1 << (idx & 7))):
+                return False
+        return True
 
 
 class SlidingWindow:
@@ -141,6 +177,7 @@ class AccountState:
     last_credit_amt: float = 0.0
     last_seen_sec: float = -1e9
     known_payees: OrderedDict[str, None] = field(default_factory=OrderedDict)
+    payee_bloom: Optional[PayeeBloomFilter] = None
 
     # Online Welford statistics for outgoing transaction amounts
     tx_count: int = 0
@@ -231,8 +268,11 @@ class StreamingFeatureEngine:
         else:
             rapid_turnover_flag = 0.0
 
-        # 9. Counterparty novelty: 1.0 if sender has not previously paid `dst_key`
-        counterparty_novelty = 0.0 if dst_key in s_state.known_payees else 1.0
+        # 9. Counterparty novelty: 0.0 if recipient is in exact LRU or overflow 64-kbit Bloom filter
+        is_known_payee = (dst_key in s_state.known_payees) or (
+            s_state.payee_bloom is not None and s_state.payee_bloom.contains(dst_key)
+        )
+        counterparty_novelty = 0.0 if is_known_payee else 1.0
 
         # 10. Sender amount z-score (online Welford mean/variance)
         if s_state.tx_count >= 2:
@@ -274,7 +314,10 @@ class StreamingFeatureEngine:
         else:
             s_state.known_payees[dst_key] = None
             if len(s_state.known_payees) > self.max_known_payees:
-                s_state.known_payees.popitem(last=False)
+                evicted_payee, _ = s_state.known_payees.popitem(last=False)
+                if s_state.payee_bloom is None:
+                    s_state.payee_bloom = PayeeBloomFilter()
+                s_state.payee_bloom.add(evicted_payee)
 
         s_state.tx_count += 1
         delta = amt - s_state.mean_amt

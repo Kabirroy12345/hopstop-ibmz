@@ -247,21 +247,59 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
     # Evaluate PolicyEngine with frozen Day-7 thresholds on unseen Days 8-10
     test_chains: Dict[int, List[Tuple[TransactionRecord, float, float, float]]] = {}
     held_decisions: List[Dict[str, Any]] = []
+    real_test_examples: Dict[str, Any] = {}
     realized_alerts = 0
     realized_holds = 0
 
     for r, feat, m_score, lr_score, r_score in zip(
         test_records, X_test, ml_test_scores, logreg_test_scores, rules_test_scores
     ):
-        reasons = scorer.top_reason_codes(feat, top_k=3) if m_score >= step_up_thr else []
+        reasons = scorer.top_reason_codes(feat, top_k=3) if round(m_score, 6) >= step_up_thr else []
         dec = policy.evaluate(r, m_score, reasons, record_audit=True)
         if dec.action in ("HOLD", "STEP_UP"):
             realized_alerts += 1
             if dec.action == "HOLD":
                 realized_holds += 1
+                if "real_test_mule_hold" not in real_test_examples and r.is_laundering == 1:
+                    real_test_examples["real_test_mule_hold"] = {
+                        "tx_id": r.tx_id,
+                        "timestamp": r.timestamp,
+                        "typology": r.typology,
+                        "hop_number": r.hop_number,
+                        "amount": round(float(r.amount_paid), 2),
+                        "payment_format": r.payment_format,
+                        "features": [round(float(v), 4) for v in feat],
+                        "hopstop_score": dec.risk_score,
+                        "hopstop_action": dec.action,
+                        "rules_baseline_score": round(float(r_score), 4),
+                        "rules_would_flag": r_score >= 0.45,
+                        "reason_codes": reasons,
+                    }
             if len(held_decisions) < 60:
                 # Production DecisionRecord is serialized cleanly without ground-truth fields
                 held_decisions.append(dec.to_dict())
+        elif (
+            "real_test_payroll_allow" not in real_test_examples
+            and r.is_laundering == 0
+            and feat[1] >= 3.0
+            and feat[4] == 0.0
+            and feat[8] == 0.0
+            and r_score >= 0.45
+        ):
+            real_test_examples["real_test_payroll_allow"] = {
+                "tx_id": r.tx_id,
+                "timestamp": r.timestamp,
+                "typology": r.typology,
+                "hop_number": r.hop_number,
+                "amount": round(float(r.amount_paid), 2),
+                "payment_format": r.payment_format,
+                "features": [round(float(v), 4) for v in feat],
+                "hopstop_score": dec.risk_score,
+                "hopstop_action": dec.action,
+                "rules_baseline_score": round(float(r_score), 4),
+                "rules_would_flag": True,
+                "reason_codes": scorer.top_reason_codes(feat, top_k=3),
+            }
         if r.chain_id > 0:
             test_chains.setdefault(r.chain_id, []).append((r, m_score, lr_score, r_score))
 
@@ -551,6 +589,7 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
             "microbatch_64_scoring_tps": microbatch_tps,
         },
         "feature_importances": feature_importance_named,
+        "real_test_case_examples": real_test_examples,
         "sample_held_alerts": held_decisions[:25],
         "sample_interrupted_chains": sample_chain_graphs,
     }

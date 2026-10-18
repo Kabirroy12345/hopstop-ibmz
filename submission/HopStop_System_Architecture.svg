@@ -50,7 +50,7 @@
   <!-- KPI Badges in Header -->
   <rect x="1115" y="38" width="140" height="42" rx="8" fill="rgba(16,185,129,0.12)" stroke="#10b981" stroke-width="1"/>
   <text x="1185" y="56" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">E2E P50 / P99</text>
-  <text x="1185" y="72" fill="#ffffff" font-size="13.5" font-weight="700" text-anchor="middle" font-family="monospace">0.13 / 0.50 ms</text>
+  <text x="1185" y="72" fill="#ffffff" font-size="13.5" font-weight="700" text-anchor="middle" font-family="monospace">0.06 / 0.19 ms</text>
 
   <rect x="1268" y="38" width="140" height="42" rx="8" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1"/>
   <text x="1338" y="56" fill="#7dd3fc" font-size="10" font-weight="700" text-anchor="middle">TEST PR-AUC</text>
@@ -71,8 +71,8 @@
   <!-- Payment Rail Cards -->
   <rect x="46" y="206" width="218" height="68" rx="8" fill="#090d16" stroke="#1e293b"/>
   <text x="60" y="228" fill="#38bdf8" font-size="12" font-weight="700">UPI / IMPS / ACH / Wire</text>
-  <text x="60" y="246" fill="#cbd5e1" font-size="11">50,884 AMLworld Transactions</text>
-  <text x="60" y="263" fill="#64748b" font-size="10.5" font-family="monospace">Days 1–6 Train | D7 Val | D8–10 Test</text>
+  <text x="60" y="246" fill="#cbd5e1" font-size="11">50,880 AMLworld Transactions</text>
+  <text x="60" y="263" fill="#64748b" font-size="10" font-family="monospace">30,616 Train | 5,032 Val | 15,232 Test</text>
 
   <rect x="46" y="288" width="218" height="92" rx="8" fill="#090d16" stroke="#1e293b"/>
   <text x="60" y="310" fill="#f43f5e" font-size="12" font-weight="700">8 Laundering Typologies</text>
@@ -87,10 +87,10 @@
 
   <rect x="46" y="486" width="218" height="145" rx="8" fill="#090d16" stroke="#1e293b"/>
   <text x="60" y="508" fill="#93c5fd" font-size="11.5" font-weight="700">Raw Event Payload Schema</text>
-  <text x="60" y="528" fill="#e2e8f0" font-size="10.5" font-family="monospace">tx_id: 35861</text>
-  <text x="60" y="545" fill="#e2e8f0" font-size="10.5" font-family="monospace">ts: 2026/09/08 05:11</text>
-  <text x="60" y="562" fill="#e2e8f0" font-size="10.5" font-family="monospace">from_bank: 14 → to_bank: 27</text>
-  <text x="60" y="579" fill="#e2e8f0" font-size="10.5" font-family="monospace">amount: INR 185,000.00</text>
+  <text x="60" y="528" fill="#e2e8f0" font-size="10.5" font-family="monospace">tx_id: 35893 (Unseen Test Split)</text>
+  <text x="60" y="545" fill="#e2e8f0" font-size="10.5" font-family="monospace">ts: 2026/09/08 05:33:15</text>
+  <text x="60" y="562" fill="#e2e8f0" font-size="10.5" font-family="monospace">from_bank: 23 → to_bank: 32</text>
+  <text x="60" y="579" fill="#e2e8f0" font-size="10.5" font-family="monospace">amount: INR 49,848.99</text>
   <text x="60" y="596" fill="#e2e8f0" font-size="10.5" font-family="monospace">payment_format: "Wire"</text>
   <text x="60" y="615" fill="#38bdf8" font-size="10" font-weight="600">Zero Network Hop (In-Memory)</text>
 
@@ -103,17 +103,17 @@
   <rect x="322" y="116" width="945" height="535" rx="14" fill="url(#enclaveGrad)" stroke="#6366f1" stroke-width="2"/>
   <rect x="338" y="130" width="913" height="36" rx="7" fill="rgba(99,102,241,0.16)" stroke="rgba(99,102,241,0.4)"/>
   <text x="354" y="153" fill="#e0e7ff" font-size="13" font-weight="700" letter-spacing="0.6">2. IBM Z / LINUXONE (s390x) ON-PLATFORM CO-LOCATED INFERENCE &amp; CRYPTO ENCLAVE</text>
-  <text x="1235" y="153" fill="#38bdf8" font-size="11.5" font-weight="700" text-anchor="end" font-family="monospace">SLA &lt; 10 ms • E2E p50: 0.134 ms | p99: 0.500 ms</text>
+  <text x="1235" y="153" fill="#38bdf8" font-size="11.5" font-weight="700" text-anchor="end" font-family="monospace">SLA &lt; 10 ms • E2E p50: 0.059 ms | p99: 0.188 ms</text>
 
   <!-- STAGE 2A: CPACF HMAC-SHA256 PII Anonymizer -->
   <rect x="340" y="182" width="265" height="215" rx="10" fill="url(#stageBlue)" stroke="#06b6d4" stroke-width="1.5"/>
   <text x="356" y="206" fill="#22d3ee" font-size="10.5" font-weight="700">STAGE 2A • CPACF CRYPTO (MSA 17/76/146)</text>
   <text x="356" y="226" fill="#ffffff" font-size="15" font-weight="700">128-Bit HMAC Account Keying</text>
-  <text x="356" y="246" fill="#94a3b8" font-size="11">Keyed HMAC-SHA256 Before State Map</text>
+  <text x="356" y="246" fill="#94a3b8" font-size="11">Env/HSM Key or 256-Bit CSPRNG Key</text>
   <rect x="354" y="260" width="237" height="62" rx="6" fill="#06080e" stroke="#1e293b"/>
   <text x="366" y="280" fill="#93c5fd" font-size="10" font-family="monospace">HMAC_SHA256(key, bank:acct)[:32]</text>
-  <text x="366" y="298" fill="#34d399" font-size="10.5" font-weight="700" font-family="monospace">→ ACCT_D7E212B939448078...</text>
-  <text x="366" y="314" fill="#64748b" font-size="10">128-bit collision-safe entity key</text>
+  <text x="366" y="298" fill="#34d399" font-size="10.5" font-weight="700" font-family="monospace">→ ACCT_CC51639778E5FFEE...</text>
+  <text x="366" y="314" fill="#64748b" font-size="10">No static key in repo (env/CSPRNG)</text>
   <text x="356" y="344" fill="#cbd5e1" font-size="11">• Hardware-assisted on s390x CPACF</text>
   <text x="356" y="362" fill="#cbd5e1" font-size="11">• Secure Execution (Facility 158)</text>
   <text x="356" y="380" fill="#cbd5e1" font-size="11">• Zero raw PII in memory or logs</text>
@@ -125,34 +125,34 @@
   <rect x="639" y="182" width="305" height="215" rx="10" fill="url(#stageBlue)" stroke="#3b82f6" stroke-width="1.5"/>
   <text x="655" y="206" fill="#60a5fa" font-size="11" font-weight="700">STAGE 2B • CAUSAL O(1) FEATURE ENGINE</text>
   <text x="655" y="226" fill="#ffffff" font-size="15" font-weight="700">12 Graph-Velocity Features</text>
-  <text x="655" y="244" fill="#94a3b8" font-size="11">Amortized O(1) SlidingWindow + LRU</text>
+  <text x="655" y="244" fill="#94a3b8" font-size="11">O(1) SlidingWindow + LRU + 8KB Bloom</text>
 
   <rect x="653" y="256" width="277" height="128" rx="6" fill="#06080e" stroke="#1e293b"/>
   <text x="665" y="275" fill="#38bdf8" font-size="10.5" font-weight="700" font-family="monospace">1. pass_through_ratio_15m  (out15/in15)</text>
   <text x="665" y="291" fill="#38bdf8" font-size="10.5" font-weight="700" font-family="monospace">2. rapid_turnover_flag     (15m/1h tier)</text>
   <text x="665" y="307" fill="#e2e8f0" font-size="10.5" font-family="monospace">3. fan_in_1h / fan_out_1h  (O(1) cnt)</text>
   <text x="665" y="323" fill="#e2e8f0" font-size="10.5" font-family="monospace">4. fan_in_24h / fan_out_24h</text>
-  <text x="665" y="339" fill="#e2e8f0" font-size="10.5" font-family="monospace">5. counterparty_novelty    (LRU 2048)</text>
+  <text x="665" y="339" fill="#e2e8f0" font-size="10.5" font-family="monospace">5. counterparty_novelty    (LRU+Bloom)</text>
   <text x="665" y="355" fill="#e2e8f0" font-size="10.5" font-family="monospace">6. amount_zscore           (Welford O(1))</text>
   <text x="665" y="371" fill="#e2e8f0" font-size="10.5" font-family="monospace">7. time_since_last_credit_log &amp; rail</text>
 
   <!-- Arrow 2B -> 2C -->
   <line x1="944" y1="288" x2="974" y2="288" stroke="#38bdf8" stroke-width="2.2" marker-end="url(#arrowCyan)"/>
 
-  <!-- STAGE 2C: IBM Snap ML & Telum NNPA Scorer -->
+  <!-- STAGE 2C: Depth-2 GBDT + s390x Snap ML Scorer -->
   <rect x="978" y="182" width="272" height="215" rx="10" fill="url(#telumGrad)" stroke="#818cf8" stroke-width="2"/>
-  <text x="994" y="206" fill="#a5b4fc" font-size="11" font-weight="700">STAGE 2C • IBM SNAP ML + TELUM AI</text>
-  <text x="994" y="226" fill="#ffffff" font-size="15" font-weight="700">Tensor-Tree GBDT Scorer</text>
-  <text x="994" y="244" fill="#c7d2fe" font-size="11" font-family="monospace">optimize_trees(tree_format='auto')</text>
+  <text x="994" y="206" fill="#a5b4fc" font-size="11" font-weight="700">STAGE 2C • GBDT + SNAP ML RUNTIME</text>
+  <text x="994" y="226" fill="#ffffff" font-size="15" font-weight="700">Depth-2 Tensor-Tree Scorer</text>
+  <text x="994" y="244" fill="#c7d2fe" font-size="11" font-family="monospace">JSON Trees + snapml tree_format='auto'</text>
 
   <rect x="992" y="256" width="244" height="78" rx="6" fill="#06080e" stroke="#4f46e5"/>
-  <text x="1004" y="275" fill="#38bdf8" font-size="10.5" font-weight="700">Hardware Runtime Probe:</text>
-  <text x="1004" y="292" fill="#e2e8f0" font-size="10" font-family="monospace">• /proc/cpuinfo Facility 165 (NNPA)</text>
-  <text x="1004" y="308" fill="#e2e8f0" font-size="10" font-family="monospace">• libzdnn: zdnn_is_nnpa_installed()</text>
-  <text x="1004" y="324" fill="#34d399" font-size="10" font-family="monospace">• JSON Model + Pure-Python Fallback</text>
+  <text x="1004" y="275" fill="#38bdf8" font-size="10.5" font-weight="700">Dual Runtime Architecture:</text>
+  <text x="1004" y="292" fill="#e2e8f0" font-size="10" font-family="monospace">• Portable JSON Depth-2 GBDT (Local)</text>
+  <text x="1004" y="308" fill="#e2e8f0" font-size="10" font-family="monospace">• s390x: Snap ML + Facility 165 NNPA</text>
+  <text x="1004" y="324" fill="#34d399" font-size="10" font-family="monospace">• Active backend logged in JSON</text>
 
-  <text x="994" y="354" fill="#f8fafc" font-size="10.5" font-weight="600">Scorer p50: 0.043 ms | E2E p50: 0.134 ms</text>
-  <text x="994" y="373" fill="#38bdf8" font-size="10.5" font-weight="600">Batch=64 Throughput: 94,000+ TPS</text>
+  <text x="994" y="354" fill="#f8fafc" font-size="10.5" font-weight="600">Scorer p50: 0.006 ms | E2E p50: 0.059 ms</text>
+  <text x="994" y="373" fill="#38bdf8" font-size="10.5" font-weight="600">Batch=64 Throughput: 174,828 TPS</text>
 
   <!-- Arrow 2C Down to 2D -->
   <path d="M 1114 397 L 1114 422 L 945 422 L 945 436" fill="none" stroke="#38bdf8" stroke-width="2.2" marker-end="url(#arrowCyan)"/>
@@ -175,11 +175,11 @@
 
   <rect x="1049" y="497" width="186" height="74" rx="7" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
   <text x="1061" y="517" fill="#6ee7b7" font-size="12" font-weight="700">ALLOW (p &lt; 0.9873)</text>
-  <text x="1061" y="534" fill="#f8fafc" font-size="10.5">Instant settlement (&lt;0.14 ms)</text>
+  <text x="1061" y="534" fill="#f8fafc" font-size="10.5">Instant settlement (&lt;0.06 ms)</text>
   <text x="1061" y="550" fill="#cbd5e1" font-size="10">Payroll safe (pass_through=0.0)</text>
 
   <text x="655" y="592" fill="#93c5fd" font-size="10" font-family="monospace">Exact TreeSHAP: Σ φ_i + E[f(X)] = raw_margin(x) • Signed (+) Mule &amp; (−) Payroll Log-Odds</text>
-  <text x="655" y="612" fill="#34d399" font-size="10.2" font-weight="600">Payroll Differentiator (fan_out=5, pass_through=0.0): Rules → FLAGGED (0.60) | HopStop → ALLOW (0.0183)</text>
+  <text x="655" y="612" fill="#34d399" font-size="10.2" font-weight="600">Unseen Test Split (#35895 Payroll): Rules → FLAGGED (0.60) | HopStop → ALLOW (0.0159, φ_novelty=−1.552)</text>
 
   <!-- Arrow 2D Left to 2E -->
   <line x1="639" y1="535" x2="609" y2="535" stroke="#10b981" stroke-width="2.2" marker-end="url(#arrowGreen)"/>
@@ -193,7 +193,7 @@
   <text x="364" y="533" fill="#e2e8f0" font-size="10" font-family="monospace">H_n = SHA256(H_{n-1} || payload)</text>
   <text x="364" y="549" fill="#e2e8f0" font-size="10" font-family="monospace">sig = HMAC_SHA256(key, H_n)</text>
   <text x="364" y="567" fill="#34d399" font-size="10" font-family="monospace">PolicyEngine.verify_chain() ✓</text>
-  <text x="356" y="602" fill="#cbd5e1" font-size="11">• Thread-safe lock + full 64-hex</text>
+  <text x="356" y="602" fill="#cbd5e1" font-size="11">• 127 test alerts verified from 0*64</text>
   <text x="356" y="620" fill="#cbd5e1" font-size="11">• Instant 1930 helpline lien packet</text>
 
   <!-- Arrow from Enclave to Right Column -->
@@ -209,7 +209,7 @@
 
   <rect x="1326" y="206" width="228" height="95" rx="8" fill="#090d16" stroke="#1e293b"/>
   <text x="1340" y="228" fill="#60a5fa" font-size="12" font-weight="700">Interactive Payment Sandbox</text>
-  <text x="1340" y="246" fill="#cbd5e1" font-size="11">• 5 Live Scenarios (1-Click Test)</text>
+  <text x="1340" y="246" fill="#cbd5e1" font-size="11">• Real Test Cases + 5 Presets</text>
   <text x="1340" y="263" fill="#cbd5e1" font-size="11">• Mule Fan-Out vs Payroll Proof</text>
   <text x="1340" y="280" fill="#cbd5e1" font-size="11">• Signed TreeSHAP Attributions</text>
 
@@ -217,7 +217,7 @@
   <text x="1340" y="337" fill="#34d399" font-size="12" font-weight="700">Alert-Budget Calibrator</text>
   <text x="1340" y="355" fill="#cbd5e1" font-size="11">• Slider: 0.5% to 2.5% Budget</text>
   <text x="1340" y="372" fill="#cbd5e1" font-size="11">• 95% Bootstrap CIs Reported</text>
-  <text x="1340" y="389" fill="#cbd5e1" font-size="11">• 94.7% Fast / 83.3% Delayed</text>
+  <text x="1340" y="389" fill="#cbd5e1" font-size="11">• 94.7% Fast / 50.0% Delayed</text>
 
   <rect x="1326" y="424" width="228" height="95" rx="8" fill="#090d16" stroke="#1e293b"/>
   <text x="1340" y="446" fill="#fda4af" font-size="12" font-weight="700">Filtered Alert Stream</text>
@@ -227,7 +227,7 @@
 
   <rect x="1326" y="533" width="228" height="98" rx="8" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
   <text x="1340" y="555" fill="#6ee7b7" font-size="12" font-weight="700">Container &amp; CI Ready</text>
-  <text x="1340" y="574" fill="#e2e8f0" font-size="10.5" font-family="monospace">Dockerfile.s390x + pytest CI</text>
+  <text x="1340" y="574" fill="#e2e8f0" font-size="10.5" font-family="monospace">Dockerfile.s390x + 8 Pytests</text>
   <text x="1340" y="592" fill="#94a3b8" font-size="10.5" font-family="monospace">icr.io/ibmz/python:3.11</text>
   <text x="1340" y="610" fill="#38bdf8" font-size="10.5">Apache-2.0 • JSON Model Format</text>
 
@@ -235,27 +235,27 @@
        BOTTOM PANEL: MULTI-HOP MONEY-MULE INTERDICTION TOPOLOGY PROOF
        ===================================================================== -->
   <rect x="30" y="672" width="1540" height="244" rx="12" fill="url(#enclaveGrad)" stroke="#334155" stroke-width="1.5"/>
-  <text x="54" y="702" fill="#38bdf8" font-size="13" font-weight="700" letter-spacing="0.6">4. PRE-SETTLEMENT MULTI-HOP LAUNDERING CHAIN INTERDICTION TOPOLOGY (94.7% FAST CHAINS • 92.0% OVERALL FROZEN ≤ HOP 2)</text>
+  <text x="54" y="702" fill="#38bdf8" font-size="13" font-weight="700" letter-spacing="0.6">4. PRE-SETTLEMENT MULTI-HOP LAUNDERING CHAIN INTERDICTION TOPOLOGY (94.7% FAST CHAINS • 84.0% OVERALL FROZEN ≤ HOP 2)</text>
   <text x="54" y="722" fill="#94a3b8" font-size="11.5">By holding the outgoing transfer at Hop 1 or Hop 2 before settlement completes, HopStop prevents stolen victim funds from dispersing across downstream banks:</text>
 
   <!-- Hop 0: Victim / Placement -->
   <rect x="54" y="744" width="235" height="118" rx="10" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
   <text x="70" y="768" fill="#60a5fa" font-size="11" font-weight="700" font-family="monospace">ORIGIN • VICTIM ACCOUNT</text>
   <text x="70" y="790" fill="#ffffff" font-size="14" font-weight="700">APP Scam / Phishing Drain</text>
-  <text x="70" y="810" fill="#cbd5e1" font-size="11" font-family="monospace">ACCT_D7E212B93944... (Bank #14)</text>
+  <text x="70" y="810" fill="#cbd5e1" font-size="11" font-family="monospace">ACCT_CC51639778E5... (Bank #23)</text>
   <text x="70" y="830" fill="#94a3b8" font-size="11">Initial compromised transfer</text>
-  <text x="70" y="848" fill="#38bdf8" font-size="11" font-weight="700" font-family="monospace">Inflow: INR 192,000</text>
+  <text x="70" y="848" fill="#38bdf8" font-size="11" font-weight="700" font-family="monospace">Inflow: INR 52,000</text>
 
   <line x1="289" y1="803" x2="365" y2="803" stroke="#f43f5e" stroke-width="2.5" marker-end="url(#arrowRed)"/>
-  <text x="327" y="791" fill="#fda4af" font-size="9.5" font-weight="700" text-anchor="middle" font-family="monospace">+2m drain</text>
+  <text x="327" y="791" fill="#fda4af" font-size="9.5" font-weight="700" text-anchor="middle" font-family="monospace">+244s drain</text>
 
   <!-- Hop 1: Mule Account (INTERDICTED!) -->
   <rect x="370" y="744" width="320" height="118" rx="10" fill="#3b0a18" stroke="#f43f5e" stroke-width="2.2"/>
-  <text x="388" y="768" fill="#fda4af" font-size="11" font-weight="700" font-family="monospace">HOP 1 • MULE DISPERSAL [HOLD • p=0.9938]</text>
-  <text x="388" y="790" fill="#ffffff" font-size="14" font-weight="700">Pre-Settlement Freeze in 0.13 ms</text>
-  <text x="388" y="810" fill="#fecdd3" font-size="11" font-family="monospace">ACCT_D7E212 → ACCT_06D658 (Bank #27)</text>
-  <text x="388" y="830" fill="#fda4af" font-size="11">pass_through_15m = 0.96 • fan_out_1h = 5</text>
-  <text x="388" y="848" fill="#ffffff" font-size="11" font-weight="700" font-family="monospace">INR 185,000 HELD ON-PLATFORM</text>
+  <text x="388" y="768" fill="#fda4af" font-size="11" font-weight="700" font-family="monospace">UNSEEN TEST #35893 [HOLD • p=0.9931]</text>
+  <text x="388" y="790" fill="#ffffff" font-size="14" font-weight="700">Pre-Settlement Freeze in 0.06 ms</text>
+  <text x="388" y="810" fill="#fecdd3" font-size="11" font-family="monospace">ACCT_CC5163 → ACCT_0EF013 (Bank #32)</text>
+  <text x="388" y="830" fill="#fda4af" font-size="11">pass_through_15m = 0.96 • zscore = 10.0</text>
+  <text x="388" y="848" fill="#ffffff" font-size="11" font-weight="700" font-family="monospace">INR 49,848.99 HELD ON-PLATFORM</text>
 
   <!-- Severed Edge 1 -> 2 -->
   <line x1="690" y1="803" x2="795" y2="803" stroke="#10b981" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowGreen)"/>
@@ -264,11 +264,11 @@
 
   <!-- Hop 2: Downstream Layering Mule (Blocked Upstream) -->
   <rect x="800" y="744" width="320" height="118" rx="10" fill="#06281e" stroke="#10b981" stroke-width="1.8" stroke-dasharray="6 3"/>
-  <text x="818" y="768" fill="#6ee7b7" font-size="11" font-weight="700" font-family="monospace">HOP 2 • DOWNSTREAM MULE [BLOCKED_UPSTREAM]</text>
+  <text x="818" y="768" fill="#6ee7b7" font-size="11" font-weight="700" font-family="monospace">DOWNSTREAM MULE [BLOCKED_UPSTREAM]</text>
   <text x="818" y="790" fill="#ffffff" font-size="14" font-weight="700">Layering Fan-Out Prevented</text>
-  <text x="818" y="810" fill="#a7f3d0" font-size="11" font-family="monospace">ACCT_06D658 → 3 Cross-Bank Accounts</text>
-  <text x="818" y="830" fill="#6ee7b7" font-size="11">Funds never reach Hop-2 mule accounts</text>
-  <text x="818" y="848" fill="#34d399" font-size="11" font-weight="700" font-family="monospace">INR 185,000 Protected for Victim Lien</text>
+  <text x="818" y="810" fill="#a7f3d0" font-size="11" font-family="monospace">ACCT_0EF013 → Cross-Bank Dispersal</text>
+  <text x="818" y="830" fill="#6ee7b7" font-size="11">Funds never reach downstream mules</text>
+  <text x="818" y="848" fill="#34d399" font-size="11" font-weight="700" font-family="monospace">INR 49,848.99 Protected for Victim Lien</text>
 
   <!-- Severed Edge 2 -> 3 -->
   <line x1="1120" y1="803" x2="1215" y2="803" stroke="#10b981" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowGreen)"/>
@@ -279,10 +279,10 @@
   <rect x="1220" y="744" width="325" height="118" rx="10" fill="#06281e" stroke="#10b981" stroke-width="1.8" stroke-dasharray="6 3"/>
   <text x="1238" y="768" fill="#6ee7b7" font-size="11" font-weight="700" font-family="monospace">HOP 3–5 • CASH-OUT EXIT [PREVENTED]</text>
   <text x="1238" y="790" fill="#ffffff" font-size="14" font-weight="700">1930 Cybercrime Recovery Ready</text>
-  <text x="1238" y="810" fill="#a7f3d0" font-size="11" font-family="monospace">36/38 Fast Chains • 10/12 Delayed Chains</text>
-  <text x="1238" y="830" fill="#6ee7b7" font-size="11">Total: 46 / 50 Test Chains Frozen ≤ Hop 2</text>
+  <text x="1238" y="810" fill="#a7f3d0" font-size="11" font-family="monospace">36/38 Fast Chains • 6/12 Delayed (6x Rules)</text>
+  <text x="1238" y="830" fill="#6ee7b7" font-size="11">Total: 42 / 50 Test Chains Frozen ≤ Hop 2</text>
   <text x="1238" y="848" fill="#34d399" font-size="11" font-weight="700" font-family="monospace">SHA-256 + HMAC Packet Sent to FIU-IND</text>
 
   <!-- Footer Caption -->
-  <text x="800" y="896" fill="#64748b" font-size="11" text-anchor="middle" font-family="monospace">HopStop Architecture • IBM Z / LinuxONE (s390x) • Snap ML tree_format='auto' • Telum NNPA (165) + CPACF (MSA 17/76/146) • https://github.com/Kabirroy12345/hopstop-ibmz</text>
+  <text x="800" y="896" fill="#64748b" font-size="11" text-anchor="middle" font-family="monospace">HopStop Architecture • IBM Z / LinuxONE (s390x) • Portable JSON GBDT + Snap ML tree_format='auto' • CPACF (MSA 17/76/146) • https://github.com/Kabirroy12345/hopstop-ibmz</text>
 </svg>

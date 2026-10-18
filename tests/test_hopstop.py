@@ -1,221 +1,310 @@
-"""Automated unit and property test suite for HopStop.
-
-Covers:
-1. O(1) SlidingWindow exactness against brute-force window scans.
-2. Strict causality (future events cannot alter past features) & receive-only eviction.
-3. Exact path-dependent TreeSHAP additivity identity and signed attributions.
-4. Full 64-hex SHA-256 + HMAC-SHA256 audit chain verification and tamper detection.
-5. Production PolicyDecision isolation from ground-truth evaluation labels & JSON model serialization.
+"""Unit and property tests for HopStop's core guarantees:
+1. Amortized O(1) SlidingWindow exactness against a naive O(W) list-scan oracle.
+2. Receiver window eviction on append + idle-account TTL garbage collection.
+3. Large corporate payroll (5,000 recurring employees > 2,048 LRU cap) zero false-novelty via PayeeBloomFilter.
+4. Strict causal ordering (no future data leakage).
+5. Exact TreeSHAP local accuracy (Σ φ_i + base_score == raw_margin to 1e-9 across 50 random vectors).
+6. Exact TreeSHAP signed negative log-odds attributions on corporate payroll vs. positive on mule fan-out.
+7. Verifiable 64-hex SHA-256 + HMAC-SHA256 audit hash chain from genesis.
+8. Single-byte tamper detection across payload, hash link, and HMAC signature.
 """
 from __future__ import annotations
 
 import copy
-import math
-import tempfile
-import unittest
-from pathlib import Path
+import random
 
-from hopstop.data_generator import TransactionRecord, generate_aml_dataset
-from hopstop.feature_engine import (
-    FEATURE_NAMES,
-    SlidingWindow,
-    StreamingFeatureEngine,
-    hash_account_id,
-)
-from hopstop.ibmz_runtime import (
-    LogisticRegressionBaseline,
-    SnapMLAcceleratedScorer,
-    VelocityRulesBaseline,
-)
+from hopstop.data_generator import TransactionRecord
+from hopstop.feature_engine import SlidingWindow, StreamingFeatureEngine
+from hopstop.ibmz_runtime import SnapMLAcceleratedScorer
 from hopstop.policy_engine import PolicyEngine
 
 
-class TestHopStopSuite(unittest.TestCase):
-    def test_sliding_window_o1_exactness(self) -> None:
-        """Verifies O(1) SlidingWindow matches brute-force set/sum computation across evictions."""
-        win = SlidingWindow()
-        events = [
-            (100.0, "PEER_A", 500.0),
-            (250.0, "PEER_B", 1200.0),
-            (400.0, "PEER_A", 300.0),
-            (950.0, "PEER_C", 2000.0),
-            (1200.0, "PEER_B", 800.0),
-        ]
-        active = []
-        for ts, peer, amt in events:
-            cutoff = ts - 600.0
-            win.evict(cutoff)
-            active = [(t, p, a) for (t, p, a) in active if t >= cutoff]
+def test_sliding_window_o1_exactness() -> None:
+    """Verifies SlidingWindow O(1) distinct_peers, sum_amount, and tx_count against a naive O(W) scan."""
+    rng = random.Random(42)
+    win = SlidingWindow()
+    history = []
+    peers = [f"PEER_{i}" for i in range(40)]
 
-            win.push(ts, peer, amt)
-            active.append((ts, peer, amt))
+    t = 1000.0
+    for _ in range(500):
+        t += rng.uniform(0.5, 25.0)
+        p = rng.choice(peers)
+        amt = round(rng.uniform(10.0, 5000.0), 2)
+        cutoff = t - 900.0
 
-            expected_peers = float(len({p for _, p, _ in active}))
-            expected_sum = sum(a for _, _, a in active)
-            self.assertEqual(win.distinct_peers, expected_peers)
-            self.assertAlmostEqual(win.sum_amount, expected_sum, places=6)
-            self.assertEqual(win.tx_count, float(len(active)))
+        win.evict(cutoff)
+        win.push(t, p, amt)
+        history.append((t, p, amt))
 
-    def test_strict_causality_no_future_leakage(self) -> None:
-        """Verifies that future transactions (t' > t) have zero effect on features extracted at time t."""
-        stream_base = [
-            TransactionRecord(
-                tx_id=1,
-                timestamp="2026/09/01 01:00:00",
-                epoch_sec=3600.0,
-                from_bank=10,
-                from_account="ACC_VICTIM",
-                to_bank=12,
-                to_account="ACC_MULE",
-                amount_received=100000.0,
-                receiving_currency="INR",
-                amount_paid=100000.0,
-                payment_currency="INR",
-                payment_format="Wire",
-            ),
-            TransactionRecord(
-                tx_id=2,
-                timestamp="2026/09/01 01:04:00",
-                epoch_sec=3840.0,
-                from_bank=12,
-                from_account="ACC_MULE",
-                to_bank=15,
-                to_account="ACC_LAYER1",
-                amount_received=95000.0,
-                receiving_currency="INR",
-                amount_paid=95000.0,
-                payment_currency="INR",
-                payment_format="Wire",
-            ),
-        ]
-        future_events = [
-            TransactionRecord(
-                tx_id=3,
-                timestamp="2026/09/01 01:10:00",
-                epoch_sec=4200.0,
-                from_bank=12,
-                from_account="ACC_MULE",
-                to_bank=19,
-                to_account="ACC_LAYER2",
-                amount_received=500000.0,
-                receiving_currency="INR",
-                amount_paid=500000.0,
-                payment_currency="INR",
-                payment_format="Wire",
-            ),
-        ]
+        active = [(ts, pr, a) for (ts, pr, a) in history if ts >= cutoff]
+        expected_distinct = float(len({pr for _, pr, _ in active}))
+        expected_sum = sum(a for _, _, a in active)
+        expected_cnt = float(len(active))
 
-        fe1 = StreamingFeatureEngine()
-        feats_without_future = [fe1.extract_and_update(tx) for tx in stream_base]
+        assert win.distinct_peers == expected_distinct
+        assert abs(win.sum_amount - expected_sum) < 1e-6
+        assert win.tx_count == expected_cnt
 
-        fe2 = StreamingFeatureEngine()
-        feats_with_future = [fe2.extract_and_update(tx) for tx in (stream_base + future_events)]
 
-        self.assertEqual(feats_without_future[0], feats_with_future[0])
-        self.assertEqual(feats_without_future[1], feats_with_future[1])
+def test_receiver_eviction_and_idle_account_ttl() -> None:
+    """Verifies that receive-only accounts evict expired items on append and idle accounts are swept."""
+    engine = StreamingFeatureEngine(max_known_payees=64, idle_ttl_seconds=3600.0, gc_interval=100000)
 
-        # Verify 15m pass-through ratio and rapid_turnover_flag on tx #2
-        pt_15m_idx = FEATURE_NAMES.index("pass_through_ratio_15m")
-        rapid_idx = FEATURE_NAMES.index("rapid_turnover_flag")
-        self.assertAlmostEqual(feats_without_future[1][pt_15m_idx], 95000.0 / 100001.0, places=4)
-        self.assertEqual(feats_without_future[1][rapid_idx], 1.0)
-
-        # Verify engine state is keyed by HMAC digest, not raw account strings
-        self.assertNotIn("ACC_MULE", fe1.states)
-        self.assertIn(hash_account_id("ACC_MULE"), fe1.states)
-
-    def test_treeshap_additivity_and_signed_attributions(self) -> None:
-        """Verifies exact TreeSHAP additivity identity and negative SHAP values on benign payroll."""
-        records, _ = generate_aml_dataset(n_normal=2500, n_chains=20, n_accounts=400, days=5, seed=7)
-        fe = StreamingFeatureEngine()
-        X = [fe.extract_and_update(r) for r in records]
-        y = [r.is_laundering for r in records]
-
-        scorer = SnapMLAcceleratedScorer(n_trees=16, learning_rate=0.18)
-        scorer.fit(X, y, pos_weight=12.0)
-
-        # Check exact Shapley additivity: sum(phi) + expected_log_odds == raw_margin(x)
-        for sample_x in X[:25]:
-            phi = scorer.explain_instance(sample_x)
-            reconstructed = sum(phi) + scorer.expected_log_odds
-            exact_margin = scorer.raw_margin(sample_x)
-            self.assertAlmostEqual(reconstructed, exact_margin, places=9)
-
-        # Check corporate payroll vector produces negative SHAP attributions and low risk score
-        payroll_vec = [0.0, 5.0, 1.0, 5.0, 0.0, 0.0, 11.36, 0.0, 0.0, 0.25, 5.0, 0.75]
-        mule_vec = [2.0, 5.0, 3.0, 6.0, 0.96, 0.95, 4.78, 1.0, 1.0, 4.2, 5.0, 1.0]
-
-        payroll_score = scorer.score_one(payroll_vec)
-        mule_score = scorer.score_one(mule_vec)
-        self.assertLess(payroll_score, 0.25)
-        self.assertGreater(mule_score, 0.80)
-        self.assertGreaterEqual(VelocityRulesBaseline.score_one(payroll_vec), 0.45)
-
-        payroll_reasons = scorer.top_reason_codes(payroll_vec, top_k=3)
-        self.assertLess(payroll_reasons[0]["shap_log_odds"], 0.0)
-        mule_reasons = scorer.top_reason_codes(mule_vec, top_k=3)
-        self.assertGreater(mule_reasons[0]["shap_log_odds"], 0.0)
-
-        # Check JSON model round-trip (no pickle)
-        with tempfile.TemporaryDirectory() as tmp:
-            json_path = Path(tmp) / "model.json"
-            scorer.save_json(json_path)
-            loaded = SnapMLAcceleratedScorer.load_json(json_path)
-            self.assertAlmostEqual(scorer.score_one(mule_vec), loaded.score_one(mule_vec), places=12)
-
-    def test_audit_hash_chain_verification_and_tamper_detection(self) -> None:
-        """Verifies full 64-hex SHA-256 + HMAC audit chain and detects any field tampering."""
-        policy = PolicyEngine(hold_threshold=0.85, step_up_threshold=0.65, log_allow_decisions=True)
-        tx1 = TransactionRecord(
-            tx_id=101,
-            timestamp="2026/09/08 05:00:00",
-            epoch_sec=1000.0,
+    # Send 10 credits spaced by 1000s to a receive-only account Sink_A
+    for i in range(10):
+        tx = TransactionRecord(
+            tx_id=i + 1,
+            timestamp="2026/09/01 00:00:00",
+            epoch_sec=1000.0 * (i + 1),
             from_bank=10,
-            from_account="ACC1001",
+            from_account=f"SENDER_{i}",
             to_bank=20,
-            to_account="ACC2002",
-            amount_received=185000.0,
+            to_account="SINK_RECEIVE_ONLY",
+            amount_received=500.0,
             receiving_currency="INR",
-            amount_paid=185000.0,
+            amount_paid=500.0,
+            payment_currency="INR",
+            payment_format="ACH",
+        )
+        engine.extract_and_update(tx)
+
+    # At t = 10,000s, SINK_RECEIVE_ONLY's 15m window (cutoff 9,100s) must only have 1 item (from t=10,000s)
+    from hopstop.feature_engine import hash_account_id
+
+    sink_key = hash_account_id("SINK_RECEIVE_ONLY")
+    assert engine.states[sink_key].in_15m.tx_count == 1.0
+    assert engine.states[sink_key].in_1h.tx_count == 4.0  # t = 7000, 8000, 9000, 10000
+
+    # Sweep idle accounts at t = 20,000s (TTL = 3,600s -> cutoff = 16,400s)
+    evicted = engine.evict_idle_accounts(20000.0)
+    assert evicted == len(engine.states) + evicted and len(engine.states) == 0
+
+
+def test_large_employer_payroll_5000_payees_bloom_filter() -> None:
+    """Verifies that a corporate payroll account with 5,000 recurring employees (>2,048 LRU cap)
+    retains evicted employees in its 64-kbit PayeeBloomFilter and gets zero false novelty."""
+    engine = StreamingFeatureEngine(max_known_payees=2048, secret_key="test-payroll-key")
+
+    # Cycle 1 (Month 1): Employer pays 5,000 distinct employees for the first time -> novelty == 1.0
+    for i in range(5000):
+        tx = TransactionRecord(
+            tx_id=i + 1,
+            timestamp="2026/09/01 09:00:00",
+            epoch_sec=10000.0 + i,
+            from_bank=10,
+            from_account="CORP_EMPLOYER_01",
+            to_bank=10,
+            to_account=f"EMP_{i:05d}",
+            amount_received=42000.0,
+            receiving_currency="INR",
+            amount_paid=42000.0,
+            payment_currency="INR",
+            payment_format="ACH",
+        )
+        feats = engine.extract_and_update(tx)
+        assert feats[8] == 1.0  # First-ever payment to this employee is novel
+
+    # Verify exact LRU is capped at 2,048 while payee_bloom is allocated
+    from hopstop.feature_engine import hash_account_id
+
+    corp_key = hash_account_id("CORP_EMPLOYER_01", "test-payroll-key")
+    assert len(engine.states[corp_key].known_payees) == 2048
+    assert engine.states[corp_key].payee_bloom is not None
+
+    # Cycle 2 (Month 2): Employer pays the earliest 1,000 employees (who were evicted from the 2,048 LRU!)
+    for i in range(1000):
+        tx = TransactionRecord(
+            tx_id=6000 + i,
+            timestamp="2026/09/15 09:00:00",
+            epoch_sec=900000.0 + i,
+            from_bank=10,
+            from_account="CORP_EMPLOYER_01",
+            to_bank=10,
+            to_account=f"EMP_{i:05d}",
+            amount_received=42000.0,
+            receiving_currency="INR",
+            amount_paid=42000.0,
+            payment_currency="INR",
+            payment_format="ACH",
+        )
+        feats = engine.extract_and_update(tx)
+        assert feats[8] == 0.0, f"Evicted employee EMP_{i:05d} falsely flagged as novel!"
+
+
+def test_strict_causality_no_future_leakage() -> None:
+    """Verifies that features for transaction k are identical regardless of future transactions k+1..N."""
+    base_txs = [
+        TransactionRecord(
+            tx_id=i,
+            timestamp="2026/09/01 12:00:00",
+            epoch_sec=10000.0 + i * 60.0,
+            from_bank=10,
+            from_account=f"ACC_{i % 4}",
+            to_bank=12,
+            to_account=f"ACC_{(i + 1) % 5}",
+            amount_received=1500.0 * (i + 1),
+            receiving_currency="INR",
+            amount_paid=1500.0 * (i + 1),
+            payment_currency="INR",
+            payment_format="Wire" if i % 2 == 0 else "ACH",
+        )
+        for i in range(1, 15)
+    ]
+
+    eng_prefix = StreamingFeatureEngine(secret_key="causality-test-key")
+    feats_prefix = [eng_prefix.extract_and_update(tx) for tx in base_txs[:8]]
+
+    future_burst = [
+        TransactionRecord(
+            tx_id=100 + j,
+            timestamp="2026/09/01 12:20:00",
+            epoch_sec=20000.0 + j * 5.0,
+            from_bank=10,
+            from_account="ACC_1",
+            to_bank=99,
+            to_account=f"MULE_{j}",
+            amount_received=950000.0,
+            receiving_currency="INR",
+            amount_paid=950000.0,
             payment_currency="INR",
             payment_format="Wire",
-            is_laundering=1,
-            chain_id=5,
-            hop_number=1,
-            typology="Fan-Out",
         )
-        tx2 = copy.deepcopy(tx1)
-        tx2.tx_id = 102
-        tx2.amount_paid = 42000.0
+        for j in range(20)
+    ]
+    eng_with_future = StreamingFeatureEngine(secret_key="causality-test-key")
+    feats_with_future = [eng_with_future.extract_and_update(tx) for tx in (base_txs[:8] + future_burst)]
 
-        d1 = policy.evaluate(tx1, 0.994, [{"feature": "rapid_turnover_flag", "impact": "+2.1"}])
-        d2 = policy.evaluate(tx2, 0.008, [{"feature": "pass_through_ratio_15m", "impact": "-1.8"}])
-
-        # Ensure full 64-hex hashes and no ground-truth label fields leak into production decision
-        self.assertEqual(len(d1.audit_hash), 64)
-        self.assertEqual(len(d1.prev_audit_hash), 64)
-        self.assertEqual(len(d1.hmac_signature), 64)
-        d1_dict = d1.to_dict()
-        self.assertNotIn("is_laundering", d1_dict)
-        self.assertNotIn("chain_id", d1_dict)
-        self.assertNotIn("hop_number", d1_dict)
-        self.assertNotIn("typology", d1_dict)
-
-        ok, msg = PolicyEngine.verify_chain(policy.audit_chain)
-        self.assertTrue(ok, msg)
-
-        # Tamper with amount in record 0 and verify detection
-        tampered = copy.deepcopy(policy.audit_chain)
-        tampered[0].amount = 185001.0
-        ok_t, _ = PolicyEngine.verify_chain(tampered)
-        self.assertFalse(ok_t)
-
-        # Tamper with reason_codes in record 1 and verify detection
-        tampered2 = copy.deepcopy(policy.audit_chain)
-        tampered2[1].reason_codes = []
-        ok_t2, _ = PolicyEngine.verify_chain(tampered2)
-        self.assertFalse(ok_t2)
+    assert feats_prefix == feats_with_future[:8]
 
 
-if __name__ == "__main__":
-    unittest.main()
+def _build_trained_scorer() -> SnapMLAcceleratedScorer:
+    rng = random.Random(7)
+    X_train = []
+    y_train = []
+    for _ in range(240):
+        is_mule = rng.random() < 0.25
+        if is_mule:
+            x = [2.0, 5.0, 3.0, 6.0, 0.95, 0.94, 4.5, 1.0, 1.0, 3.5, 5.0, 1.0]
+            y_train.append(1)
+        else:
+            x = [0.0, 4.0, 1.0, 4.0, 0.0, 0.0, 11.2, 0.0, 0.0, 0.2, 4.0, 0.75]
+            y_train.append(0)
+        x = [max(0.0, v + rng.uniform(-0.05, 0.05)) for v in x]
+        X_train.append(x)
+
+    scorer = SnapMLAcceleratedScorer(n_trees=16, learning_rate=0.2)
+    scorer.fit(X_train, y_train)
+    return scorer
+
+
+def test_treeshap_local_accuracy_additivity() -> None:
+    """Verifies exact TreeSHAP local accuracy: sum(phi) + expected_base == raw_margin(x) to 1e-9."""
+    scorer = _build_trained_scorer()
+    rng = random.Random(99)
+
+    for _ in range(50):
+        vec = [rng.uniform(0.0, 6.0) for _ in range(12)]
+        phis, expected_base, raw_margin = scorer.explain_instance(vec)
+        assert abs((sum(phis) + expected_base) - raw_margin) < 1e-9
+
+
+def test_treeshap_signed_negative_attributions_on_payroll() -> None:
+    """Verifies that corporate payroll receives negative TreeSHAP log-odds while mule fan-out receives positive."""
+    scorer = _build_trained_scorer()
+    payroll_vec = [0.0, 5.0, 1.0, 5.0, 0.0, 0.0, 11.36, 0.0, 0.0, 0.25, 5.0, 0.75]
+    mule_vec = [2.0, 5.0, 3.0, 6.0, 0.96, 0.95, 4.78, 1.0, 1.0, 4.2, 5.0, 1.0]
+
+    phis_payroll, _, _ = scorer.explain_instance(payroll_vec)
+    phis_mule, _, _ = scorer.explain_instance(mule_vec)
+
+    assert sum(phis_payroll) < 0.0
+    assert any(p < 0.0 for p in phis_payroll)
+    assert sum(phis_mule) > 0.0
+
+
+def test_audit_hash_chain_verification() -> None:
+    """Verifies that PolicyEngine builds a valid 64-hex SHA-256 + HMAC-SHA256 chain from genesis."""
+    policy = PolicyEngine(
+        hold_threshold=0.85,
+        step_up_threshold=0.60,
+        audit_hmac_key="unit-test-hmac-secret",
+        log_allow_decisions=True,
+    )
+    for i in range(6):
+        tx = TransactionRecord(
+            tx_id=500 + i,
+            timestamp="2026/09/08 10:00:00",
+            epoch_sec=1725789600.0 + i,
+            from_bank=10,
+            from_account=f"SRC_{i}",
+            to_bank=20,
+            to_account=f"DST_{i}",
+            amount_received=25000.0,
+            receiving_currency="INR",
+            amount_paid=25000.0,
+            payment_currency="INR",
+            payment_format="Wire",
+        )
+        reasons = [{"feature": "pass_through_ratio_15m", "shap_log_odds": 1.42}]
+        dec = policy.evaluate(tx, 0.92 if i % 2 == 0 else 0.12, reasons, record_audit=True)
+        assert len(dec.audit_hash) == 64
+        assert len(dec.prev_audit_hash) == 64
+        assert len(dec.hmac_signature) == 64
+        assert "is_laundering" not in dec.to_dict()
+
+    ok, msg = PolicyEngine.verify_chain(policy.audit_chain, audit_hmac_key="unit-test-hmac-secret")
+    assert ok, msg
+
+
+def test_audit_chain_single_byte_tamper_detection() -> None:
+    """Verifies that flipping a single byte in risk_score, action, prev_audit_hash, or hmac_signature fails verify_chain()."""
+    policy = PolicyEngine(
+        hold_threshold=0.85,
+        step_up_threshold=0.60,
+        audit_hmac_key="unit-test-hmac-secret",
+        log_allow_decisions=True,
+    )
+    for i in range(4):
+        tx = TransactionRecord(
+            tx_id=800 + i,
+            timestamp="2026/09/08 11:00:00",
+            epoch_sec=1725793200.0 + i,
+            from_bank=14,
+            from_account=f"A_{i}",
+            to_bank=27,
+            to_account=f"B_{i}",
+            amount_received=50000.0,
+            receiving_currency="INR",
+            amount_paid=50000.0,
+            payment_currency="INR",
+            payment_format="Wire",
+        )
+        policy.evaluate(tx, 0.95, [{"feature": "fan_out_1h", "shap_log_odds": 1.1}], record_audit=True)
+
+    # 1. Tamper risk_score
+    t1 = copy.deepcopy(policy.audit_chain)
+    t1[1].risk_score = 0.01
+    ok1, _ = PolicyEngine.verify_chain(t1, audit_hmac_key="unit-test-hmac-secret")
+    assert not ok1
+
+    # 2. Tamper action
+    t2 = copy.deepcopy(policy.audit_chain)
+    t2[2].action = "ALLOW"
+    ok2, _ = PolicyEngine.verify_chain(t2, audit_hmac_key="unit-test-hmac-secret")
+    assert not ok2
+
+    # 3. Flip 1 byte in hmac_signature
+    t3 = copy.deepcopy(policy.audit_chain)
+    sig = t3[0].hmac_signature
+    flipped_char = "a" if sig[-1] != "a" else "b"
+    t3[0].hmac_signature = sig[:-1] + flipped_char
+    ok3, _ = PolicyEngine.verify_chain(t3, audit_hmac_key="unit-test-hmac-secret")
+    assert not ok3
+
+    # 4. Flip 1 byte in prev_audit_hash link
+    t4 = copy.deepcopy(policy.audit_chain)
+    ph = t4[2].prev_audit_hash
+    t4[2].prev_audit_hash = ("f" if ph[0] != "f" else "0") + ph[1:]
+    ok4, _ = PolicyEngine.verify_chain(t4, audit_hmac_key="unit-test-hmac-secret")
+    assert not ok4

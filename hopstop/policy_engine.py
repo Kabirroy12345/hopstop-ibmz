@@ -33,10 +33,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from hopstop.data_generator import TransactionRecord
-from hopstop.feature_engine import hash_account_id
-
-
-_DEFAULT_AUDIT_KEY = "HOPSTOP_DEV_AUDIT_HMAC_KEY_OVERRIDE_IN_PROD"
+from hopstop.feature_engine import get_active_hmac_key, hash_account_id
 
 
 @dataclass
@@ -82,7 +79,9 @@ class PolicyEngine:
         self.model_version = model_version
         self.audit_log_path = audit_log_path
         self.audit_hmac_key = (
-            audit_hmac_key or os.environ.get("HOPSTOP_AUDIT_HMAC_KEY") or _DEFAULT_AUDIT_KEY
+            audit_hmac_key
+            or os.environ.get("HOPSTOP_AUDIT_HMAC_KEY")
+            or get_active_hmac_key()
         )
         self.log_allow_decisions = log_allow_decisions
         self.max_memory_records = max_memory_records
@@ -222,7 +221,7 @@ class PolicyEngine:
         genesis_hash: str = "0" * 64,
     ) -> Tuple[bool, str]:
         """Re-computes every SHA-256 link and HMAC-SHA256 signature from genesis to verify integrity."""
-        key = audit_hmac_key or os.environ.get("HOPSTOP_AUDIT_HMAC_KEY") or _DEFAULT_AUDIT_KEY
+        key = audit_hmac_key or os.environ.get("HOPSTOP_AUDIT_HMAC_KEY") or get_active_hmac_key()
         expected_prev = genesis_hash
 
         for idx, rec in enumerate(records):

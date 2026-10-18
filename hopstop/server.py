@@ -56,11 +56,12 @@ def _ensure_loaded() -> Tuple[dict, SnapMLAcceleratedScorer, PolicyEngine]:
 
 def score_preset_scenario(scenario: str) -> dict:
     """Runs live GBDT scoring + exact TreeSHAP + verifiable SHA-256 audit logging."""
-    _, scorer, policy = _ensure_loaded()
+    bench, scorer, policy = _ensure_loaded()
 
     presets = {
         "fan_out_mule": {
             "title": "Mule Hop 1 -> Hop 2 Fan-Out Dispersal (INR 185,000 Wire)",
+            "scenario_source": "hand_specified_sandbox_illustration",
             "from_acc": "ACC104821",
             "to_acc": "ACC109312",
             "from_bank": 14,
@@ -73,6 +74,7 @@ def score_preset_scenario(scenario: str) -> dict:
         },
         "gather_scatter_mule": {
             "title": "Gather-Scatter Aggregator Mule Drain (INR 240,000 ACH)",
+            "scenario_source": "hand_specified_sandbox_illustration",
             "from_acc": "ACC102190",
             "to_acc": "ACC108841",
             "from_bank": 11,
@@ -85,6 +87,7 @@ def score_preset_scenario(scenario: str) -> dict:
         },
         "step_up_borderline": {
             "title": "Unusual First-Time High-Value Transfer (INR 48,500 ACH)",
+            "scenario_source": "hand_specified_sandbox_illustration",
             "from_acc": "ACC101105",
             "to_acc": "ACC107720",
             "from_bank": 12,
@@ -97,6 +100,7 @@ def score_preset_scenario(scenario: str) -> dict:
         },
         "corporate_payroll": {
             "title": "Legitimate Corporate Payroll Batch (INR 42,000 ACH to Known Employee)",
+            "scenario_source": "hand_specified_sandbox_illustration",
             "from_acc": "ACC100018",
             "to_acc": "ACC100412",
             "from_bank": 10,
@@ -109,6 +113,7 @@ def score_preset_scenario(scenario: str) -> dict:
         },
         "retail_normal": {
             "title": "Normal Retail Peer Transfer (INR 1,850 Credit Card)",
+            "scenario_source": "hand_specified_sandbox_illustration",
             "from_acc": "ACC103301",
             "to_acc": "ACC103990",
             "from_bank": 15,
@@ -120,7 +125,25 @@ def score_preset_scenario(scenario: str) -> dict:
             "features": [0.0, 1.0, 1.0, 2.0, 0.0, 0.12, 10.8, 0.0, 0.0, -0.1, 1.0, 0.30],
         },
     }
-    p = presets.get(scenario, presets["fan_out_mule"])
+
+    real_examples = bench.get("real_test_case_examples", {})
+    if scenario in real_examples:
+        rex = real_examples[scenario]
+        p = {
+            "title": f"Real Unseen Test Tx #{rex['tx_id']} ({rex['typology']}, INR {rex['amount']:,.2f})",
+            "scenario_source": "unseen_test_split_days_8_10",
+            "from_acc": f"TEST_SRC_{rex['tx_id']}",
+            "to_acc": f"TEST_DST_{rex['tx_id']}",
+            "from_bank": 20,
+            "to_bank": 28,
+            "amount": rex["amount"],
+            "format": rex["payment_format"],
+            "typology": rex["typology"],
+            "hop": rex["hop_number"],
+            "features": rex["features"],
+        }
+    else:
+        p = presets.get(scenario, presets["fan_out_mule"])
     feats = p["features"]
 
     t0 = time.perf_counter_ns()
@@ -146,6 +169,7 @@ def score_preset_scenario(scenario: str) -> dict:
     decision = policy.evaluate(tx, score, reasons, record_audit=True)
     res = decision.to_dict()
     res["title"] = p["title"]
+    res["scenario_source"] = p["scenario_source"]
     res["latency_ms"] = elapsed_ms
     res["rules_baseline_score"] = round(rules_score, 4)
     res["rules_would_flag"] = rules_score >= 0.45
