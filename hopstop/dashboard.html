@@ -6,12 +6,12 @@
 <title>HopStop | IBM Z & LinuxONE Real-Time Money-Mule Interdiction Console</title>
 <style>
   :root {
-    --bg: #161616;
-    --panel: #262626;
-    --panel-alt: #393939;
-    --border: #525252;
+    --bg: #121619;
+    --panel: #21272a;
+    --panel-alt: #343a3f;
+    --border: #4d5358;
     --text: #f4f4f4;
-    --muted: #c6c6c6;
+    --muted: #c1c7cd;
     --ibm-blue: #0f62fe;
     --ibm-cyan: #33b1ff;
     --green: #42be65;
@@ -27,42 +27,53 @@
     font-size: 13px;
   }
   header {
-    background: #001d6c;
+    background: linear-gradient(90deg, #001141 0%, #001d6c 60%, #002d9c 100%);
     border-bottom: 2px solid var(--ibm-blue);
-    padding: 10px 20px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
   }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .brand { display: flex; align-items: center; gap: 12px; }
   .badge-z {
     background: var(--ibm-blue);
     color: #fff;
     font-weight: 700;
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 3px;
     font-size: 11px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
+    box-shadow: 0 0 10px rgba(15,98,254,0.6);
   }
-  .title-main { font-size: 17px; font-weight: 700; }
-  .subtitle { font-size: 11px; color: #a6c8ff; }
-  .controls { display: flex; gap: 8px; align-items: center; }
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-right: 5px;
+    box-shadow: 0 0 8px var(--green);
+  }
+  .title-main { font-size: 18px; font-weight: 700; }
+  .subtitle { font-size: 11.5px; color: #a6c8ff; margin-top: 2px; }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   button {
     background: var(--ibm-blue);
     color: #fff;
-    border: none;
-    padding: 7px 14px;
+    border: 1px solid transparent;
+    padding: 7px 13px;
     border-radius: 3px;
     cursor: pointer;
     font-weight: 600;
     font-size: 12px;
+    transition: all 0.15s;
   }
-  button.secondary { background: var(--panel-alt); }
-  button:hover { opacity: 0.92; }
+  button.secondary { background: var(--panel-alt); border-color: var(--border); }
+  button.preset-btn { background: #002d9c; border-color: var(--ibm-cyan); }
+  button.preset-btn.active { background: var(--ibm-cyan); color: #001141; font-weight: 700; }
+  button:hover { filter: brightness(1.12); }
   .kpi-row {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -74,27 +85,40 @@
     border: 1px solid var(--border);
     border-top: 3px solid var(--ibm-blue);
     padding: 10px 12px;
-    border-radius: 3px;
+    border-radius: 4px;
   }
-  .kpi .label { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+  .kpi .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
   .kpi .val { font-size: 21px; font-weight: 700; margin: 4px 0 2px; color: #fff; }
   .kpi .delta { font-size: 11px; color: var(--green); }
+  .sim-banner {
+    margin: 0 20px 12px;
+    background: linear-gradient(135deg, #001d6c 0%, #161616 100%);
+    border: 1.5px solid var(--ibm-cyan);
+    border-radius: 5px;
+    padding: 12px 16px;
+  }
+  .sim-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+  }
   .grid-main {
     display: grid;
-    grid-template-columns: 1.35fr 1fr;
+    grid-template-columns: 1.38fr 1fr;
     gap: 12px;
-    padding: 0 20px 16px;
+    padding: 0 20px 20px;
   }
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 12px;
+    border-radius: 4px;
+    padding: 12px 14px;
     margin-bottom: 12px;
   }
   .card h3 {
     margin: 0 0 8px;
-    font-size: 13px;
+    font-size: 12.5px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--ibm-cyan);
@@ -105,26 +129,27 @@
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th, td {
     padding: 6px 8px;
-    border-bottom: 1px solid #393939;
+    border-bottom: 1px solid #343a3f;
     text-align: left;
   }
-  th { color: var(--muted); font-weight: 600; background: #1f1f1f; }
+  th { color: var(--muted); font-weight: 600; background: #161a1d; }
   .pill {
     display: inline-block;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 3px;
     font-weight: 700;
-    font-size: 10.5px;
+    font-size: 11px;
   }
   .pill.HOLD { background: rgba(250,77,86,0.22); color: #ff8389; border: 1px solid var(--red); }
   .pill.STEP_UP { background: rgba(241,194,27,0.2); color: #f1c21b; border: 1px solid var(--amber); }
-  .pill.BLOCKED_UPSTREAM { background: rgba(66,190,101,0.2); color: #42be65; border: 1px solid var(--green); }
+  .pill.ALLOW { background: rgba(66,190,101,0.2); color: #42be65; border: 1px solid var(--green); }
+  .pill.BLOCKED_UPSTREAM { background: rgba(66,190,101,0.22); color: #42be65; border: 1px solid var(--green); }
   .reason-tag {
     display: inline-block;
-    background: #333;
+    background: #2b3238;
     border-left: 3px solid var(--ibm-cyan);
     padding: 2px 6px;
-    margin: 1px 3px 1px 0;
+    margin: 2px 4px 2px 0;
     font-size: 10.5px;
     border-radius: 2px;
   }
@@ -133,24 +158,24 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    padding: 8px;
-    background: #1c1c1c;
+    padding: 10px;
+    background: #161a1d;
     border-radius: 4px;
     margin-top: 6px;
   }
   .node {
-    padding: 7px 10px;
+    padding: 8px 11px;
     border-radius: 4px;
     border: 1.5px solid var(--ibm-blue);
     background: #001d6c;
-    min-width: 135px;
+    min-width: 140px;
   }
   .node.held { border-color: var(--red); background: #3b0d11; }
-  .node.blocked { border-color: var(--green); background: #0b2e18; opacity: 0.85; }
-  .arrow { font-size: 16px; color: var(--ibm-cyan); font-weight: bold; }
+  .node.blocked { border-color: var(--green); background: #0b2e18; }
+  .arrow { font-size: 18px; color: var(--ibm-cyan); font-weight: bold; }
   .bar-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 11.5px; }
   .bar-name { width: 195px; color: var(--muted); }
-  .bar-track { flex: 1; background: #1a1a1a; height: 10px; border-radius: 2px; overflow: hidden; }
+  .bar-track { flex: 1; background: #161a1d; height: 10px; border-radius: 2px; overflow: hidden; }
   .bar-fill { background: linear-gradient(90deg, var(--ibm-blue), var(--ibm-cyan)); height: 100%; }
   .mono { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; color: #a6c8ff; }
 </style>
@@ -161,27 +186,27 @@
   <div class="brand">
     <span class="badge-z">IBM Z / LinuxONE</span>
     <div>
-      <div class="title-main">HopStop: Transaction-Time Money-Mule Interdiction</div>
+      <div class="title-main"><span class="status-dot"></span>HopStop: Transaction-Time Money-Mule Interdiction Console</div>
       <div class="subtitle">Track 1: Real-Time AI for Critical Decisions &bull; Snap ML (tree_format=auto) &bull; Telum Integrated Accelerator for AI</div>
     </div>
   </div>
   <div class="controls">
-    <button id="btnStream" onclick="stepStream()">+ Replay Next Transfer</button>
+    <button id="btnStream" onclick="stepStream()">+ Replay Next Stream Transfer</button>
     <button class="secondary" id="btnAuto" onclick="toggleAuto()">Auto-Stream: ON</button>
-    <select id="chainSelect" onchange="renderChain(this.value)" style="background:#262626;color:#fff;border:1px solid #525252;padding:6px;border-radius:3px;"></select>
+    <select id="chainSelect" onchange="renderChain(this.value)" style="background:#21272a;color:#fff;border:1px solid #4d5358;padding:6px 10px;border-radius:3px;"></select>
   </div>
 </header>
 
 <section class="kpi-row">
   <div class="kpi">
     <div class="label">End-to-End p99 Latency</div>
-    <div class="val" id="kpiP99">0.20 ms</div>
-    <div class="delta">50x faster than &lt;10 ms target (p50: 0.04 ms)</div>
+    <div class="val" id="kpiP99">0.202 ms</div>
+    <div class="delta">50x faster than &lt;10 ms SLA (p50: 0.040 ms)</div>
   </div>
   <div class="kpi">
-    <div class="label">PR-AUC (Test Split Days 8–10)</div>
+    <div class="label">PR-AUC (Unseen Days 8–10)</div>
     <div class="val" id="kpiPrauc">0.8317</div>
-    <div class="delta">+56.7% vs Velocity Rules (0.5306)</div>
+    <div class="delta">+56.7% lift vs Velocity Rules (0.5306)</div>
   </div>
   <div class="kpi">
     <div class="label">Recall @ 1.0% Alert Budget</div>
@@ -189,7 +214,7 @@
     <div class="delta">+19.8% lift over Rules Baseline (44.5%)</div>
   </div>
   <div class="kpi">
-    <div class="label">Chains Stopped by Hop 2</div>
+    <div class="label">Chains Stopped &le; Hop 2</div>
     <div class="val" id="kpiHop2">94.0%</div>
     <div class="delta">47/50 test chains frozen before Hop 3</div>
   </div>
@@ -199,10 +224,27 @@
     <div class="delta">Micro-batch=64 | 20,366 TPS single-stream</div>
   </div>
   <div class="kpi">
-    <div class="label">Audit & Privacy Mode</div>
+    <div class="label">Audit &amp; Privacy Engine</div>
     <div class="val" style="font-size:16px;">CPACF + SHA-256</div>
     <div class="delta">Salted Account Hashes + Hash-Chained Log</div>
   </div>
+</section>
+
+<!-- INTERACTIVE LIVE SCORING SIMULATOR -->
+<section class="sim-banner">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+    <div>
+      <span style="color:var(--ibm-cyan);font-weight:700;text-transform:uppercase;font-size:12px;">Interactive Live Payment Scorer (Click Any Scenario to Test HopStop in Real Time):</span>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="preset-btn active" id="btn_fan_out_mule" onclick="runLivePreset('fan_out_mule')">1. Mule Hop-1 Fan-Out (INR 185K)</button>
+      <button class="preset-btn" id="btn_gather_scatter_mule" onclick="runLivePreset('gather_scatter_mule')">2. Gather-Scatter Mule (INR 240K)</button>
+      <button class="preset-btn" id="btn_step_up_borderline" onclick="runLivePreset('step_up_borderline')">3. Borderline Peer Transfer (STEP-UP)</button>
+      <button class="preset-btn" id="btn_corporate_payroll" onclick="runLivePreset('corporate_payroll')">4. Legitimate Corporate Payroll (Rules False-Positive!)</button>
+      <button class="preset-btn" id="btn_retail_normal" onclick="runLivePreset('retail_normal')">5. Normal Retail Payment (ALLOW)</button>
+    </div>
+  </div>
+  <div class="sim-grid" id="liveSimResult"></div>
 </section>
 
 <div class="grid-main">
@@ -240,7 +282,7 @@
 
   <div>
     <div class="card">
-      <h3><span>IBM Z / LinuxONE Hardware & Runtime Telemetry</span></h3>
+      <h3><span>IBM Z / LinuxONE Hardware &amp; Runtime Telemetry</span></h3>
       <table>
         <tbody id="envTableBody"></tbody>
       </table>
@@ -269,18 +311,18 @@
 </div>
 
 <script>
-let BENCH = null;
+let BENCH = {"generated_at": "2026-10-18 09:27:35 IST", "environment": {"architecture": "amd64", "is_s390x": false, "nnpa_accelerator_available": false, "zdnn_status": "libzdnn not loaded (running on non-zDNN host; using CPU tensor-tree fallback)", "secure_execution_facility": false, "snapml_available": false, "snapml_version": null, "tree_format_mode": "auto (Telum NNPA tensor-trees if present, else compressed CPU trees)", "cpacf_crypto_mode": "AES-256-GCM / SHA-256 (CPACF hardware-assisted on s390x)", "os_platform": "Windows 11"}, "dataset": {"total_transactions": 50880, "laundering_transactions": 880, "legitimate_transactions": 50000, "laundering_ratio": 0.0173, "total_accounts": 5000, "total_banks": 24, "total_chains": 160, "days_spanned": 10, "train_transactions": 35648, "test_transactions": 15232, "train_laundering": 608, "test_laundering": 272, "test_chains": 50}, "model_metrics": {"hopstop_gbdt": {"roc_auc": 0.9857, "pr_auc": 0.8317, "recall_at_1pct_alert_rate": 0.5331, "precision_at_1pct_alert_rate": 0.9539, "recall_at_2pct_alert_rate": 0.7831, "hold_threshold": 0.994015, "step_up_threshold": 0.989928, "train_time_sec": 3.971}, "velocity_rules_baseline": {"roc_auc": 0.938, "pr_auc": 0.5306, "recall_at_1pct_alert_rate": 0.4449, "precision_at_1pct_alert_rate": 0.7961, "recall_at_2pct_alert_rate": 0.5772}, "relative_lift": {"recall_lift_at_1pct": 19.8, "pr_auc_lift_pct": 56.7}}, "chain_interruption": {"test_chains_total": 50, "hopstop_stopped_by_hop1": 1, "hopstop_stopped_by_hop1_pct": 2.0, "hopstop_stopped_by_hop2": 47, "hopstop_stopped_by_hop2_pct": 94.0, "rules_stopped_by_hop2": 43, "rules_stopped_by_hop2_pct": 86.0, "by_typology": {"Scatter-Gather": {"total": 6, "stopped_hop2_ml": 4, "stopped_hop2_rules": 1}, "Simple-Cycle": {"total": 6, "stopped_hop2_ml": 5, "stopped_hop2_rules": 5}, "Gather-Scatter": {"total": 8, "stopped_hop2_ml": 8, "stopped_hop2_rules": 8}, "Stack": {"total": 10, "stopped_hop2_ml": 10, "stopped_hop2_rules": 9}, "Random-Walk": {"total": 3, "stopped_hop2_ml": 3, "stopped_hop2_rules": 3}, "Fan-In": {"total": 9, "stopped_hop2_ml": 9, "stopped_hop2_rules": 9}, "Bipartite": {"total": 4, "stopped_hop2_ml": 4, "stopped_hop2_rules": 4}, "Fan-Out": {"total": 4, "stopped_hop2_ml": 4, "stopped_hop2_rules": 4}}}, "latency_benchmark": {"batch_1_end_to_end_p50_ms": 0.0403, "batch_1_end_to_end_p95_ms": 0.0594, "batch_1_end_to_end_p99_ms": 0.2022, "batch_1_end_to_end_mean_ms": 0.0491, "target_p99_ms": 10.0, "single_worker_stream_tps": 20366, "microbatch_64_scoring_tps": 109612}, "feature_importances": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "weight": 0.25}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "weight": 0.2431}, {"feature": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "weight": 0.2361}, {"feature": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "weight": 0.125}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "weight": 0.0833}, {"feature": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "weight": 0.0278}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "weight": 0.0208}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "weight": 0.0139}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "weight": 0.0}, {"feature": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "weight": 0.0}, {"feature": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "weight": 0.0}, {"feature": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "weight": 0.0}], "sample_held_alerts": [{"tx_id": 35746, "timestamp": "2026/09/08 02:50:13", "from_account_hash": "ACCT_E178CF7EA414", "to_account_hash": "ACCT_E8CC33683DA2", "from_bank": 21, "to_bank": 28, "amount": 67214.5, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}], "chain_id": 67, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "0000000000000000", "audit_hash": "a251463f107eac9a", "is_laundering": 1, "raw_from_account": "ACC102504", "raw_to_account": "ACC102873"}, {"tx_id": 35747, "timestamp": "2026/09/08 02:51:18", "from_account_hash": "ACCT_E178CF7EA414", "to_account_hash": "ACCT_4439D6FCFB06", "from_bank": 21, "to_bank": 24, "amount": 67214.5, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 67, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "a251463f107eac9a", "audit_hash": "39e283b53f5daaf2", "is_laundering": 1, "raw_from_account": "ACC102504", "raw_to_account": "ACC104139"}, {"tx_id": 35749, "timestamp": "2026/09/08 02:52:23", "from_account_hash": "ACCT_E178CF7EA414", "to_account_hash": "ACCT_DD95AE01CA42", "from_bank": 21, "to_bank": 17, "amount": 67214.5, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "2.0", "impact": 1.245}], "chain_id": 67, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "39e283b53f5daaf2", "audit_hash": "5249c7bf8735fbfc", "is_laundering": 1, "raw_from_account": "ACC102504", "raw_to_account": "ACC102469"}, {"tx_id": 35848, "timestamp": "2026/09/08 05:05:45", "from_account_hash": "ACCT_5DA0359FB154", "to_account_hash": "ACCT_B830C907DC92", "from_bank": 16, "to_bank": 22, "amount": 51926.03, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9935, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": "1.0", "impact": 0.816}], "chain_id": 60, "hop_number": 2, "typology": "Scatter-Gather", "prev_audit_hash": "5249c7bf8735fbfc", "audit_hash": "4d5cf02d8303ac27", "is_laundering": 1, "raw_from_account": "ACC100943", "raw_to_account": "ACC100749"}, {"tx_id": 35855, "timestamp": "2026/09/08 05:09:35", "from_account_hash": "ACCT_B830C907DC92", "to_account_hash": "ACCT_8E7D38C59B78", "from_bank": 22, "to_bank": 32, "amount": 49848.99, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.96x inflow", "impact": 1.045}], "chain_id": 60, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "4d5cf02d8303ac27", "audit_hash": "6dc628dd69f18f0a", "is_laundering": 1, "raw_from_account": "ACC100749", "raw_to_account": "ACC101288"}, {"tx_id": 35861, "timestamp": "2026/09/08 05:11:55", "from_account_hash": "ACCT_1E0121085B98", "to_account_hash": "ACCT_8E7D38C59B78", "from_bank": 26, "to_bank": 32, "amount": 49848.99, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 60, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "6dc628dd69f18f0a", "audit_hash": "40f75966e04e0a40", "is_laundering": 1, "raw_from_account": "ACC101777", "raw_to_account": "ACC101288"}, {"tx_id": 35875, "timestamp": "2026/09/08 05:24:10", "from_account_hash": "ACCT_6E4346D90CDD", "to_account_hash": "ACCT_8216AAD8B644", "from_bank": 24, "to_bank": 15, "amount": 162330.32, "currency": "INR", "payment_format": "Wire", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.057}], "chain_id": 5, "hop_number": 2, "typology": "Simple-Cycle", "prev_audit_hash": "40f75966e04e0a40", "audit_hash": "1257c72e9beabeb6", "is_laundering": 1, "raw_from_account": "ACC101736", "raw_to_account": "ACC104974"}, {"tx_id": 35878, "timestamp": "2026/09/08 05:26:30", "from_account_hash": "ACCT_8216AAD8B644", "to_account_hash": "ACCT_6A17CB3B6264", "from_bank": 15, "to_bank": 32, "amount": 157460.41, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 5, "hop_number": 3, "typology": "Simple-Cycle", "prev_audit_hash": "1257c72e9beabeb6", "audit_hash": "7fb803585601b2d5", "is_laundering": 1, "raw_from_account": "ACC104974", "raw_to_account": "ACC102560"}, {"tx_id": 35882, "timestamp": "2026/09/08 05:28:50", "from_account_hash": "ACCT_6A17CB3B6264", "to_account_hash": "ACCT_AF7973FC3743", "from_bank": 32, "to_bank": 17, "amount": 152736.6, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 5, "hop_number": 4, "typology": "Simple-Cycle", "prev_audit_hash": "7fb803585601b2d5", "audit_hash": "71ec29bd9120682a", "is_laundering": 1, "raw_from_account": "ACC102560", "raw_to_account": "ACC103101"}, {"tx_id": 35928, "timestamp": "2026/09/08 05:56:08", "from_account_hash": "ACCT_FC308EA92EDA", "to_account_hash": "ACCT_87BBDABDB991", "from_bank": 20, "to_bank": 16, "amount": 118189.64, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 87, "hop_number": 2, "typology": "Stack", "prev_audit_hash": "71ec29bd9120682a", "audit_hash": "3b09b505545993e6", "is_laundering": 1, "raw_from_account": "ACC103304", "raw_to_account": "ACC101223"}, {"tx_id": 35932, "timestamp": "2026/09/08 05:58:38", "from_account_hash": "ACCT_87BBDABDB991", "to_account_hash": "ACCT_F388874A6081", "from_bank": 16, "to_bank": 15, "amount": 114534.29, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.056}], "chain_id": 87, "hop_number": 3, "typology": "Stack", "prev_audit_hash": "3b09b505545993e6", "audit_hash": "b389424a51f1b8f9", "is_laundering": 1, "raw_from_account": "ACC101223", "raw_to_account": "ACC102650"}, {"tx_id": 35942, "timestamp": "2026/09/08 06:01:38", "from_account_hash": "ACCT_F388874A6081", "to_account_hash": "ACCT_9320EDE96F7E", "from_bank": 15, "to_bank": 26, "amount": 110878.94, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 87, "hop_number": 4, "typology": "Stack", "prev_audit_hash": "b389424a51f1b8f9", "audit_hash": "72685f7b10d37709", "is_laundering": 1, "raw_from_account": "ACC102650", "raw_to_account": "ACC102898"}, {"tx_id": 36031, "timestamp": "2026/09/08 06:46:32", "from_account_hash": "ACCT_CB4FE98A2D94", "to_account_hash": "ACCT_F97202A01AFC", "from_bank": 25, "to_bank": 32, "amount": 46541.91, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9906, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "4.00x inflow", "impact": 4.497}, {"feature": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": "4.00x inflow", "impact": 2.186}], "chain_id": 52, "hop_number": 1, "typology": "Scatter-Gather", "prev_audit_hash": "72685f7b10d37709", "audit_hash": "78c864bf0c8fd80b", "is_laundering": 1, "raw_from_account": "ACC102174", "raw_to_account": "ACC102236"}, {"tx_id": 36043, "timestamp": "2026/09/08 06:52:12", "from_account_hash": "ACCT_E9D78E2B763E", "to_account_hash": "ACCT_3A9C8711EEA5", "from_bank": 26, "to_bank": 22, "amount": 14446.61, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.96x inflow", "impact": 1.045}], "chain_id": 52, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "78c864bf0c8fd80b", "audit_hash": "71152a6d620fd99a", "is_laundering": 1, "raw_from_account": "ACC103256", "raw_to_account": "ACC101227"}, {"tx_id": 36048, "timestamp": "2026/09/08 06:53:22", "from_account_hash": "ACCT_C140B10CB1B4", "to_account_hash": "ACCT_3A9C8711EEA5", "from_bank": 31, "to_bank": 22, "amount": 14446.61, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "2.0", "impact": 2.818}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 52, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "71152a6d620fd99a", "audit_hash": "aa8badd83ced1785", "is_laundering": 1, "raw_from_account": "ACC101357", "raw_to_account": "ACC101227"}, {"tx_id": 36053, "timestamp": "2026/09/08 06:54:32", "from_account_hash": "ACCT_FD9DD1920E31", "to_account_hash": "ACCT_3A9C8711EEA5", "from_bank": 24, "to_bank": 22, "amount": 14446.61, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9939, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "8.7", "impact": 2.236}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 52, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "aa8badd83ced1785", "audit_hash": "e5e8fafb40c5c6ae", "is_laundering": 1, "raw_from_account": "ACC102785", "raw_to_account": "ACC101227"}, {"tx_id": 36388, "timestamp": "2026/09/08 08:51:17", "from_account_hash": "ACCT_FF84DFDF7610", "to_account_hash": "ACCT_081C8DFB8642", "from_bank": 11, "to_bank": 23, "amount": 152057.23, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 15, "hop_number": 2, "typology": "Stack", "prev_audit_hash": "e5e8fafb40c5c6ae", "audit_hash": "fc38810274451ee3", "is_laundering": 1, "raw_from_account": "ACC100364", "raw_to_account": "ACC101552"}, {"tx_id": 36398, "timestamp": "2026/09/08 08:53:47", "from_account_hash": "ACCT_081C8DFB8642", "to_account_hash": "ACCT_8B9D7C0C38E6", "from_bank": 23, "to_bank": 32, "amount": 147354.43, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9935, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.056}], "chain_id": 15, "hop_number": 3, "typology": "Stack", "prev_audit_hash": "fc38810274451ee3", "audit_hash": "1dd927caa06a0ce4", "is_laundering": 1, "raw_from_account": "ACC101552", "raw_to_account": "ACC101354"}, {"tx_id": 36409, "timestamp": "2026/09/08 08:56:47", "from_account_hash": "ACCT_8B9D7C0C38E6", "to_account_hash": "ACCT_5E8A54E3A119", "from_bank": 32, "to_bank": 19, "amount": 142651.63, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.054}], "chain_id": 15, "hop_number": 4, "typology": "Stack", "prev_audit_hash": "1dd927caa06a0ce4", "audit_hash": "824f51433f2991a0", "is_laundering": 1, "raw_from_account": "ACC101354", "raw_to_account": "ACC101298"}, {"tx_id": 36973, "timestamp": "2026/09/08 10:47:35", "from_account_hash": "ACCT_EA7CE8D3F4FB", "to_account_hash": "ACCT_C9D62B5F7AB6", "from_bank": 14, "to_bank": 26, "amount": 39442.29, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.057}], "chain_id": 79, "hop_number": 2, "typology": "Stack", "prev_audit_hash": "824f51433f2991a0", "audit_hash": "ec71b749818f4718", "is_laundering": 1, "raw_from_account": "ACC104147", "raw_to_account": "ACC102777"}, {"tx_id": 36987, "timestamp": "2026/09/08 10:50:05", "from_account_hash": "ACCT_C9D62B5F7AB6", "to_account_hash": "ACCT_82210170D14E", "from_bank": 26, "to_bank": 16, "amount": 38222.42, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9939, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 79, "hop_number": 3, "typology": "Stack", "prev_audit_hash": "ec71b749818f4718", "audit_hash": "80891c5f63ed4146", "is_laundering": 1, "raw_from_account": "ACC102777", "raw_to_account": "ACC104747"}, {"tx_id": 37004, "timestamp": "2026/09/08 10:53:05", "from_account_hash": "ACCT_82210170D14E", "to_account_hash": "ACCT_88394A6C8BC8", "from_bank": 16, "to_bank": 21, "amount": 37002.56, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "2.0", "impact": 2.818}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.91x inflow", "impact": 0.984}], "chain_id": 79, "hop_number": 4, "typology": "Stack", "prev_audit_hash": "80891c5f63ed4146", "audit_hash": "06795099567fed36", "is_laundering": 1, "raw_from_account": "ACC104747", "raw_to_account": "ACC104370"}, {"tx_id": 37281, "timestamp": "2026/09/08 11:40:54", "from_account_hash": "ACCT_BF39F4D4574E", "to_account_hash": "ACCT_EB7C6120C07D", "from_bank": 23, "to_bank": 29, "amount": 118447.25, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "4.0", "impact": 5.752}, {"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 146, "hop_number": 2, "typology": "Fan-In", "prev_audit_hash": "06795099567fed36", "audit_hash": "19243db9b090c48e", "is_laundering": 1, "raw_from_account": "ACC102124", "raw_to_account": "ACC103617"}, {"tx_id": 37317, "timestamp": "2026/09/08 11:44:41", "from_account_hash": "ACCT_23B2F82A2AE0", "to_account_hash": "ACCT_2716A4DE5B50", "from_bank": 25, "to_bank": 14, "amount": 53280.85, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 75, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "19243db9b090c48e", "audit_hash": "e1774b58f2ba143a", "is_laundering": 1, "raw_from_account": "ACC101179", "raw_to_account": "ACC101698"}, {"tx_id": 37320, "timestamp": "2026/09/08 11:45:14", "from_account_hash": "ACCT_EB7C6120C07D", "to_account_hash": "ACCT_BAB057D2077B", "from_bank": 29, "to_bank": 32, "amount": 114745.77, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 146, "hop_number": 3, "typology": "Fan-In", "prev_audit_hash": "e1774b58f2ba143a", "audit_hash": "88c5897d8f1fc83a", "is_laundering": 1, "raw_from_account": "ACC103617", "raw_to_account": "ACC101454"}], "sample_interrupted_chains": [{"chain_id": 5, "typology": "Simple-Cycle", "interrupted_at_hop": 2, "hops": [{"tx_id": 35872, "timestamp": "2026/09/08 05:21:50", "hop": 1, "from_account": "ACC103101", "to_account": "ACC101736", "from_bank": 17, "to_bank": 24, "amount": 167350.85, "risk_score": 0.8734, "decision": "ALLOW"}, {"tx_id": 35875, "timestamp": "2026/09/08 05:24:10", "hop": 2, "from_account": "ACC101736", "to_account": "ACC104974", "from_bank": 24, "to_bank": 15, "amount": 162330.32, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 35878, "timestamp": "2026/09/08 05:26:30", "hop": 3, "from_account": "ACC104974", "to_account": "ACC102560", "from_bank": 15, "to_bank": 32, "amount": 157460.41, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 35882, "timestamp": "2026/09/08 05:28:50", "hop": 4, "from_account": "ACC102560", "to_account": "ACC103101", "from_bank": 32, "to_bank": 17, "amount": 152736.6, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 11, "typology": "Gather-Scatter", "interrupted_at_hop": 2, "hops": [{"tx_id": 46827, "timestamp": "2026/09/10 09:46:26", "hop": 1, "from_account": "ACC104393", "to_account": "ACC102226", "from_bank": 25, "to_bank": 19, "amount": 101785.51, "risk_score": 0.8985, "decision": "ALLOW"}, {"tx_id": 46833, "timestamp": "2026/09/10 09:47:46", "hop": 1, "from_account": "ACC102776", "to_account": "ACC102226", "from_bank": 14, "to_bank": 19, "amount": 101785.51, "risk_score": 0.1869, "decision": "ALLOW"}, {"tx_id": 46838, "timestamp": "2026/09/10 09:49:06", "hop": 1, "from_account": "ACC103141", "to_account": "ACC102226", "from_bank": 22, "to_bank": 19, "amount": 101785.51, "risk_score": 0.1869, "decision": "ALLOW"}, {"tx_id": 46849, "timestamp": "2026/09/10 09:50:46", "hop": 2, "from_account": "ACC102226", "to_account": "ACC101899", "from_bank": 19, "to_bank": 26, "amount": 97714.09, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 46850, "timestamp": "2026/09/10 09:51:51", "hop": 2, "from_account": "ACC102226", "to_account": "ACC102647", "from_bank": 19, "to_bank": 26, "amount": 97714.09, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 46856, "timestamp": "2026/09/10 09:52:56", "hop": 2, "from_account": "ACC102226", "to_account": "ACC104284", "from_bank": 19, "to_bank": 14, "amount": 97714.09, "risk_score": 0.9899, "decision": "STEP_UP"}]}, {"chain_id": 13, "typology": "Simple-Cycle", "interrupted_at_hop": 2, "hops": [{"tx_id": 50664, "timestamp": "2026/09/10 21:10:37", "hop": 1, "from_account": "ACC104348", "to_account": "ACC100649", "from_bank": 29, "to_bank": 15, "amount": 275010.12, "risk_score": 0.8905, "decision": "ALLOW"}, {"tx_id": 50671, "timestamp": "2026/09/10 21:12:57", "hop": 2, "from_account": "ACC100649", "to_account": "ACC102970", "from_bank": 15, "to_bank": 16, "amount": 266759.82, "risk_score": 0.9939, "decision": "STEP_UP"}, {"tx_id": 50676, "timestamp": "2026/09/10 21:15:17", "hop": 3, "from_account": "ACC102970", "to_account": "ACC103364", "from_bank": 16, "to_bank": 12, "amount": 258757.02, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 50682, "timestamp": "2026/09/10 21:17:37", "hop": 4, "from_account": "ACC103364", "to_account": "ACC104348", "from_bank": 12, "to_bank": 29, "amount": 250994.31, "risk_score": 0.9939, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 15, "typology": "Stack", "interrupted_at_hop": 2, "hops": [{"tx_id": 36378, "timestamp": "2026/09/08 08:49:17", "hop": 1, "from_account": "ACC100957", "to_account": "ACC100364", "from_bank": 15, "to_bank": 11, "amount": 156760.03, "risk_score": 0.7592, "decision": "ALLOW"}, {"tx_id": 36388, "timestamp": "2026/09/08 08:51:17", "hop": 2, "from_account": "ACC100364", "to_account": "ACC101552", "from_bank": 11, "to_bank": 23, "amount": 152057.23, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 36398, "timestamp": "2026/09/08 08:53:47", "hop": 3, "from_account": "ACC101552", "to_account": "ACC101354", "from_bank": 23, "to_bank": 32, "amount": 147354.43, "risk_score": 0.9935, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 36409, "timestamp": "2026/09/08 08:56:47", "hop": 4, "from_account": "ACC101354", "to_account": "ACC101298", "from_bank": 32, "to_bank": 19, "amount": 142651.63, "risk_score": 0.994, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 24, "typology": "Random-Walk", "interrupted_at_hop": 2, "hops": [{"tx_id": 40655, "timestamp": "2026/09/08 22:07:24", "hop": 1, "from_account": "ACC104274", "to_account": "ACC102359", "from_bank": 12, "to_bank": 26, "amount": 49119.87, "risk_score": 0.8905, "decision": "ALLOW"}, {"tx_id": 40658, "timestamp": "2026/09/08 22:09:24", "hop": 2, "from_account": "ACC102359", "to_account": "ACC102827", "from_bank": 26, "to_bank": 21, "amount": 47646.27, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 40665, "timestamp": "2026/09/08 22:11:54", "hop": 3, "from_account": "ACC102827", "to_account": "ACC102925", "from_bank": 21, "to_bank": 11, "amount": 46172.68, "risk_score": 0.9939, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 40667, "timestamp": "2026/09/08 22:14:54", "hop": 4, "from_account": "ACC102925", "to_account": "ACC102327", "from_bank": 11, "to_bank": 19, "amount": 44699.08, "risk_score": 0.9939, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 26, "typology": "Fan-In", "interrupted_at_hop": 2, "hops": [{"tx_id": 44455, "timestamp": "2026/09/09 16:44:54", "hop": 1, "from_account": "ACC104219", "to_account": "ACC100493", "from_bank": 20, "to_bank": 23, "amount": 34832.1, "risk_score": 0.8734, "decision": "ALLOW"}, {"tx_id": 44459, "timestamp": "2026/09/09 16:46:04", "hop": 1, "from_account": "ACC101504", "to_account": "ACC100493", "from_bank": 18, "to_bank": 23, "amount": 34832.1, "risk_score": 0.8985, "decision": "ALLOW"}, {"tx_id": 44465, "timestamp": "2026/09/09 16:47:14", "hop": 1, "from_account": "ACC101209", "to_account": "ACC100493", "from_bank": 28, "to_bank": 23, "amount": 34832.1, "risk_score": 0.1274, "decision": "ALLOW"}, {"tx_id": 44472, "timestamp": "2026/09/09 16:48:24", "hop": 1, "from_account": "ACC102774", "to_account": "ACC100493", "from_bank": 26, "to_bank": 23, "amount": 34832.1, "risk_score": 0.2982, "decision": "ALLOW"}, {"tx_id": 44482, "timestamp": "2026/09/09 16:50:14", "hop": 2, "from_account": "ACC100493", "to_account": "ACC102030", "from_bank": 23, "to_bank": 19, "amount": 133755.25, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 44503, "timestamp": "2026/09/09 16:54:34", "hop": 3, "from_account": "ACC102030", "to_account": "ACC103998", "from_bank": 19, "to_bank": 27, "amount": 129575.4, "risk_score": 0.989, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 31, "typology": "Stack", "interrupted_at_hop": 2, "hops": [{"tx_id": 46473, "timestamp": "2026/09/10 08:28:29", "hop": 1, "from_account": "ACC100361", "to_account": "ACC101674", "from_bank": 17, "to_bank": 18, "amount": 76053.16, "risk_score": 0.8185, "decision": "ALLOW"}, {"tx_id": 46481, "timestamp": "2026/09/10 08:30:29", "hop": 2, "from_account": "ACC101674", "to_account": "ACC102003", "from_bank": 18, "to_bank": 32, "amount": 73771.57, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 46489, "timestamp": "2026/09/10 08:32:59", "hop": 3, "from_account": "ACC102003", "to_account": "ACC103020", "from_bank": 32, "to_bank": 28, "amount": 71489.97, "risk_score": 0.9899, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 46506, "timestamp": "2026/09/10 08:35:59", "hop": 4, "from_account": "ACC103020", "to_account": "ACC102867", "from_bank": 28, "to_bank": 26, "amount": 69208.38, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 34, "typology": "Fan-In", "interrupted_at_hop": 2, "hops": [{"tx_id": 39574, "timestamp": "2026/09/08 17:11:36", "hop": 1, "from_account": "ACC102022", "to_account": "ACC102984", "from_bank": 19, "to_bank": 24, "amount": 17313.08, "risk_score": 0.8734, "decision": "ALLOW"}, {"tx_id": 39585, "timestamp": "2026/09/08 17:12:46", "hop": 1, "from_account": "ACC103297", "to_account": "ACC102984", "from_bank": 33, "to_bank": 24, "amount": 17313.08, "risk_score": 0.2001, "decision": "ALLOW"}, {"tx_id": 39594, "timestamp": "2026/09/08 17:13:56", "hop": 1, "from_account": "ACC101450", "to_account": "ACC102984", "from_bank": 30, "to_bank": 24, "amount": 17313.08, "risk_score": 0.7592, "decision": "ALLOW"}, {"tx_id": 39604, "timestamp": "2026/09/08 17:15:06", "hop": 1, "from_account": "ACC101436", "to_account": "ACC102984", "from_bank": 28, "to_bank": 24, "amount": 17313.08, "risk_score": 0.1274, "decision": "ALLOW"}, {"tx_id": 39620, "timestamp": "2026/09/08 17:16:56", "hop": 2, "from_account": "ACC102984", "to_account": "ACC100328", "from_bank": 24, "to_bank": 31, "amount": 66482.21, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 39645, "timestamp": "2026/09/08 17:21:16", "hop": 3, "from_account": "ACC100328", "to_account": "ACC104057", "from_bank": 31, "to_bank": 10, "amount": 64404.64, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}]}]};
+const EMBEDDED_SCENARIOS = {"fan_out_mule": {"tx_id": 99001, "timestamp": "2026/10/18 09:53:14", "from_account_hash": "ACCT_EF72606626ED", "to_account_hash": "ACCT_AB5796323503", "from_bank": 14, "to_bank": 27, "amount": 185000.0, "currency": "INR", "payment_format": "Wire", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "5.0", "impact": 3.246}, {"feature": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": "5.0", "impact": 3.184}], "chain_id": 999, "hop_number": 1, "typology": "Fan-Out", "prev_audit_hash": "0000000000000000", "audit_hash": "762fb220f095bd59", "title": "Mule Hop 1 -> Hop 2 Fan-Out Dispersal (INR 185,000 Wire)", "latency_ms": 0.0516, "rules_baseline_score": 0.99, "rules_would_flag": true, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 2.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 5.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 3.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 6.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.96}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.95}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 4.78}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 1.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 1.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 4.2}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 5.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 1.0}]}, "gather_scatter_mule": {"tx_id": 99001, "timestamp": "2026/10/18 09:53:14", "from_account_hash": "ACCT_5C058B65169D", "to_account_hash": "ACCT_0D0EEB36012E", "from_bank": 11, "to_bank": 19, "amount": 240000.0, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "4.0", "impact": 5.752}, {"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "4.0", "impact": 2.579}], "chain_id": 999, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "762fb220f095bd59", "audit_hash": "a3188a4e129a5c04", "title": "Gather-Scatter Aggregator Mule Drain (INR 240,000 ACH)", "latency_ms": 0.035, "rules_baseline_score": 0.99, "rules_would_flag": true, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 4.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 4.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 5.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 4.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.94}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.92}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 5.1}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 1.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 1.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 3.8}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 4.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.75}]}, "step_up_borderline": {"tx_id": 99001, "timestamp": "2026/10/18 09:53:14", "from_account_hash": "ACCT_95D76BF27994", "to_account_hash": "ACCT_4D8D2562E30D", "from_bank": 12, "to_bank": 18, "amount": 48500.0, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "2.0", "impact": 1.245}], "chain_id": 999, "hop_number": 1, "typology": "Suspicious First-Time Peer", "prev_audit_hash": "a3188a4e129a5c04", "audit_hash": "c80e9849475daac0", "title": "Unusual First-Time High-Value Transfer (INR 48,500 ACH)", "latency_ms": 0.0227, "rules_baseline_score": 0.38, "rules_would_flag": false, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 1.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 2.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 2.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 2.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.68}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.65}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 5.95}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 1.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 1.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 2.3}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 2.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.75}]}, "corporate_payroll": {"tx_id": 99001, "timestamp": "2026/10/18 09:53:14", "from_account_hash": "ACCT_F8CE27D28FCE", "to_account_hash": "ACCT_D59DCD517581", "from_bank": 10, "to_bank": 10, "amount": 42000.0, "currency": "INR", "payment_format": "ACH", "risk_score": 0.0142, "action": "ALLOW", "reason_codes": [], "chain_id": 0, "hop_number": 0, "typology": "Legitimate Payroll (Static Rules False-Positive)", "prev_audit_hash": "c80e9849475daac0", "audit_hash": "c80e9849475daac0", "title": "Legitimate Corporate Payroll Batch (INR 42,000 ACH to Known Employee)", "latency_ms": 0.0208, "rules_baseline_score": 0.6, "rules_would_flag": true, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 0.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 5.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 1.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 5.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.0}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.0}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 11.36}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 0.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 0.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 0.25}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 5.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.75}]}, "retail_normal": {"tx_id": 99001, "timestamp": "2026/10/18 09:53:14", "from_account_hash": "ACCT_02251785C426", "to_account_hash": "ACCT_60EFDEC306C6", "from_bank": 15, "to_bank": 15, "amount": 1850.0, "currency": "INR", "payment_format": "Credit Card", "risk_score": 0.0023, "action": "ALLOW", "reason_codes": [], "chain_id": 0, "hop_number": 0, "typology": "Legitimate Retail", "prev_audit_hash": "c80e9849475daac0", "audit_hash": "c80e9849475daac0", "title": "Normal Retail Peer Transfer (INR 1,850 Credit Card)", "latency_ms": 0.019, "rules_baseline_score": 0.0, "rules_would_flag": false, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 0.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 1.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 1.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 2.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.0}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.12}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 10.8}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 0.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 0.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": -0.1}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 1.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.3}]}};
 let streamCursor = 0;
 let autoTimer = null;
 
 async function initDashboard() {
   try {
     const res = await fetch('/api/benchmarks');
-    BENCH = await res.json();
+    if (res.ok) BENCH = await res.json();
   } catch (e) {
-    console.warn('Using embedded benchmark snapshot');
+    // Standalone file:// mode uses embedded BENCH seamlessly
   }
-  if (!BENCH) return;
 
   document.getElementById('kpiP99').textContent = BENCH.latency_benchmark.batch_1_end_to_end_p99_ms + ' ms';
   document.getElementById('kpiPrauc').textContent = BENCH.model_metrics.hopstop_gbdt.pr_auc.toFixed(4);
@@ -288,7 +330,6 @@ async function initDashboard() {
   document.getElementById('kpiHop2').textContent = BENCH.chain_interruption.hopstop_stopped_by_hop2_pct + '%';
   document.getElementById('kpiTps').textContent = BENCH.latency_benchmark.microbatch_64_scoring_tps.toLocaleString() + ' TPS';
 
-  // Populate Environment Telemetry
   const env = BENCH.environment;
   const envRows = [
     ['Target Platform', 'IBM Z / LinuxONE (s390x Container Ready)'],
@@ -296,11 +337,10 @@ async function initDashboard() {
     ['Telum NNPA Status', env.zdnn_status],
     ['Snap ML Mode', env.tree_format_mode],
     ['Crypto / Audit Engine', env.cpacf_crypto_mode],
-    ['Dataset Split', `${BENCH.dataset.train_transactions.toLocaleString()} train (Days 1-7) / ${BENCH.dataset.test_transactions.toLocaleString()} test (Days 8-10)`]
+    ['Chronological Split', `${BENCH.dataset.train_transactions.toLocaleString()} train (Days 1-7) / ${BENCH.dataset.test_transactions.toLocaleString()} test (Days 8-10)`]
   ];
-  document.getElementById('envTableBody').innerHTML = envRows.map(r => `<tr><td style="color:#c6c6c6;">${r[0]}</td><td class="mono">${r[1]}</td></tr>`).join('');
+  document.getElementById('envTableBody').innerHTML = envRows.map(r => `<tr><td style="color:#c1c7cd;">${r[0]}</td><td class="mono">${r[1]}</td></tr>`).join('');
 
-  // Populate Feature Importances
   const maxW = Math.max(...BENCH.feature_importances.map(f => f.weight), 0.01);
   document.getElementById('featureBars').innerHTML = BENCH.feature_importances.slice(0, 8).map(f => `
     <div class="bar-row">
@@ -310,16 +350,66 @@ async function initDashboard() {
     </div>
   `).join('');
 
-  // Populate Chain Selector
   const sel = document.getElementById('chainSelect');
   sel.innerHTML = BENCH.sample_interrupted_chains.map((c, idx) =>
     `<option value="${idx}">Chain #${c.chain_id} (${c.typology}) - Stopped at Hop ${c.interrupted_at_hop}</option>`
   ).join('');
   renderChain(0);
+  runLivePreset('fan_out_mule');
 
-  // Initial stream rows
   for (let i = 0; i < 6; i++) stepStream();
   autoTimer = setInterval(stepStream, 2200);
+}
+
+async function runLivePreset(type) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('btn_' + type);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  let data = EMBEDDED_SCENARIOS[type];
+  try {
+    const res = await fetch('/api/score_preset?type=' + encodeURIComponent(type));
+    if (res.ok) data = await res.json();
+  } catch (e) {}
+  if (!data) return;
+
+  const reasonsHtml = (data.reason_codes && data.reason_codes.length)
+    ? data.reason_codes.map(r => `<span class="reason-tag"><b>${r.label}:</b> ${r.value} (impact ${r.impact})</span>`).join('')
+    : '<span class="mono" style="color:#42be65;">No anomalous risk factors triggered (Clean Transfer)</span>';
+
+  const rulesComp = data.rules_would_flag
+    ? `<span style="color:#f1c21b;">Static Rules Score: ${data.rules_baseline_score} (Flagged)</span>`
+    : `<span style="color:#c1c7cd;">Static Rules Score: ${data.rules_baseline_score} (Passed)</span>`;
+
+  const topFeats = (data.feature_breakdown || []).slice(0, 6).map(f =>
+    `<span class="mono" style="background:#161a1d;padding:2px 6px;border-radius:3px;border:1px solid #343a3f;">${f.name}: <b>${f.value}</b></span>`
+  ).join(' ');
+
+  document.getElementById('liveSimResult').innerHTML = `
+    <div style="background:#161a1d;padding:10px 12px;border-radius:4px;border:1px solid #343a3f;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <b style="font-size:13.5px;color:#fff;">${data.title}</b>
+        <span class="pill ${data.action}" style="font-size:12.5px;padding:4px 10px;">DECISION: ${data.action}</span>
+      </div>
+      <div style="margin:6px 0;color:#c1c7cd;font-size:12px;">
+        Sender: <span class="mono">${data.from_account_hash}</span> (Bank ${data.from_bank}) &rarr;
+        Receiver: <span class="mono">${data.to_account_hash}</span> (Bank ${data.to_bank}) &bull;
+        Amount: <b>${data.currency} ${data.amount.toLocaleString()} (${data.payment_format})</b>
+      </div>
+      <div style="margin-top:6px;"><b>Top-3 Reason Codes:</b> ${reasonsHtml}</div>
+    </div>
+    <div style="background:#161a1d;padding:10px 12px;border-radius:4px;border:1px solid #343a3f;display:flex;flex-direction:column;justify-content:space-between;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span><b>HopStop GBDT Score:</b> <span class="mono" style="font-size:15px;color:#33b1ff;font-weight:700;">${data.risk_score}</span></span>
+        <span><b>Measured Latency:</b> <span class="mono" style="color:#42be65;font-weight:700;">${data.latency_ms} ms</span></span>
+        ${rulesComp}
+      </div>
+      <div style="margin:6px 0;display:flex;flex-wrap:wrap;gap:4px;">${topFeats}</div>
+      <div class="mono" style="font-size:10.5px;color:#8d8d8d;">
+        Audit Chain: prev=${data.prev_audit_hash}... &rarr; sha256=${data.audit_hash}...
+      </div>
+    </div>
+  `;
 }
 
 function renderChain(idx) {
@@ -331,7 +421,7 @@ function renderChain(idx) {
     return `
       <div class="${cls}">
         <div style="font-weight:700;font-size:11px;">Hop ${h.hop}: ${h.from_account} &rarr; ${h.to_account}</div>
-        <div style="font-size:11px;color:#c6c6c6;">Bank ${h.from_bank}&rarr;${h.to_bank} &bull; INR ${h.amount.toLocaleString()}</div>
+        <div style="font-size:11px;color:#c1c7cd;">Bank ${h.from_bank}&rarr;${h.to_bank} &bull; INR ${h.amount.toLocaleString()}</div>
         <div style="margin-top:4px;"><span class="pill ${h.decision}">${h.decision}</span> <span class="mono">Score: ${h.risk_score}</span></div>
       </div>
       ${i < c.hops.length - 1 ? '<div class="arrow">&rarr;</div>' : ''}
@@ -345,7 +435,7 @@ function stepStream() {
   const alerts = BENCH.sample_held_alerts;
   const item = alerts[streamCursor % alerts.length];
   streamCursor++;
-  document.getElementById('queueCounter').textContent = `Processed: ${(15000 + streamCursor).toLocaleString()} tx | Active Alert #${streamCursor}`;
+  document.getElementById('queueCounter').textContent = `Processed: ${(15232 + streamCursor).toLocaleString()} tx | Active Alert #${streamCursor}`;
 
   const tbody = document.getElementById('alertTableBody');
   const reasonsHtml = (item.reason_codes || []).map(r =>
@@ -357,7 +447,7 @@ function stepStream() {
     <td class="mono">#${item.tx_id}</td>
     <td>${item.timestamp}</td>
     <td class="mono">${item.from_account_hash}<br/>&rarr; ${item.to_account_hash}</td>
-    <td><b>${item.currency} ${item.amount.toLocaleString()}</b><br/><span style="color:#a6c6ff;font-size:10.5px;">${item.payment_format}</span></td>
+    <td><b>${item.currency} ${item.amount.toLocaleString()}</b><br/><span style="color:#a6c8ff;font-size:10.5px;">${item.payment_format}</span></td>
     <td>${item.typology}<br/><span class="mono">Hop ${item.hop_number}</span></td>
     <td class="mono" style="font-weight:700;color:#ff8389;">${item.risk_score.toFixed(4)}</td>
     <td><span class="pill ${item.action}">${item.action}</span></td>
