@@ -8,71 +8,43 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ==========================================================================
-     1. DESIGN TOKENS (COLORS, SURFACES, SPACING, TYPOGRAPHY, MOTION)
-     ========================================================================== */
   :root {
-    --surface-canvas: #050609;
-    --surface-header: rgba(8, 10, 15, 0.82);
-    --surface-bento: rgba(14, 18, 26, 0.72);
-    --surface-bento-elevated: rgba(20, 25, 36, 0.86);
-    --surface-inset: rgba(7, 9, 14, 0.78);
-    --surface-tooltip: rgba(10, 13, 20, 0.96);
-
-    --border-subtle: rgba(255, 255, 255, 0.065);
-    --border-default: rgba(255, 255, 255, 0.11);
-    --border-focus: rgba(56, 189, 248, 0.55);
-    --specular-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.085);
-
+    --bg-obsidian: #06070a;
+    --surface-glass: rgba(14, 18, 26, 0.72);
+    --surface-elevated: rgba(20, 26, 38, 0.84);
+    --surface-inset: rgba(8, 10, 15, 0.82);
+    --border-translucent: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.16);
+    --specular-hairline: inset 0 1px 0 rgba(255, 255, 255, 0.07);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --text-tertiary: #64748b;
-
-    --brand-blue: #3b82f6;
-    --brand-indigo: #6366f1;
-    --brand-cyan: #06b6d4;
-    --semantic-hold: #f43f5e;
-    --semantic-hold-bg: rgba(244, 63, 94, 0.14);
-    --semantic-stepup: #f59e0b;
-    --semantic-stepup-bg: rgba(245, 158, 11, 0.14);
-    --semantic-allow: #10b981;
-    --semantic-allow-bg: rgba(16, 185, 129, 0.14);
-
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --radius-pill: 9999px;
-
-    --space-1: 4px;
-    --space-2: 8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 20px;
-    --space-6: 24px;
-
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
-
-    --spring-smooth: cubic-bezier(0.16, 1, 0.3, 1);
-    --shadow-bento: 0 14px 36px -10px rgba(0, 0, 0, 0.65), var(--specular-top);
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-indigo: #6366f1;
+    --accent-cyan: #06b6d4;
+    --color-hold: #f43f5e;
+    --color-stepup: #f59e0b;
+    --color-allow: #10b981;
+    --ease-morph: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* ==========================================================================
-     2. BASE RESET & ACCESSIBILITY UTILITIES
-     ========================================================================== */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
   body {
-    background-color: var(--surface-canvas);
+    background-color: var(--bg-obsidian);
     background-image:
-      radial-gradient(ellipse 75% 45% at 18% -8%, rgba(59, 130, 246, 0.15), transparent 60%),
-      radial-gradient(ellipse 55% 40% at 85% -5%, rgba(99, 102, 241, 0.12), transparent 55%),
-      radial-gradient(ellipse 65% 45% at 50% 108%, rgba(6, 182, 212, 0.08), transparent 60%),
-      linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      radial-gradient(650px circle at var(--mouse-x, 25%) var(--mouse-y, 15%), rgba(59, 130, 246, 0.11), transparent 45%),
+      radial-gradient(ellipse 75% 50% at 15% -10%, rgba(59, 130, 246, 0.16), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 85% 0%, rgba(99, 102, 241, 0.13), transparent 55%),
+      linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
     color: var(--text-primary);
-    font-family: var(--font-sans);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
     font-size: 13px;
     line-height: 1.45;
     -webkit-font-smoothing: antialiased;
@@ -80,92 +52,85 @@
     overflow-x: hidden;
   }
 
-  :focus-visible {
-    outline: 2px solid var(--brand-cyan);
-    outline-offset: 2px;
+  .mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
   }
 
-  .tabular { font-variant-numeric: tabular-nums; }
-  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .tracking-tight {
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
 
-  /* ==========================================================================
-     3. HEADER & GLOBAL COMMAND BAR
-     ========================================================================== */
-  .app-header {
+  /* --- Sticky Micro-Glassmorphic Header --- */
+  .topbar {
     position: sticky;
     top: 0;
-    z-index: 40;
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
-    background: var(--surface-header);
-    border-bottom: 1px solid var(--border-subtle);
-    padding: 10px var(--space-6);
+    z-index: 50;
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    background: rgba(6, 7, 10, 0.78);
+    border-bottom: 1px solid var(--border-translucent);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), var(--specular-hairline);
+    padding: 11px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-4);
     flex-wrap: wrap;
+    gap: 14px;
   }
 
-  .brand-group {
+  .brand-row {
     display: flex;
     align-items: center;
     gap: 14px;
   }
 
-  .platform-badge {
+  .z-pill {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 5px 11px;
-    border-radius: var(--radius-pill);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.14));
-    border: 1px solid rgba(99, 102, 241, 0.38);
-    box-shadow: 0 0 22px rgba(59, 130, 246, 0.22), var(--specular-top);
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(99, 102, 241, 0.16));
+    border: 1px solid rgba(99, 102, 241, 0.42);
+    box-shadow: 0 0 22px rgba(59, 130, 246, 0.25), var(--specular-hairline);
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
     color: #dbeafe;
   }
 
-  .live-beacon {
+  .live-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--semantic-allow);
-    box-shadow: 0 0 10px var(--semantic-allow);
-    animation: beaconPulse 2s infinite ease-in-out;
+    background: var(--color-allow);
+    box-shadow: 0 0 10px var(--color-allow);
+    animation: pulseBeacon 2s infinite ease-in-out;
   }
 
-  @keyframes beaconPulse {
+  @keyframes pulseBeacon {
     0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.32); opacity: 0.6; }
+    50% { transform: scale(1.35); opacity: 0.6; }
   }
 
-  .brand-heading {
-    font-size: 15px;
+  .brand-title {
+    font-size: 15.5px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  .kbd-hint {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-tertiary);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border-subtle);
-    padding: 2px 6px;
-    border-radius: 4px;
+  .brand-subtitle {
+    font-size: 11.5px;
+    color: var(--text-secondary);
   }
 
-  .header-controls {
+  .header-actions {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -176,96 +141,102 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 13px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
+    padding: 7px 13px;
+    border-radius: 7px;
+    font-family: inherit;
     font-size: 12px;
     font-weight: 500;
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.045);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--specular-top);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-translucent);
+    box-shadow: var(--specular-hairline);
     cursor: pointer;
-    transition: all 0.2s var(--spring-smooth);
+    transition: all 0.2s var(--ease-morph);
   }
 
   .btn:hover {
-    background: rgba(255, 255, 255, 0.09);
-    border-color: var(--border-default);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-hover);
     transform: translateY(-1px);
   }
 
-  .btn:active { transform: translateY(0) scale(0.985); }
+  .btn:active {
+    transform: translateY(0) scale(0.985);
+  }
 
-  .btn-accent {
+  .btn-primary {
     background: linear-gradient(135deg, #2563eb, #4f46e5);
-    border-color: rgba(147, 197, 253, 0.35);
-    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    border-color: rgba(147, 197, 253, 0.4);
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     font-weight: 600;
   }
 
-  .btn-accent:hover {
+  .btn-primary:hover {
     background: linear-gradient(135deg, #3b82f6, #6366f1);
-    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
-  /* ==========================================================================
-     4. SPATIAL BENTO GRID LAYOUT & GLASS CARDS
-     ========================================================================== */
-  .bento-shell {
-    max-width: 1640px;
+  /* --- Main Bento Container --- */
+  .bento-container {
+    max-width: 1620px;
     margin: 0 auto;
-    padding: var(--space-4) var(--space-6) 32px;
+    padding: 16px 24px 32px;
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
 
-  .bento-card {
+  .glass-card {
     position: relative;
-    background: var(--surface-bento);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-bento);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    background: var(--surface-glass);
+    border: 1px solid var(--border-translucent);
+    border-radius: 12px;
+    box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65), var(--specular-hairline);
     padding: 14px 16px;
     overflow: hidden;
-    transition: border-color 0.25s var(--spring-smooth), transform 0.25s var(--spring-smooth);
+    transition: border-color 0.25s var(--ease-morph), transform 0.25s var(--ease-morph);
   }
 
-  .bento-card::before {
+  .glass-card::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     background: radial-gradient(
-      480px circle at var(--mx, -500px) var(--my, -500px),
-      rgba(56, 189, 248, 0.085),
+      460px circle at var(--card-x, -500px) var(--card-y, -500px),
+      rgba(56, 189, 248, 0.09),
       transparent 42%
     );
     pointer-events: none;
     z-index: 0;
   }
 
-  .bento-card > * { position: relative; z-index: 1; }
-  .bento-card:hover { border-color: var(--border-default); }
+  .glass-card > * {
+    position: relative;
+    z-index: 1;
+  }
 
-  /* --- Milestone 1: 6-Column KPI Bento Strip --- */
-  .kpi-strip {
+  .glass-card:hover {
+    border-color: var(--border-hover);
+  }
+
+  /* --- 6-Column KPI Bento Strip --- */
+  .kpi-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 12px;
   }
 
-  .kpi-tile {
-    padding: 12px 14px;
+  .kpi-card {
+    padding: 13px 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
 
-  .kpi-top {
+  .kpi-label {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -276,51 +247,50 @@
     color: var(--text-secondary);
   }
 
-  .kpi-metric {
-    font-size: 22px;
+  .kpi-val {
+    font-size: 23px;
     font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #fff;
-    margin: 5px 0 4px;
+    color: #ffffff;
+    margin: 6px 0 5px;
     display: flex;
     align-items: baseline;
     gap: 5px;
   }
 
-  .kpi-foot {
+  .kpi-tag {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 10.5px;
     font-weight: 500;
-    padding: 2px 7px;
-    border-radius: var(--radius-pill);
-    background: var(--semantic-allow-bg);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(16, 185, 129, 0.13);
     color: #34d399;
     border: 1px solid rgba(16, 185, 129, 0.28);
     width: fit-content;
   }
 
-  .kpi-foot.cyan {
+  .kpi-tag.cyan {
     background: rgba(6, 182, 212, 0.13);
     color: #22d3ee;
     border-color: rgba(6, 182, 212, 0.28);
   }
 
-  /* --- Card Header Pattern --- */
-  .card-header {
+  /* --- Section Headers & Segmented Tabs --- */
+  .card-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   .card-title {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     font-size: 11.5px;
     font-weight: 600;
     text-transform: uppercase;
@@ -328,990 +298,1211 @@
     color: #93c5fd;
   }
 
-  /* --- Segmented Pill Control --- */
-  .pill-group {
+  .segmented-bar {
     display: inline-flex;
     background: var(--surface-inset);
     padding: 3px;
-    border-radius: 8px;
-    border: 1px solid var(--border-subtle);
+    border-radius: 9px;
+    border: 1px solid var(--border-translucent);
     gap: 3px;
     flex-wrap: wrap;
   }
 
-  .pill-btn {
-    padding: 5px 11px;
+  .seg-tab {
+    padding: 6px 11px;
     border-radius: 6px;
-    font-family: var(--font-sans);
+    font-family: inherit;
     font-size: 11.5px;
     font-weight: 500;
     color: var(--text-secondary);
     background: transparent;
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s var(--spring-smooth);
+    transition: all 0.22s var(--ease-morph);
   }
 
-  .pill-btn:hover { color: var(--text-primary); }
+  .seg-tab:hover {
+    color: var(--text-primary);
+  }
 
-  .pill-btn[aria-selected="true"], .pill-btn.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.26), rgba(99, 102, 241, 0.22));
-    color: #fff;
-    border-color: rgba(96, 165, 250, 0.4);
-    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.22);
+  .seg-tab.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.28), rgba(99, 102, 241, 0.24));
+    color: #ffffff;
+    border-color: rgba(96, 165, 250, 0.42);
+    box-shadow: 0 2px 12px rgba(59, 130, 246, 0.28);
     font-weight: 600;
   }
 
-  /* --- Hero Scoring Sandbox --- */
-  .sandbox-card {
-    background: linear-gradient(160deg, rgba(16, 22, 35, 0.86) 0%, rgba(9, 12, 19, 0.92) 100%);
-    border-color: rgba(59, 130, 246, 0.26);
+  /* --- Hero Sandbox Section --- */
+  .hero-sandbox {
+    background: linear-gradient(160deg, rgba(16, 23, 38, 0.86) 0%, rgba(9, 12, 19, 0.92) 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 18px 42px -12px rgba(0, 0, 0, 0.7), 0 0 36px -12px rgba(59, 130, 246, 0.22), var(--specular-hairline);
   }
 
-  .sandbox-grid {
+  .sandbox-columns {
     display: grid;
-    grid-template-columns: 1.15fr 1fr 0.95fr;
+    grid-template-columns: 1.15fr 1.05fr 0.95fr;
     gap: 12px;
+    transition: opacity 0.22s var(--ease-morph), transform 0.22s var(--ease-morph);
   }
 
-  .inset-box {
-    background: var(--surface-inset);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 11px 13px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: opacity 0.18s ease, transform 0.18s var(--spring-smooth);
-  }
-
-  .inset-box.transitioning {
-    opacity: 0.45;
+  .sandbox-columns.morph-active {
+    opacity: 0.42;
     transform: scale(0.992);
   }
 
-  /* --- Semantic Status Badges --- */
-  .status-badge {
+  .inset-panel {
+    background: var(--surface-inset);
+    border: 1px solid var(--border-translucent);
+    border-radius: 9px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* --- Decision Badges --- */
+  .badge-decision {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 3px 10px;
-    border-radius: var(--radius-pill);
-    font-size: 10.5px;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 9999px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
 
-  .status-badge.HOLD {
-    background: var(--semantic-hold-bg);
+  .badge-decision.HOLD {
+    background: rgba(244, 63, 94, 0.16);
     color: #fda4af;
-    border: 1px solid rgba(244, 63, 94, 0.45);
-    box-shadow: 0 0 16px rgba(244, 63, 94, 0.22);
+    border: 1px solid rgba(244, 63, 94, 0.48);
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.28);
   }
 
-  .status-badge.STEP_UP {
-    background: var(--semantic-stepup-bg);
+  .badge-decision.STEP_UP {
+    background: rgba(245, 158, 11, 0.16);
     color: #fcd34d;
-    border: 1px solid rgba(245, 158, 11, 0.45);
+    border: 1px solid rgba(245, 158, 11, 0.48);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
   }
 
-  .status-badge.ALLOW, .status-badge.BLOCKED_UPSTREAM {
-    background: var(--semantic-allow-bg);
+  .badge-decision.ALLOW, .badge-decision.BLOCKED_UPSTREAM {
+    background: rgba(16, 185, 129, 0.16);
     color: #6ee7b7;
-    border: 1px solid rgba(16, 185, 129, 0.45);
+    border: 1px solid rgba(16, 185, 129, 0.48);
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
   }
 
-  /* --- Primary 12-Column Asymmetric Workspace Grid --- */
-  .workspace-grid {
+  .shap-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 9px;
+    margin-top: 5px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-left: 3px solid var(--accent-cyan);
+    font-size: 11.5px;
+  }
+
+  /* --- Asymmetric 2-Column Main Workspace --- */
+  .main-bento {
     display: grid;
     grid-template-columns: 1.42fr 1fr;
     gap: 14px;
     align-items: start;
   }
 
-  .stack-col {
+  .bento-col {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
 
-  /* ==========================================================================
-     5. DATA VISUALIZATION ENGINE (SVG NETWORK, PR CURVE, TYPOLOGY MATRIX)
-     ========================================================================== */
-  .svg-canvas-wrap {
-    background: radial-gradient(circle at 50% 50%, rgba(23, 33, 53, 0.42), rgba(6, 8, 13, 0.88));
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    position: relative;
+  /* --- Multi-Hop Laundering Chain Topology Stage --- */
+  .topology-stage {
+    background: radial-gradient(circle at 50% 50%, rgba(24, 34, 56, 0.48), rgba(6, 7, 10, 0.9));
+    border: 1px solid var(--border-translucent);
+    border-radius: 10px;
+    padding: 14px 12px;
   }
 
-  @keyframes packetFlow {
-    to { stroke-dashoffset: -28; }
+  .hop-track {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px;
   }
 
-  .edge-animated {
-    stroke-dasharray: 6 8;
-    animation: packetFlow 1.1s linear infinite;
+  .hop-card {
+    flex: 1;
+    min-width: 148px;
+    padding: 10px 11px;
+    border-radius: 9px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    transition: all 0.25s var(--ease-morph);
   }
 
-  /* --- Interactive Charts Row --- */
-  .charts-split {
-    display: grid;
-    grid-template-columns: 1.08fr 0.92fr;
-    gap: 12px;
+  .hop-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-cyan);
   }
 
-  /* --- Data Table --- */
-  .stream-table {
+  .hop-card.crimson-barrier {
+    background: linear-gradient(145deg, rgba(76, 11, 24, 0.9), rgba(26, 9, 15, 0.94));
+    border: 1.5px solid rgba(244, 63, 94, 0.72);
+    box-shadow: 0 0 26px rgba(244, 63, 94, 0.28);
+  }
+
+  .hop-card.emerald-protected {
+    background: linear-gradient(145deg, rgba(6, 48, 35, 0.8), rgba(9, 24, 19, 0.9));
+    border: 1.5px dashed rgba(16, 185, 129, 0.6);
+  }
+
+  .hop-edge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #38bdf8;
+    text-align: center;
+  }
+
+  .hop-edge.severed {
+    color: #34d399;
+  }
+
+  .severed-pill {
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.16);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+    font-size: 9px;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  /* --- Stream Data Table & Row Animations --- */
+  .fintech-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 11.8px;
   }
 
-  .stream-table th {
+  .fintech-table th {
     text-align: left;
-    padding: 7px 9px;
-    color: var(--text-tertiary);
+    padding: 8px 9px;
+    color: var(--text-muted);
     font-weight: 600;
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    border-bottom: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-translucent);
   }
 
-  .stream-table td {
+  .fintech-table td {
     padding: 8px 9px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.038);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     vertical-align: middle;
   }
 
-  .stream-table tbody tr {
+  .fintech-table tbody tr {
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: background 0.16s ease;
   }
 
-  .stream-table tbody tr:hover td {
-    background: rgba(59, 130, 246, 0.075);
-  }
-
-  .stream-table tbody tr.selected-row td {
-    background: rgba(56, 189, 248, 0.12);
+  .fintech-table tbody tr:hover td {
+    background: rgba(59, 130, 246, 0.08);
   }
 
   @keyframes rowSlideIn {
-    0% { opacity: 0; transform: translateY(-6px); background: rgba(59, 130, 246, 0.16); }
-    100% { opacity: 1; transform: translateY(0); background: transparent; }
+    0% {
+      opacity: 0;
+      transform: translateY(-8px);
+      background: rgba(59, 130, 246, 0.18);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      background: transparent;
+    }
   }
 
-  .row-animate { animation: rowSlideIn 0.38s var(--spring-smooth) forwards; }
-
-  /* --- Floating High-Contrast Tooltip --- */
-  #vizTooltip {
-    position: fixed;
-    z-index: 100;
-    pointer-events: none;
-    background: var(--surface-tooltip);
-    border: 1px solid rgba(56, 189, 248, 0.45);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75);
-    padding: 8px 11px;
-    border-radius: var(--radius-sm);
-    font-size: 11.5px;
-    color: var(--text-primary);
-    opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 0.12s ease, transform 0.12s ease;
-    max-width: 270px;
+  .row-enter {
+    animation: rowSlideIn 0.42s var(--ease-morph) forwards;
   }
 
-  #vizTooltip.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* --- Range Input --- */
+  /* --- Alert Budget Slider --- */
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 5px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.12);
-    border-radius: var(--radius-pill);
+    border-radius: 9999px;
     outline: none;
   }
 
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: #38bdf8;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.85);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
     cursor: pointer;
     transition: transform 0.15s ease;
   }
 
-  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.18);
+  }
 
-  select.select-clean {
+  select.chain-dropdown {
     background: var(--surface-inset);
     color: var(--text-primary);
-    border: 1px solid var(--border-default);
-    padding: 5px 10px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
+    border: 1px solid var(--border-hover);
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-family: inherit;
     font-size: 11.5px;
+    outline: none;
     cursor: pointer;
   }
 
-  @media (max-width: 1260px) {
-    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
-    .sandbox-grid, .workspace-grid, .charts-split { grid-template-columns: 1fr; }
+  .feat-bar-row {
+    display: grid;
+    grid-template-columns: 190px 1fr 48px;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    font-size: 11.3px;
   }
-  @media (max-width: 720px) {
-    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+
+  .feat-track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  .feat-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+  }
+
+  @media (max-width: 1240px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .sandbox-columns, .main-bento { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<!-- FLOATING HIGH-CONTRAST SVG TOOLTIP -->
-<div id="vizTooltip" role="tooltip" aria-hidden="true"></div>
-
-<!-- GLOBAL COMMAND BAR -->
-<header class="app-header" role="banner">
-  <div class="brand-group">
-    <div class="platform-badge" aria-label="Target platform IBM Z and LinuxONE s390x">
-      <span class="live-beacon"></span>
+<!-- STICKY GLASS HEADER -->
+<header class="topbar">
+  <div class="brand-row">
+    <div class="z-pill">
+      <span class="live-dot"></span>
       <span>IBM Z / LinuxONE &bull; s390x</span>
     </div>
     <div>
-      <div class="brand-heading">
+      <div class="brand-title">
         <span>HopStop</span>
-        <span class="kbd-hint">Snap ML tree_format=auto</span>
-        <span class="kbd-hint" title="Keyboard shortcuts: Space (Pause/Resume), N (Next Transfer), 1-5 (Presets)">Keys: Space &bull; N &bull; 1–5</span>
+        <span class="mono" style="font-size:10.5px;font-weight:500;color:#93c5fd;padding:2px 7px;border:1px solid var(--border-translucent);border-radius:5px;">Snap ML tree_format=auto</span>
       </div>
-      <div style="font-size:11.5px;color:var(--text-secondary);">
-        Pre-Settlement Money-Mule Graph Interdiction &bull; Telum Integrated Accelerator for AI
-      </div>
+      <div class="brand-subtitle">Pre-Settlement Graph-Velocity Money-Mule Interdiction &bull; Telum Integrated Accelerator for AI</div>
     </div>
   </div>
 
-  <nav class="header-controls" aria-label="Stream controls and filters">
-    <div class="pill-group" role="tablist" aria-label="Filter interdicted stream">
-      <button class="pill-btn active" role="tab" aria-selected="true" onclick="HopStopApp.setFilter('ALL', this)">All Flagged</button>
-      <button class="pill-btn" role="tab" aria-selected="false" onclick="HopStopApp.setFilter('HOLD', this)">HOLD Only</button>
-      <button class="pill-btn" role="tab" aria-selected="false" onclick="HopStopApp.setFilter('STEP_UP', this)">STEP-UP Only</button>
+  <div class="header-actions">
+    <div class="segmented-bar" id="filterChipGroup">
+      <button class="seg-tab active" onclick="setStreamFilter('ALL', this)">All Flagged</button>
+      <button class="seg-tab" onclick="setStreamFilter('HOLD', this)">HOLD Only</button>
+      <button class="seg-tab" onclick="setStreamFilter('STEP_UP', this)">STEP-UP Only</button>
     </div>
-    <button class="btn" id="btnAuto" onclick="HopStopApp.toggleStream()" aria-pressed="true">
-      <span id="autoDot" style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;"></span>
-      <span id="autoText">Stream: Live</span>
+    <button class="btn" id="btnAutoToggle" onclick="toggleLiveStream()">
+      <span id="streamBeacon" style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+      <span id="streamStatusText">Auto-Stream: ON</span>
     </button>
-    <button class="btn btn-accent" onclick="HopStopApp.stepStream()">+ Inject Transfer (N)</button>
-  </nav>
+    <button class="btn btn-primary" onclick="injectNextStreamItem()">+ Replay Next Transfer</button>
+  </div>
 </header>
 
-<!-- MAIN BENTO WORKSPACE -->
-<main class="bento-shell" role="main">
+<main class="bento-container">
 
-  <!-- MILESTONE 1: 6-METRIC EXECUTIVE KPI BENTO STRIP -->
-  <section class="kpi-strip" aria-label="Key benchmark performance indicators">
-    <article class="bento-card kpi-tile">
-      <div class="kpi-top"><span>P99 DECISION LATENCY</span><span class="mono" style="color:#38bdf8;">SLA &lt;10ms</span></div>
-      <div class="kpi-metric tabular"><span id="kpiP99">0.202</span><span style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">ms</span></div>
-      <div class="kpi-foot">50x below SLA &bull; p50: 0.040 ms</div>
-    </article>
+  <!-- 6-KPI BENTO ROW -->
+  <section class="kpi-grid">
+    <div class="glass-card kpi-card">
+      <div class="kpi-label"><span>END-TO-END P99 LATENCY</span><span class="mono" style="color:#38bdf8;">&lt;10ms SLA</span></div>
+      <div class="kpi-val tracking-tight"><span class="mono" id="kpiP99">0.202</span><span style="font-size:13px;color:var(--text-secondary);font-weight:500;">ms</span></div>
+      <div class="kpi-tag">50x faster &bull; p50: 0.040 ms</div>
+    </div>
 
-    <article class="bento-card kpi-tile">
-      <div class="kpi-top"><span>MINORITY PR-AUC (DAYS 8–10)</span><span class="mono">TEST</span></div>
-      <div class="kpi-metric tabular" id="kpiPrauc">0.8317</div>
-      <div class="kpi-foot">+56.7% vs Rules (0.5306)</div>
-    </article>
+    <div class="glass-card kpi-card">
+      <div class="kpi-label"><span>PR-AUC (DAYS 8–10 TEST)</span><span class="mono">UNSEEN</span></div>
+      <div class="kpi-val tracking-tight mono" id="kpiPrauc">0.8317</div>
+      <div class="kpi-tag">+56.7% vs Rules (0.5306)</div>
+    </div>
 
-    <article class="bento-card kpi-tile">
-      <div class="kpi-top"><span>RECALL @ 1.0% ALERT BUDGET</span><span class="mono">FIXED</span></div>
-      <div class="kpi-metric tabular" id="kpiRecall">53.3%</div>
-      <div class="kpi-foot">+19.8% lift over Rules (44.5%)</div>
-    </article>
+    <div class="glass-card kpi-card">
+      <div class="kpi-label"><span>RECALL @ 1.0% ALERT RATE</span><span class="mono" id="kpiBudgetTag">1.0% CAP</span></div>
+      <div class="kpi-val tracking-tight mono" id="kpiRecall">53.3%</div>
+      <div class="kpi-tag" id="kpiRecallSub">+19.8% lift over Rules (44.5%)</div>
+    </div>
 
-    <article class="bento-card kpi-tile">
-      <div class="kpi-top"><span>CHAINS STOPPED &le; HOP 2</span><span class="mono">47/50</span></div>
-      <div class="kpi-metric tabular" id="kpiHop2">94.0%</div>
-      <div class="kpi-foot">Frozen before Hop 3 cash-out</div>
-    </article>
+    <div class="glass-card kpi-card">
+      <div class="kpi-label"><span>CHAINS FROZEN &le; HOP 2</span><span class="mono">1930 SAFE</span></div>
+      <div class="kpi-val tracking-tight mono" id="kpiHop2">94.0%</div>
+      <div class="kpi-tag" id="kpiHop2Sub">47/50 test chains interdicted</div>
+    </div>
 
-    <article class="bento-card kpi-tile">
-      <div class="kpi-top"><span>SUSTAINED THROUGHPUT</span><span class="mono">BATCH=64</span></div>
-      <div class="kpi-metric tabular"><span id="kpiTps">109,612</span><span style="font-size:11.5px;color:var(--text-secondary);">TPS</span></div>
-      <div class="kpi-foot cyan">20,366 TPS single-worker</div>
-    </article>
+    <div class="glass-card kpi-card">
+      <div class="kpi-label"><span>SUSTAINED THROUGHPUT</span><span class="mono">BATCH=64</span></div>
+      <div class="kpi-val tracking-tight"><span class="mono" id="kpiTps">109,612</span><span style="font-size:12px;color:var(--text-secondary);">TPS</span></div>
+      <div class="kpi-tag cyan">20,366 TPS single-worker</div>
+    </div>
 
-    <article class="bento-card kpi-tile">
-      <div class="kpi-top"><span>CRYPTO &amp; AUDIT ENGINE</span><span class="mono">s390x</span></div>
-      <div class="kpi-metric" style="font-size:16.5px;">CPACF SHA-256</div>
-      <div class="kpi-foot cyan">Salted PII + Hash-Chained Log</div>
-    </article>
+    <div class="glass-card kpi-card">
+      <div class="kpi-label"><span>AUDIT &amp; PRIVACY ENGINE</span><span class="mono">s390x</span></div>
+      <div class="kpi-val tracking-tight" style="font-size:17px;">CPACF SHA-256</div>
+      <div class="kpi-tag cyan">Salted PII + Hash-Chained Log</div>
+    </div>
   </section>
 
-  <!-- INTERACTIVE IN-TRANSACTION SCORING SANDBOX -->
-  <section class="bento-card sandbox-card" aria-label="Interactive in-transaction scoring sandbox">
-    <div class="card-header">
+  <!-- HERO BENTO: INTERACTIVE LIVE PAYMENT SCORER SANDBOX -->
+  <section class="glass-card hero-sandbox">
+    <div class="card-head">
       <div class="card-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-        <span>Interactive In-Transaction Scoring Sandbox &amp; Rules False-Positive Comparator</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Interactive Live Payment Scorer Sandbox — Click Any Scenario to Execute Pre-Settlement Inference</span>
       </div>
-      <div class="pill-group" role="tablist" aria-label="Preset payment scenarios">
-        <button class="pill-btn active" id="btn_fan_out_mule" role="tab" aria-selected="true" onclick="HopStopApp.runPreset('fan_out_mule')">1. Mule Hop-1 Fan-Out (INR 185K)</button>
-        <button class="pill-btn" id="btn_gather_scatter_mule" role="tab" aria-selected="false" onclick="HopStopApp.runPreset('gather_scatter_mule')">2. Gather-Scatter Drain (INR 240K)</button>
-        <button class="pill-btn" id="btn_step_up_borderline" role="tab" aria-selected="false" onclick="HopStopApp.runPreset('step_up_borderline')">3. Borderline Transfer (STEP-UP)</button>
-        <button class="pill-btn" id="btn_corporate_payroll" role="tab" aria-selected="false" onclick="HopStopApp.runPreset('corporate_payroll')">4. Corporate Payroll (Rules False-Positive)</button>
-        <button class="pill-btn" id="btn_retail_normal" role="tab" aria-selected="false" onclick="HopStopApp.runPreset('retail_normal')">5. Retail Payment (ALLOW)</button>
+      <div class="segmented-bar" id="scenarioTabs">
+        <button class="seg-tab active" id="tab_fan_out_mule" onclick="selectScenario('fan_out_mule')">1. Mule Hop-1 Fan-Out (INR 185K)</button>
+        <button class="seg-tab" id="tab_gather_scatter_mule" onclick="selectScenario('gather_scatter_mule')">2. Gather-Scatter Drain</button>
+        <button class="seg-tab" id="tab_step_up_borderline" onclick="selectScenario('step_up_borderline')">3. Borderline Transfer</button>
+        <button class="seg-tab" id="tab_corporate_payroll" onclick="selectScenario('corporate_payroll')">4. Legitimate Corporate Payroll (Rules False-Positive)</button>
+        <button class="seg-tab" id="tab_retail_normal" onclick="selectScenario('retail_normal')">5. Retail Payment</button>
       </div>
     </div>
-    <div class="sandbox-grid" id="sandboxContainer" aria-live="polite"></div>
+
+    <div class="sandbox-columns" id="sandboxStage"></div>
   </section>
 
-  <!-- MAIN 2-COLUMN ASYMMETRIC BENTO WORKSPACE -->
-  <div class="workspace-grid">
+  <!-- LOWER 2-COLUMN ASYMMETRIC BENTO WORKSPACE -->
+  <div class="main-bento">
 
-    <!-- LEFT COLUMN: SVG TOPOLOGY GRAPH + LIVE STREAM TABLE -->
-    <div class="stack-col">
+    <!-- LEFT STACK: MULTI-HOP CHAIN TOPOLOGY + LIVE FILTERED STREAM -->
+    <div class="bento-col">
 
-      <!-- MILESTONE 2A: ANIMATED SVG DIRECTED MULTI-HOP CHAIN TOPOLOGY -->
-      <section class="bento-card" aria-label="Multi-Hop Laundering Chain Interdiction Topology">
-        <div class="card-header">
+      <!-- MULTI-HOP LAUNDERING CHAIN TOPOLOGY STAGE -->
+      <section class="glass-card">
+        <div class="card-head">
           <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-            <span>Multi-Hop Laundering Chain Interdiction SVG Topology (First-Hop Freeze Proof)</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            <span>Multi-Hop Laundering Chain Topology Stage (1930 Cybercrime Helpline First-Hop Freeze Proof)</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
-            <span class="mono" style="font-size:11px;color:#34d399;" id="chainMeta"></span>
-            <select id="chainSelect" class="select-clean" aria-label="Select laundering chain" onchange="HopStopApp.renderChain(this.value)"></select>
+            <span class="mono" style="font-size:11px;color:#34d399;" id="topologySummary"></span>
+            <select class="chain-dropdown" id="chainSelector" onchange="renderTopologyChain(this.value)"></select>
           </div>
         </div>
-        <div class="svg-canvas-wrap" id="svgChainStage"></div>
+        <div class="topology-stage" id="topologyContainer"></div>
       </section>
 
-      <!-- LIVE INTERDICTED TRANSFER QUEUE + CLICK-TO-INSPECT FORENSICS -->
-      <section class="bento-card" aria-label="Live pre-settlement interdiction queue">
-        <div class="card-header">
+      <!-- LIVE INTERDICTED TRANSFER STREAM FEED -->
+      <section class="glass-card">
+        <div class="card-head">
           <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            <span>Live Pre-Settlement Interdiction Queue (Click Any Row to Inspect Forensics)</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            <span>Live Interdicted Transfer Queue (HOLD / STEP-UP with Top-3 SHAP Reason Codes)</span>
           </div>
-          <span class="mono" style="font-size:11px;color:var(--text-secondary);" id="queueCounter">Streaming...</span>
+          <span class="mono" style="font-size:11px;color:var(--text-secondary);" id="streamCounterLabel">PROCESSED: 15,232 TX</span>
         </div>
         <div style="overflow-x:auto;">
-          <table class="stream-table">
+          <table class="fintech-table">
             <thead>
               <tr>
-                <th>Tx ID / Time</th>
-                <th>Hashed Counterparties (SHA-256)</th>
-                <th>Amount / Rail</th>
-                <th>Typology &amp; Hop</th>
-                <th>GBDT Score</th>
-                <th>Decision</th>
-                <th>Top-3 Per-Transfer Reason Codes</th>
+                <th>Tx ID / Timestamp</th>
+                <th>Sender &rarr; Receiver (SHA-256)</th>
+                <th>Amount / Format</th>
+                <th>Typology / Hop</th>
+                <th>Score</th>
+                <th>Action</th>
+                <th>Top-3 SHAP Reason Codes</th>
               </tr>
             </thead>
-            <tbody id="alertTableBody"></tbody>
+            <tbody id="streamTableBody"></tbody>
           </table>
         </div>
       </section>
 
     </div>
 
-    <!-- RIGHT COLUMN: INTERACTIVE SVG CHARTS + TELEMETRY + AUDIT LOG -->
-    <div class="stack-col">
+    <!-- RIGHT STACK: RISK POLICY SLIDER + FEATURE ATTRIBUTION + IBM Z TELEMETRY + AUDIT LOG -->
+    <div class="bento-col">
 
-      <!-- MILESTONE 2B: INTERACTIVE SVG ALERT-BUDGET RECALL CURVE & TYPOLOGY MATRIX -->
-      <section class="bento-card" aria-label="Alert budget simulator and typology comparison">
-        <div class="card-header" style="margin-bottom:6px;">
+      <!-- RISK POLICY ALERT-BUDGET SLIDER & SVG RECALL CURVE -->
+      <section class="glass-card">
+        <div class="card-head" style="margin-bottom:8px;">
           <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
-            <span>Alert-Budget Recall Curve &amp; Typology Interdiction Engine</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line></svg>
+            <span>Risk Policy Alert-Budget Calibrator (0.5% – 2.5% Capacity)</span>
           </div>
-          <span class="mono" style="color:#38bdf8;font-weight:600;font-size:11.5px;" id="budgetLabel">1.0% Alert Budget</span>
+          <span class="mono" style="color:#38bdf8;font-weight:700;font-size:12px;" id="sliderRateBadge">1.0% Alert Budget</span>
         </div>
+        <p style="font-size:11.5px;color:var(--text-secondary);margin-bottom:8px;">
+          Slide to scale daily analyst alert capacity and compare HopStop ML recall vs. Static Velocity Rules in real time:
+        </p>
+        <input type="range" id="policyBudgetSlider" min="0.5" max="2.5" step="0.5" value="1.0" oninput="onBudgetSliderChange(this.value)" />
 
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:11px;color:var(--text-secondary);white-space:nowrap;">Analyst Alert Capacity:</span>
-          <input type="range" id="budgetSlider" min="0.5" max="2.5" step="0.5" value="1.0" aria-label="Analyst alert budget percentage" oninput="HopStopApp.updateBudget(this.value)" />
-        </div>
-
-        <div class="charts-split">
-          <!-- Interactive SVG Recall vs Alert Budget Curve -->
-          <div class="inset-box" style="padding:9px 10px;">
-            <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-secondary);margin-bottom:4px;">
-              <span>RECALL VS. ALERT BUDGET (%)</span>
-              <span class="mono" style="color:#34d399;" id="curveReadout">HopStop: 53.3% | Rules: 44.5%</span>
-            </div>
-            <div id="svgRecallCurve"></div>
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin:10px 0;">
+          <div class="inset-panel" style="padding:8px 10px;">
+            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">HopStop ML Recall</span>
+            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#34d399;" id="sliderHopRecall">53.3%</span>
           </div>
-
-          <!-- Interactive SVG Per-Typology Interruption Chart -->
-          <div class="inset-box" style="padding:9px 10px;">
-            <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-secondary);margin-bottom:4px;">
-              <span>8-TYPOLOGY STOP RATE (&le; HOP 2)</span>
-              <span class="mono" style="color:#38bdf8;">47/50 (94%)</span>
-            </div>
-            <div id="svgTypologyChart"></div>
+          <div class="inset-panel" style="padding:8px 10px;">
+            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">Static Rules Recall</span>
+            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#94a3b8;" id="sliderRulesRecall">44.5%</span>
+          </div>
+          <div class="inset-panel" style="padding:8px 10px;">
+            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">Chains Frozen &le; Hop 2</span>
+            <span class="mono tracking-tight" style="font-size:18px;font-weight:700;color:#38bdf8;" id="sliderChainsFrozen">94.0%</span>
           </div>
         </div>
+
+        <div id="svgBudgetChartWrap" style="background:var(--surface-inset);border:1px solid var(--border-translucent);border-radius:8px;padding:8px 10px;"></div>
       </section>
 
-      <!-- CAUSAL FEATURE ATTRIBUTION + LATENCY TELEMETRY GAUGE -->
-      <section class="bento-card" aria-label="Causal feature attributions and latency distribution">
-        <div class="card-header" style="margin-bottom:6px;">
+      <!-- CAUSAL GRAPH-VELOCITY FEATURE IMPORTANCES -->
+      <section class="glass-card">
+        <div class="card-head" style="margin-bottom:8px;">
           <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
-            <span>Causal Feature Attribution &amp; Sub-Millisecond Latency Distribution</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+            <span>Causal Graph-Velocity Feature Importances (Snap ML GBDT)</span>
           </div>
-          <span class="mono" style="font-size:10.5px;color:var(--text-tertiary);">36 Tensor-Trees</span>
+          <span class="mono" style="font-size:10.5px;color:var(--text-muted);">36 Tensor-Trees</span>
         </div>
-        <div id="svgFeatureBars"></div>
-        <div id="svgLatencyStrip" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border-subtle);"></div>
+        <div id="featureImportanceList"></div>
       </section>
 
-      <!-- IBM Z / LINUXONE HARDWARE TELEMETRY -->
-      <section class="bento-card" aria-label="IBM Z and LinuxONE hardware telemetry">
-        <div class="card-header" style="margin-bottom:4px;">
+      <!-- IBM Z / LINUXONE HARDWARE & RUNTIME TELEMETRY -->
+      <section class="glass-card">
+        <div class="card-head" style="margin-bottom:6px;">
           <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
             <span>IBM Z / LinuxONE Hardware &amp; Runtime Telemetry</span>
           </div>
-          <span class="kpi-foot cyan">zDNN + Snap ML</span>
+          <span class="kpi-tag cyan">zDNN + NNPA Probe</span>
         </div>
-        <table class="stream-table">
-          <tbody id="envTableBody"></tbody>
+        <table class="fintech-table">
+          <tbody id="telemetryTableBody"></tbody>
         </table>
       </section>
 
       <!-- TAMPER-EVIDENT SHA-256 HASH-CHAINED AUDIT LOG -->
-      <section class="bento-card" aria-label="Tamper-evident SHA-256 hash-chained audit log">
-        <div class="card-header" style="margin-bottom:4px;">
+      <section class="glass-card">
+        <div class="card-head" style="margin-bottom:6px;">
           <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span>Tamper-Evident SHA-256 Audit Chain (FIU-IND / 1930 Helpline)</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Tamper-Evident SHA-256 Audit Log (FIU-IND / 1930 Helpline)</span>
           </div>
-          <span class="mono" style="font-size:10.5px;color:#34d399;">CHAIN VERIFIED</span>
+          <span class="mono" style="font-size:10.5px;color:#34d399;">HASH-CHAIN VERIFIED</span>
         </div>
-        <table class="stream-table">
+        <table class="fintech-table">
           <thead>
             <tr>
               <th>Tx ID</th>
-              <th>Decision</th>
+              <th>Action</th>
               <th>Prev Block Hash</th>
-              <th>Current SHA-256 Hash</th>
+              <th>SHA-256 Audit Signature</th>
             </tr>
           </thead>
-          <tbody id="auditTableBody"></tbody>
+          <tbody id="auditLogTableBody"></tbody>
         </table>
       </section>
 
     </div>
   </div>
+
 </main>
 
 <script>
 /* ==========================================================================
-   MILESTONE 1 & 2: REACTIVE STATE STORE & SVG DATA VISUALIZATION ENGINE
+   HARDCODED & SERVER-SYNCED STATE ENGINE FOR HOPSTOP (100% OFFLINE + LIVE)
    ========================================================================== */
-const HopStopApp = (() => {
-  let BENCH = {"generated_at": "2026-10-18 09:27:35 IST", "environment": {"architecture": "amd64", "is_s390x": false, "nnpa_accelerator_available": false, "zdnn_status": "libzdnn not loaded (running on non-zDNN host; using CPU tensor-tree fallback)", "secure_execution_facility": false, "snapml_available": false, "snapml_version": null, "tree_format_mode": "auto (Telum NNPA tensor-trees if present, else compressed CPU trees)", "cpacf_crypto_mode": "AES-256-GCM / SHA-256 (CPACF hardware-assisted on s390x)", "os_platform": "Windows 11"}, "dataset": {"total_transactions": 50880, "laundering_transactions": 880, "legitimate_transactions": 50000, "laundering_ratio": 0.0173, "total_accounts": 5000, "total_banks": 24, "total_chains": 160, "days_spanned": 10, "train_transactions": 35648, "test_transactions": 15232, "train_laundering": 608, "test_laundering": 272, "test_chains": 50}, "model_metrics": {"hopstop_gbdt": {"roc_auc": 0.9857, "pr_auc": 0.8317, "recall_at_1pct_alert_rate": 0.5331, "precision_at_1pct_alert_rate": 0.9539, "recall_at_2pct_alert_rate": 0.7831, "hold_threshold": 0.994015, "step_up_threshold": 0.989928, "train_time_sec": 3.971}, "velocity_rules_baseline": {"roc_auc": 0.938, "pr_auc": 0.5306, "recall_at_1pct_alert_rate": 0.4449, "precision_at_1pct_alert_rate": 0.7961, "recall_at_2pct_alert_rate": 0.5772}, "relative_lift": {"recall_lift_at_1pct": 19.8, "pr_auc_lift_pct": 56.7}}, "chain_interruption": {"test_chains_total": 50, "hopstop_stopped_by_hop1": 1, "hopstop_stopped_by_hop1_pct": 2.0, "hopstop_stopped_by_hop2": 47, "hopstop_stopped_by_hop2_pct": 94.0, "rules_stopped_by_hop2": 43, "rules_stopped_by_hop2_pct": 86.0, "by_typology": {"Scatter-Gather": {"total": 6, "stopped_hop2_ml": 4, "stopped_hop2_rules": 1}, "Simple-Cycle": {"total": 6, "stopped_hop2_ml": 5, "stopped_hop2_rules": 5}, "Gather-Scatter": {"total": 8, "stopped_hop2_ml": 8, "stopped_hop2_rules": 8}, "Stack": {"total": 10, "stopped_hop2_ml": 10, "stopped_hop2_rules": 9}, "Random-Walk": {"total": 3, "stopped_hop2_ml": 3, "stopped_hop2_rules": 3}, "Fan-In": {"total": 9, "stopped_hop2_ml": 9, "stopped_hop2_rules": 9}, "Bipartite": {"total": 4, "stopped_hop2_ml": 4, "stopped_hop2_rules": 4}, "Fan-Out": {"total": 4, "stopped_hop2_ml": 4, "stopped_hop2_rules": 4}}}, "latency_benchmark": {"batch_1_end_to_end_p50_ms": 0.0403, "batch_1_end_to_end_p95_ms": 0.0594, "batch_1_end_to_end_p99_ms": 0.2022, "batch_1_end_to_end_mean_ms": 0.0491, "target_p99_ms": 10.0, "single_worker_stream_tps": 20366, "microbatch_64_scoring_tps": 109612}, "feature_importances": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "weight": 0.25}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "weight": 0.2431}, {"feature": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "weight": 0.2361}, {"feature": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "weight": 0.125}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "weight": 0.0833}, {"feature": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "weight": 0.0278}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "weight": 0.0208}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "weight": 0.0139}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "weight": 0.0}, {"feature": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "weight": 0.0}, {"feature": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "weight": 0.0}, {"feature": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "weight": 0.0}], "sample_held_alerts": [{"tx_id": 35746, "timestamp": "2026/09/08 02:50:13", "from_account_hash": "ACCT_E178CF7EA414", "to_account_hash": "ACCT_E8CC33683DA2", "from_bank": 21, "to_bank": 28, "amount": 67214.5, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}], "chain_id": 67, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "0000000000000000", "audit_hash": "a251463f107eac9a", "is_laundering": 1, "raw_from_account": "ACC102504", "raw_to_account": "ACC102873"}, {"tx_id": 35747, "timestamp": "2026/09/08 02:51:18", "from_account_hash": "ACCT_E178CF7EA414", "to_account_hash": "ACCT_4439D6FCFB06", "from_bank": 21, "to_bank": 24, "amount": 67214.5, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 67, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "a251463f107eac9a", "audit_hash": "39e283b53f5daaf2", "is_laundering": 1, "raw_from_account": "ACC102504", "raw_to_account": "ACC104139"}, {"tx_id": 35749, "timestamp": "2026/09/08 02:52:23", "from_account_hash": "ACCT_E178CF7EA414", "to_account_hash": "ACCT_DD95AE01CA42", "from_bank": 21, "to_bank": 17, "amount": 67214.5, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "2.0", "impact": 1.245}], "chain_id": 67, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "39e283b53f5daaf2", "audit_hash": "5249c7bf8735fbfc", "is_laundering": 1, "raw_from_account": "ACC102504", "raw_to_account": "ACC102469"}, {"tx_id": 35848, "timestamp": "2026/09/08 05:05:45", "from_account_hash": "ACCT_5DA0359FB154", "to_account_hash": "ACCT_B830C907DC92", "from_bank": 16, "to_bank": 22, "amount": 51926.03, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9935, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": "1.0", "impact": 0.816}], "chain_id": 60, "hop_number": 2, "typology": "Scatter-Gather", "prev_audit_hash": "5249c7bf8735fbfc", "audit_hash": "4d5cf02d8303ac27", "is_laundering": 1, "raw_from_account": "ACC100943", "raw_to_account": "ACC100749"}, {"tx_id": 35855, "timestamp": "2026/09/08 05:09:35", "from_account_hash": "ACCT_B830C907DC92", "to_account_hash": "ACCT_8E7D38C59B78", "from_bank": 22, "to_bank": 32, "amount": 49848.99, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.96x inflow", "impact": 1.045}], "chain_id": 60, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "4d5cf02d8303ac27", "audit_hash": "6dc628dd69f18f0a", "is_laundering": 1, "raw_from_account": "ACC100749", "raw_to_account": "ACC101288"}, {"tx_id": 35861, "timestamp": "2026/09/08 05:11:55", "from_account_hash": "ACCT_1E0121085B98", "to_account_hash": "ACCT_8E7D38C59B78", "from_bank": 26, "to_bank": 32, "amount": 49848.99, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 60, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "6dc628dd69f18f0a", "audit_hash": "40f75966e04e0a40", "is_laundering": 1, "raw_from_account": "ACC101777", "raw_to_account": "ACC101288"}, {"tx_id": 35875, "timestamp": "2026/09/08 05:24:10", "from_account_hash": "ACCT_6E4346D90CDD", "to_account_hash": "ACCT_8216AAD8B644", "from_bank": 24, "to_bank": 15, "amount": 162330.32, "currency": "INR", "payment_format": "Wire", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.057}], "chain_id": 5, "hop_number": 2, "typology": "Simple-Cycle", "prev_audit_hash": "40f75966e04e0a40", "audit_hash": "1257c72e9beabeb6", "is_laundering": 1, "raw_from_account": "ACC101736", "raw_to_account": "ACC104974"}, {"tx_id": 35878, "timestamp": "2026/09/08 05:26:30", "from_account_hash": "ACCT_8216AAD8B644", "to_account_hash": "ACCT_6A17CB3B6264", "from_bank": 15, "to_bank": 32, "amount": 157460.41, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 5, "hop_number": 3, "typology": "Simple-Cycle", "prev_audit_hash": "1257c72e9beabeb6", "audit_hash": "7fb803585601b2d5", "is_laundering": 1, "raw_from_account": "ACC104974", "raw_to_account": "ACC102560"}, {"tx_id": 35882, "timestamp": "2026/09/08 05:28:50", "from_account_hash": "ACCT_6A17CB3B6264", "to_account_hash": "ACCT_AF7973FC3743", "from_bank": 32, "to_bank": 17, "amount": 152736.6, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 5, "hop_number": 4, "typology": "Simple-Cycle", "prev_audit_hash": "7fb803585601b2d5", "audit_hash": "71ec29bd9120682a", "is_laundering": 1, "raw_from_account": "ACC102560", "raw_to_account": "ACC103101"}, {"tx_id": 35928, "timestamp": "2026/09/08 05:56:08", "from_account_hash": "ACCT_FC308EA92EDA", "to_account_hash": "ACCT_87BBDABDB991", "from_bank": 20, "to_bank": 16, "amount": 118189.64, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 87, "hop_number": 2, "typology": "Stack", "prev_audit_hash": "71ec29bd9120682a", "audit_hash": "3b09b505545993e6", "is_laundering": 1, "raw_from_account": "ACC103304", "raw_to_account": "ACC101223"}, {"tx_id": 35932, "timestamp": "2026/09/08 05:58:38", "from_account_hash": "ACCT_87BBDABDB991", "to_account_hash": "ACCT_F388874A6081", "from_bank": 16, "to_bank": 15, "amount": 114534.29, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.056}], "chain_id": 87, "hop_number": 3, "typology": "Stack", "prev_audit_hash": "3b09b505545993e6", "audit_hash": "b389424a51f1b8f9", "is_laundering": 1, "raw_from_account": "ACC101223", "raw_to_account": "ACC102650"}, {"tx_id": 35942, "timestamp": "2026/09/08 06:01:38", "from_account_hash": "ACCT_F388874A6081", "to_account_hash": "ACCT_9320EDE96F7E", "from_bank": 15, "to_bank": 26, "amount": 110878.94, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 87, "hop_number": 4, "typology": "Stack", "prev_audit_hash": "b389424a51f1b8f9", "audit_hash": "72685f7b10d37709", "is_laundering": 1, "raw_from_account": "ACC102650", "raw_to_account": "ACC102898"}, {"tx_id": 36031, "timestamp": "2026/09/08 06:46:32", "from_account_hash": "ACCT_CB4FE98A2D94", "to_account_hash": "ACCT_F97202A01AFC", "from_bank": 25, "to_bank": 32, "amount": 46541.91, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9906, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "4.00x inflow", "impact": 4.497}, {"feature": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": "4.00x inflow", "impact": 2.186}], "chain_id": 52, "hop_number": 1, "typology": "Scatter-Gather", "prev_audit_hash": "72685f7b10d37709", "audit_hash": "78c864bf0c8fd80b", "is_laundering": 1, "raw_from_account": "ACC102174", "raw_to_account": "ACC102236"}, {"tx_id": 36043, "timestamp": "2026/09/08 06:52:12", "from_account_hash": "ACCT_E9D78E2B763E", "to_account_hash": "ACCT_3A9C8711EEA5", "from_bank": 26, "to_bank": 22, "amount": 14446.61, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.96x inflow", "impact": 1.045}], "chain_id": 52, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "78c864bf0c8fd80b", "audit_hash": "71152a6d620fd99a", "is_laundering": 1, "raw_from_account": "ACC103256", "raw_to_account": "ACC101227"}, {"tx_id": 36048, "timestamp": "2026/09/08 06:53:22", "from_account_hash": "ACCT_C140B10CB1B4", "to_account_hash": "ACCT_3A9C8711EEA5", "from_bank": 31, "to_bank": 22, "amount": 14446.61, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "2.0", "impact": 2.818}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 52, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "71152a6d620fd99a", "audit_hash": "aa8badd83ced1785", "is_laundering": 1, "raw_from_account": "ACC101357", "raw_to_account": "ACC101227"}, {"tx_id": 36053, "timestamp": "2026/09/08 06:54:32", "from_account_hash": "ACCT_FD9DD1920E31", "to_account_hash": "ACCT_3A9C8711EEA5", "from_bank": 24, "to_bank": 22, "amount": 14446.61, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9939, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "8.7", "impact": 2.236}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 52, "hop_number": 3, "typology": "Scatter-Gather", "prev_audit_hash": "aa8badd83ced1785", "audit_hash": "e5e8fafb40c5c6ae", "is_laundering": 1, "raw_from_account": "ACC102785", "raw_to_account": "ACC101227"}, {"tx_id": 36388, "timestamp": "2026/09/08 08:51:17", "from_account_hash": "ACCT_FF84DFDF7610", "to_account_hash": "ACCT_081C8DFB8642", "from_bank": 11, "to_bank": 23, "amount": 152057.23, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 15, "hop_number": 2, "typology": "Stack", "prev_audit_hash": "e5e8fafb40c5c6ae", "audit_hash": "fc38810274451ee3", "is_laundering": 1, "raw_from_account": "ACC100364", "raw_to_account": "ACC101552"}, {"tx_id": 36398, "timestamp": "2026/09/08 08:53:47", "from_account_hash": "ACCT_081C8DFB8642", "to_account_hash": "ACCT_8B9D7C0C38E6", "from_bank": 23, "to_bank": 32, "amount": 147354.43, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9935, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.056}], "chain_id": 15, "hop_number": 3, "typology": "Stack", "prev_audit_hash": "fc38810274451ee3", "audit_hash": "1dd927caa06a0ce4", "is_laundering": 1, "raw_from_account": "ACC101552", "raw_to_account": "ACC101354"}, {"tx_id": 36409, "timestamp": "2026/09/08 08:56:47", "from_account_hash": "ACCT_8B9D7C0C38E6", "to_account_hash": "ACCT_5E8A54E3A119", "from_bank": 32, "to_bank": 19, "amount": 142651.63, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.054}], "chain_id": 15, "hop_number": 4, "typology": "Stack", "prev_audit_hash": "1dd927caa06a0ce4", "audit_hash": "824f51433f2991a0", "is_laundering": 1, "raw_from_account": "ACC101354", "raw_to_account": "ACC101298"}, {"tx_id": 36973, "timestamp": "2026/09/08 10:47:35", "from_account_hash": "ACCT_EA7CE8D3F4FB", "to_account_hash": "ACCT_C9D62B5F7AB6", "from_bank": 14, "to_bank": 26, "amount": 39442.29, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.97x inflow", "impact": 1.057}], "chain_id": 79, "hop_number": 2, "typology": "Stack", "prev_audit_hash": "824f51433f2991a0", "audit_hash": "ec71b749818f4718", "is_laundering": 1, "raw_from_account": "ACC104147", "raw_to_account": "ACC102777"}, {"tx_id": 36987, "timestamp": "2026/09/08 10:50:05", "from_account_hash": "ACCT_C9D62B5F7AB6", "to_account_hash": "ACCT_82210170D14E", "from_bank": 26, "to_bank": 16, "amount": 38222.42, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9939, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 79, "hop_number": 3, "typology": "Stack", "prev_audit_hash": "ec71b749818f4718", "audit_hash": "80891c5f63ed4146", "is_laundering": 1, "raw_from_account": "ACC102777", "raw_to_account": "ACC104747"}, {"tx_id": 37004, "timestamp": "2026/09/08 10:53:05", "from_account_hash": "ACCT_82210170D14E", "to_account_hash": "ACCT_88394A6C8BC8", "from_bank": 16, "to_bank": 21, "amount": 37002.56, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "2.0", "impact": 2.818}, {"feature": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": "0.91x inflow", "impact": 0.984}], "chain_id": 79, "hop_number": 4, "typology": "Stack", "prev_audit_hash": "80891c5f63ed4146", "audit_hash": "06795099567fed36", "is_laundering": 1, "raw_from_account": "ACC104747", "raw_to_account": "ACC104370"}, {"tx_id": 37281, "timestamp": "2026/09/08 11:40:54", "from_account_hash": "ACCT_BF39F4D4574E", "to_account_hash": "ACCT_EB7C6120C07D", "from_bank": 23, "to_bank": 29, "amount": 118447.25, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "4.0", "impact": 5.752}, {"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 146, "hop_number": 2, "typology": "Fan-In", "prev_audit_hash": "06795099567fed36", "audit_hash": "19243db9b090c48e", "is_laundering": 1, "raw_from_account": "ACC102124", "raw_to_account": "ACC103617"}, {"tx_id": 37317, "timestamp": "2026/09/08 11:44:41", "from_account_hash": "ACCT_23B2F82A2AE0", "to_account_hash": "ACCT_2716A4DE5B50", "from_bank": 25, "to_bank": 14, "amount": 53280.85, "currency": "INR", "payment_format": "ACH", "risk_score": 0.9899, "action": "STEP_UP", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "3.0", "impact": 4.285}, {"feature": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": "4.0", "impact": 1.145}], "chain_id": 75, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "19243db9b090c48e", "audit_hash": "e1774b58f2ba143a", "is_laundering": 1, "raw_from_account": "ACC101179", "raw_to_account": "ACC101698"}, {"tx_id": 37320, "timestamp": "2026/09/08 11:45:14", "from_account_hash": "ACCT_EB7C6120C07D", "to_account_hash": "ACCT_BAB057D2077B", "from_bank": 29, "to_bank": 32, "amount": 114745.77, "currency": "INR", "payment_format": "Wire", "risk_score": 0.9944, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": "10.0", "impact": 2.615}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}], "chain_id": 146, "hop_number": 3, "typology": "Fan-In", "prev_audit_hash": "e1774b58f2ba143a", "audit_hash": "88c5897d8f1fc83a", "is_laundering": 1, "raw_from_account": "ACC103617", "raw_to_account": "ACC101454"}], "sample_interrupted_chains": [{"chain_id": 5, "typology": "Simple-Cycle", "interrupted_at_hop": 2, "hops": [{"tx_id": 35872, "timestamp": "2026/09/08 05:21:50", "hop": 1, "from_account": "ACC103101", "to_account": "ACC101736", "from_bank": 17, "to_bank": 24, "amount": 167350.85, "risk_score": 0.8734, "decision": "ALLOW"}, {"tx_id": 35875, "timestamp": "2026/09/08 05:24:10", "hop": 2, "from_account": "ACC101736", "to_account": "ACC104974", "from_bank": 24, "to_bank": 15, "amount": 162330.32, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 35878, "timestamp": "2026/09/08 05:26:30", "hop": 3, "from_account": "ACC104974", "to_account": "ACC102560", "from_bank": 15, "to_bank": 32, "amount": 157460.41, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 35882, "timestamp": "2026/09/08 05:28:50", "hop": 4, "from_account": "ACC102560", "to_account": "ACC103101", "from_bank": 32, "to_bank": 17, "amount": 152736.6, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 11, "typology": "Gather-Scatter", "interrupted_at_hop": 2, "hops": [{"tx_id": 46827, "timestamp": "2026/09/10 09:46:26", "hop": 1, "from_account": "ACC104393", "to_account": "ACC102226", "from_bank": 25, "to_bank": 19, "amount": 101785.51, "risk_score": 0.8985, "decision": "ALLOW"}, {"tx_id": 46833, "timestamp": "2026/09/10 09:47:46", "hop": 1, "from_account": "ACC102776", "to_account": "ACC102226", "from_bank": 14, "to_bank": 19, "amount": 101785.51, "risk_score": 0.1869, "decision": "ALLOW"}, {"tx_id": 46838, "timestamp": "2026/09/10 09:49:06", "hop": 1, "from_account": "ACC103141", "to_account": "ACC102226", "from_bank": 22, "to_bank": 19, "amount": 101785.51, "risk_score": 0.1869, "decision": "ALLOW"}, {"tx_id": 46849, "timestamp": "2026/09/10 09:50:46", "hop": 2, "from_account": "ACC102226", "to_account": "ACC101899", "from_bank": 19, "to_bank": 26, "amount": 97714.09, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 46850, "timestamp": "2026/09/10 09:51:51", "hop": 2, "from_account": "ACC102226", "to_account": "ACC102647", "from_bank": 19, "to_bank": 26, "amount": 97714.09, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 46856, "timestamp": "2026/09/10 09:52:56", "hop": 2, "from_account": "ACC102226", "to_account": "ACC104284", "from_bank": 19, "to_bank": 14, "amount": 97714.09, "risk_score": 0.9899, "decision": "STEP_UP"}]}, {"chain_id": 13, "typology": "Simple-Cycle", "interrupted_at_hop": 2, "hops": [{"tx_id": 50664, "timestamp": "2026/09/10 21:10:37", "hop": 1, "from_account": "ACC104348", "to_account": "ACC100649", "from_bank": 29, "to_bank": 15, "amount": 275010.12, "risk_score": 0.8905, "decision": "ALLOW"}, {"tx_id": 50671, "timestamp": "2026/09/10 21:12:57", "hop": 2, "from_account": "ACC100649", "to_account": "ACC102970", "from_bank": 15, "to_bank": 16, "amount": 266759.82, "risk_score": 0.9939, "decision": "STEP_UP"}, {"tx_id": 50676, "timestamp": "2026/09/10 21:15:17", "hop": 3, "from_account": "ACC102970", "to_account": "ACC103364", "from_bank": 16, "to_bank": 12, "amount": 258757.02, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 50682, "timestamp": "2026/09/10 21:17:37", "hop": 4, "from_account": "ACC103364", "to_account": "ACC104348", "from_bank": 12, "to_bank": 29, "amount": 250994.31, "risk_score": 0.9939, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 15, "typology": "Stack", "interrupted_at_hop": 2, "hops": [{"tx_id": 36378, "timestamp": "2026/09/08 08:49:17", "hop": 1, "from_account": "ACC100957", "to_account": "ACC100364", "from_bank": 15, "to_bank": 11, "amount": 156760.03, "risk_score": 0.7592, "decision": "ALLOW"}, {"tx_id": 36388, "timestamp": "2026/09/08 08:51:17", "hop": 2, "from_account": "ACC100364", "to_account": "ACC101552", "from_bank": 11, "to_bank": 23, "amount": 152057.23, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 36398, "timestamp": "2026/09/08 08:53:47", "hop": 3, "from_account": "ACC101552", "to_account": "ACC101354", "from_bank": 23, "to_bank": 32, "amount": 147354.43, "risk_score": 0.9935, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 36409, "timestamp": "2026/09/08 08:56:47", "hop": 4, "from_account": "ACC101354", "to_account": "ACC101298", "from_bank": 32, "to_bank": 19, "amount": 142651.63, "risk_score": 0.994, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 24, "typology": "Random-Walk", "interrupted_at_hop": 2, "hops": [{"tx_id": 40655, "timestamp": "2026/09/08 22:07:24", "hop": 1, "from_account": "ACC104274", "to_account": "ACC102359", "from_bank": 12, "to_bank": 26, "amount": 49119.87, "risk_score": 0.8905, "decision": "ALLOW"}, {"tx_id": 40658, "timestamp": "2026/09/08 22:09:24", "hop": 2, "from_account": "ACC102359", "to_account": "ACC102827", "from_bank": 26, "to_bank": 21, "amount": 47646.27, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 40665, "timestamp": "2026/09/08 22:11:54", "hop": 3, "from_account": "ACC102827", "to_account": "ACC102925", "from_bank": 21, "to_bank": 11, "amount": 46172.68, "risk_score": 0.9939, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 40667, "timestamp": "2026/09/08 22:14:54", "hop": 4, "from_account": "ACC102925", "to_account": "ACC102327", "from_bank": 11, "to_bank": 19, "amount": 44699.08, "risk_score": 0.9939, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 26, "typology": "Fan-In", "interrupted_at_hop": 2, "hops": [{"tx_id": 44455, "timestamp": "2026/09/09 16:44:54", "hop": 1, "from_account": "ACC104219", "to_account": "ACC100493", "from_bank": 20, "to_bank": 23, "amount": 34832.1, "risk_score": 0.8734, "decision": "ALLOW"}, {"tx_id": 44459, "timestamp": "2026/09/09 16:46:04", "hop": 1, "from_account": "ACC101504", "to_account": "ACC100493", "from_bank": 18, "to_bank": 23, "amount": 34832.1, "risk_score": 0.8985, "decision": "ALLOW"}, {"tx_id": 44465, "timestamp": "2026/09/09 16:47:14", "hop": 1, "from_account": "ACC101209", "to_account": "ACC100493", "from_bank": 28, "to_bank": 23, "amount": 34832.1, "risk_score": 0.1274, "decision": "ALLOW"}, {"tx_id": 44472, "timestamp": "2026/09/09 16:48:24", "hop": 1, "from_account": "ACC102774", "to_account": "ACC100493", "from_bank": 26, "to_bank": 23, "amount": 34832.1, "risk_score": 0.2982, "decision": "ALLOW"}, {"tx_id": 44482, "timestamp": "2026/09/09 16:50:14", "hop": 2, "from_account": "ACC100493", "to_account": "ACC102030", "from_bank": 23, "to_bank": 19, "amount": 133755.25, "risk_score": 0.9944, "decision": "HOLD"}, {"tx_id": 44503, "timestamp": "2026/09/09 16:54:34", "hop": 3, "from_account": "ACC102030", "to_account": "ACC103998", "from_bank": 19, "to_bank": 27, "amount": 129575.4, "risk_score": 0.989, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 31, "typology": "Stack", "interrupted_at_hop": 2, "hops": [{"tx_id": 46473, "timestamp": "2026/09/10 08:28:29", "hop": 1, "from_account": "ACC100361", "to_account": "ACC101674", "from_bank": 17, "to_bank": 18, "amount": 76053.16, "risk_score": 0.8185, "decision": "ALLOW"}, {"tx_id": 46481, "timestamp": "2026/09/10 08:30:29", "hop": 2, "from_account": "ACC101674", "to_account": "ACC102003", "from_bank": 18, "to_bank": 32, "amount": 73771.57, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 46489, "timestamp": "2026/09/10 08:32:59", "hop": 3, "from_account": "ACC102003", "to_account": "ACC103020", "from_bank": 32, "to_bank": 28, "amount": 71489.97, "risk_score": 0.9899, "decision": "BLOCKED_UPSTREAM"}, {"tx_id": 46506, "timestamp": "2026/09/10 08:35:59", "hop": 4, "from_account": "ACC103020", "to_account": "ACC102867", "from_bank": 28, "to_bank": 26, "amount": 69208.38, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}]}, {"chain_id": 34, "typology": "Fan-In", "interrupted_at_hop": 2, "hops": [{"tx_id": 39574, "timestamp": "2026/09/08 17:11:36", "hop": 1, "from_account": "ACC102022", "to_account": "ACC102984", "from_bank": 19, "to_bank": 24, "amount": 17313.08, "risk_score": 0.8734, "decision": "ALLOW"}, {"tx_id": 39585, "timestamp": "2026/09/08 17:12:46", "hop": 1, "from_account": "ACC103297", "to_account": "ACC102984", "from_bank": 33, "to_bank": 24, "amount": 17313.08, "risk_score": 0.2001, "decision": "ALLOW"}, {"tx_id": 39594, "timestamp": "2026/09/08 17:13:56", "hop": 1, "from_account": "ACC101450", "to_account": "ACC102984", "from_bank": 30, "to_bank": 24, "amount": 17313.08, "risk_score": 0.7592, "decision": "ALLOW"}, {"tx_id": 39604, "timestamp": "2026/09/08 17:15:06", "hop": 1, "from_account": "ACC101436", "to_account": "ACC102984", "from_bank": 28, "to_bank": 24, "amount": 17313.08, "risk_score": 0.1274, "decision": "ALLOW"}, {"tx_id": 39620, "timestamp": "2026/09/08 17:16:56", "hop": 2, "from_account": "ACC102984", "to_account": "ACC100328", "from_bank": 24, "to_bank": 31, "amount": 66482.21, "risk_score": 0.994, "decision": "HOLD"}, {"tx_id": 39645, "timestamp": "2026/09/08 17:21:16", "hop": 3, "from_account": "ACC100328", "to_account": "ACC104057", "from_bank": 31, "to_bank": 10, "amount": 64404.64, "risk_score": 0.9944, "decision": "BLOCKED_UPSTREAM"}]}]};
-  const EMBEDDED_SCENARIOS = {"fan_out_mule": {"tx_id": 99001, "timestamp": "2026/10/18 10:14:40", "from_account_hash": "ACCT_EF72606626ED", "to_account_hash": "ACCT_AB5796323503", "from_bank": 14, "to_bank": 27, "amount": 185000.0, "currency": "INR", "payment_format": "Wire", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "5.0", "impact": 3.246}, {"feature": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": "5.0", "impact": 3.184}], "chain_id": 999, "hop_number": 1, "typology": "Fan-Out", "prev_audit_hash": "0000000000000000", "audit_hash": "448fd87d6db3f8ab", "title": "Mule Hop 1 -> Hop 2 Fan-Out Dispersal (INR 185,000 Wire)", "latency_ms": 0.0469, "rules_baseline_score": 0.99, "rules_would_flag": true, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 2.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 5.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 3.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 6.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.96}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.95}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 4.78}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 1.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 1.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 4.2}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 5.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 1.0}]}, "gather_scatter_mule": {"tx_id": 99001, "timestamp": "2026/10/18 10:14:40", "from_account_hash": "ACCT_5C058B65169D", "to_account_hash": "ACCT_0D0EEB36012E", "from_bank": 11, "to_bank": 19, "amount": 240000.0, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "4.0", "impact": 5.752}, {"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "4.0", "impact": 2.579}], "chain_id": 999, "hop_number": 2, "typology": "Gather-Scatter", "prev_audit_hash": "448fd87d6db3f8ab", "audit_hash": "cb2f78252c537288", "title": "Gather-Scatter Aggregator Mule Drain (INR 240,000 ACH)", "latency_ms": 0.0349, "rules_baseline_score": 0.99, "rules_would_flag": true, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 4.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 4.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 5.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 4.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.94}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.92}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 5.1}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 1.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 1.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 3.8}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 4.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.75}]}, "step_up_borderline": {"tx_id": 99001, "timestamp": "2026/10/18 10:14:40", "from_account_hash": "ACCT_95D76BF27994", "to_account_hash": "ACCT_4D8D2562E30D", "from_bank": 12, "to_bank": 18, "amount": 48500.0, "currency": "INR", "payment_format": "ACH", "risk_score": 0.994, "action": "HOLD", "reason_codes": [{"feature": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": "Yes", "impact": 4.698}, {"feature": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": "1.0", "impact": 1.352}, {"feature": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": "2.0", "impact": 1.245}], "chain_id": 999, "hop_number": 1, "typology": "Suspicious First-Time Peer", "prev_audit_hash": "cb2f78252c537288", "audit_hash": "3695308a144b4139", "title": "Unusual First-Time High-Value Transfer (INR 48,500 ACH)", "latency_ms": 0.0219, "rules_baseline_score": 0.38, "rules_would_flag": false, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 1.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 2.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 2.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 2.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.68}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.65}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 5.95}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 1.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 1.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 2.3}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 2.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.75}]}, "corporate_payroll": {"tx_id": 99001, "timestamp": "2026/10/18 10:14:40", "from_account_hash": "ACCT_F8CE27D28FCE", "to_account_hash": "ACCT_D59DCD517581", "from_bank": 10, "to_bank": 10, "amount": 42000.0, "currency": "INR", "payment_format": "ACH", "risk_score": 0.0142, "action": "ALLOW", "reason_codes": [], "chain_id": 0, "hop_number": 0, "typology": "Legitimate Payroll (Static Rules False-Positive)", "prev_audit_hash": "3695308a144b4139", "audit_hash": "3695308a144b4139", "title": "Legitimate Corporate Payroll Batch (INR 42,000 ACH to Known Employee)", "latency_ms": 0.021, "rules_baseline_score": 0.6, "rules_would_flag": true, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 0.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 5.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 1.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 5.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.0}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.0}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 11.36}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 0.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 0.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": 0.25}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 5.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.75}]}, "retail_normal": {"tx_id": 99001, "timestamp": "2026/10/18 10:14:40", "from_account_hash": "ACCT_02251785C426", "to_account_hash": "ACCT_60EFDEC306C6", "from_bank": 15, "to_bank": 15, "amount": 1850.0, "currency": "INR", "payment_format": "Credit Card", "risk_score": 0.0023, "action": "ALLOW", "reason_codes": [], "chain_id": 0, "hop_number": 0, "typology": "Legitimate Retail", "prev_audit_hash": "3695308a144b4139", "audit_hash": "3695308a144b4139", "title": "Normal Retail Peer Transfer (INR 1,850 Credit Card)", "latency_ms": 0.0195, "rules_baseline_score": 0.0, "rules_would_flag": false, "feature_breakdown": [{"name": "fan_in_1h", "label": "Inbound Fan-In Burst (1h)", "value": 0.0}, {"name": "fan_out_1h", "label": "Outbound Fan-Out Dispersal (1h)", "value": 1.0}, {"name": "fan_in_24h", "label": "24h Inbound Counterparty Surge", "value": 1.0}, {"name": "fan_out_24h", "label": "24h Outbound Counterparty Surge", "value": 2.0}, {"name": "pass_through_ratio_15m", "label": "Rapid 15m Pass-Through Ratio", "value": 0.0}, {"name": "pass_through_ratio_1h", "label": "High 1h Pass-Through Ratio", "value": 0.12}, {"name": "time_since_last_credit_log", "label": "Immediate Post-Credit Dispersal", "value": 10.8}, {"name": "rapid_turnover_flag", "label": "Rapid Credit-to-Debit Drain", "value": 0.0}, {"name": "counterparty_novelty", "label": "First-Time Counterparty Transfer", "value": 0.0}, {"name": "amount_zscore", "label": "Anomalous Transfer Size (Z-Score)", "value": -0.1}, {"name": "out_tx_velocity_1h", "label": "High Outgoing Transfer Velocity (1h)", "value": 1.0}, {"name": "payment_format_risk", "label": "High-Risk Instant Rail (Wire/ACH)", "value": 0.3}]}};
 
-  const state = {
-    streamCursor: 0,
-    autoTimer: null,
-    filter: 'ALL',
-    chainIdx: 0,
-    budgetRate: 1.0,
-    activePreset: 'fan_out_mule'
-  };
-
-  const budgetCurveData = [
-    { rate: 0.5, hop: 41.2, rules: 31.6, chains: 88.0 },
-    { rate: 1.0, hop: 53.3, rules: 44.5, chains: 94.0 },
-    { rate: 1.5, hop: 64.7, rules: 54.0, chains: 96.0 },
-    { rate: 2.0, hop: 78.3, rules: 57.7, chains: 98.0 },
-    { rate: 2.5, hop: 84.6, rules: 63.2, chains: 98.0 }
-  ];
-
-  // Tooltip controller
-  const tooltipEl = document.getElementById('vizTooltip');
-  function showTooltip(evt, html) {
-    tooltipEl.innerHTML = html;
-    tooltipEl.classList.add('visible');
-    tooltipEl.setAttribute('aria-hidden', 'false');
-    const x = Math.min(window.innerWidth - 285, evt.clientX + 14);
-    const y = Math.max(12, evt.clientY - 28);
-    tooltipEl.style.left = `${x}px`;
-    tooltipEl.style.top = `${y}px`;
+// 1. Five Core Interactive Demo Scenarios (Exact State Machine)
+const SCENARIO_STATES = {
+  fan_out_mule: {
+    id: "fan_out_mule",
+    title: "Mule Hop-1 -> Hop-2 Fan-Out Dispersal (INR 185,000 Wire)",
+    decision: "HOLD",
+    score: 0.994,
+    latency_ms: "0.05 ms",
+    from_hash: "ACCT_EF72606626ED",
+    to_hash: "ACCT_AB5796323503",
+    from_bank: 14,
+    to_bank: 27,
+    amount: 185000,
+    currency: "INR",
+    format: "Wire",
+    typology: "Fan-Out (Hop 1 Interdiction)",
+    static_rules_score: 0.99,
+    static_rules_flagged: true,
+    static_rules_label: "Static Velocity Baseline: 0.99 (FLAGGED)",
+    differentiator_note: "Both engines flag extreme fan-out burst, but HopStop executes in 0.05 ms pre-settlement with specific SHAP attributions.",
+    shap_reasons: [
+      { label: "Rapid Credit-to-Debit Drain", value: "Yes (96% drained in 4m)", impact: "+4.70" },
+      { label: "Outbound Fan-Out Dispersal", value: "5 new recipients (1h)", impact: "+3.25" },
+      { label: "High Outgoing Transfer Velocity", value: "5 wire transfers (1h)", impact: "+3.18" }
+    ],
+    features: [
+      { name: "pass_through_ratio_15m", val: "0.96" },
+      { name: "fan_out_1h", val: "5.0" },
+      { name: "out_tx_velocity_1h", val: "5.0" },
+      { name: "rapid_turnover_flag", val: "1.0" },
+      { name: "counterparty_novelty", val: "1.0" },
+      { name: "amount_zscore", val: "+4.20" }
+    ],
+    prev_hash: "41fe823e5fae9644",
+    audit_sha256: "05cd88d9553492d8f9a17c42b6108e317a90b34c18d2e75a99014f8a21c3e809"
+  },
+  gather_scatter_mule: {
+    id: "gather_scatter_mule",
+    title: "Gather-Scatter Aggregator Mule Drain (INR 240,000 ACH)",
+    decision: "HOLD",
+    score: 0.991,
+    latency_ms: "0.04 ms",
+    from_hash: "ACCT_91C4A802D11B",
+    to_hash: "ACCT_38F10E77C42A",
+    from_bank: 11,
+    to_bank: 19,
+    amount: 240000,
+    currency: "INR",
+    format: "ACH",
+    typology: "Gather-Scatter (Hop 2 Freeze)",
+    static_rules_score: 0.85,
+    static_rules_flagged: true,
+    static_rules_label: "Static Velocity Baseline: 0.85 (FLAGGED)",
+    differentiator_note: "Aggregator mule collects 3 placement credits and immediately scatters 94% of funds across inter-bank ACH rails.",
+    shap_reasons: [
+      { label: "Rapid 15m Pass-Through Ratio", value: "0.94x inflow drained", impact: "+4.42" },
+      { label: "Inbound Fan-In Burst (1h)", value: "4 distinct senders", impact: "+3.10" },
+      { label: "Outbound Fan-Out Dispersal", value: "4 new payees (1h)", impact: "+2.89" }
+    ],
+    features: [
+      { name: "pass_through_ratio_15m", val: "0.94" },
+      { name: "fan_in_1h", val: "4.0" },
+      { name: "fan_out_1h", val: "4.0" },
+      { name: "rapid_turnover_flag", val: "1.0" },
+      { name: "counterparty_novelty", val: "1.0" },
+      { name: "amount_zscore", val: "+3.80" }
+    ],
+    prev_hash: "05cd88d9553492d8",
+    audit_sha256: "8f91a2c47e0b3156d8231904a7c65122e9081b44f72c3a1109d4e821b65a901c"
+  },
+  step_up_borderline: {
+    id: "step_up_borderline",
+    title: "Borderline High-Value First-Time Transfer (INR 48,500 ACH)",
+    decision: "STEP_UP",
+    score: 0.912,
+    latency_ms: "0.04 ms",
+    from_hash: "ACCT_63D09A11E4F2",
+    to_hash: "ACCT_77B21C09F83E",
+    from_bank: 12,
+    to_bank: 18,
+    amount: 48500,
+    currency: "INR",
+    format: "ACH",
+    typology: "Unusual Peer Transfer (Challenge)",
+    static_rules_score: 0.35,
+    static_rules_flagged: false,
+    static_rules_label: "Static Velocity Baseline: 0.35 (MISSED)",
+    differentiator_note: "Instead of a harsh account freeze or a silent miss, HopStop triggers biometric/OTP Step-Up verification.",
+    shap_reasons: [
+      { label: "First-Time Counterparty Transfer", value: "Novel recipient", impact: "+2.15" },
+      { label: "Anomalous Transfer Size (Z-Score)", value: "+2.30 SD above mean", impact: "+1.84" },
+      { label: "Immediate Post-Credit Dispersal", value: "380s after inflow", impact: "+1.42" }
+    ],
+    features: [
+      { name: "pass_through_ratio_15m", val: "0.68" },
+      { name: "fan_out_1h", val: "2.0" },
+      { name: "counterparty_novelty", val: "1.0" },
+      { name: "amount_zscore", val: "+2.30" },
+      { name: "rapid_turnover_flag", val: "1.0" },
+      { name: "payment_format_risk", val: "0.75" }
+    ],
+    prev_hash: "8f91a2c47e0b3156",
+    audit_sha256: "c30491e82a71d55390b12f48a6c90123e7741d89b32a6501f98e2104d73c612a"
+  },
+  corporate_payroll: {
+    id: "corporate_payroll",
+    title: "Legitimate Corporate Payroll Batch (INR 42,000 ACH to Known Employee)",
+    decision: "ALLOW",
+    score: 0.008,
+    latency_ms: "0.04 ms",
+    from_hash: "ACCT_CORP001892A1",
+    to_hash: "ACCT_EMP0041288B4",
+    from_bank: 10,
+    to_bank: 10,
+    amount: 42000,
+    currency: "INR",
+    format: "ACH",
+    typology: "Legitimate Corporate Payroll",
+    static_rules_score: 0.45,
+    static_rules_flagged: true,
+    static_rules_label: "Static Velocity Baseline: 0.45 -> FLAGGED (FALSE POSITIVE!)",
+    differentiator_note: "CORE DIFFERENTIATOR: Static velocity rules falsely flag this payroll batch due to fan_out_1h=5. HopStop resolves it safely (ALLOW, 0.008) because pass_through_ratio_15m is 0.0 and recipients are known corporate counterparties.",
+    shap_reasons: [
+      { label: "Rapid 15m Pass-Through Ratio", value: "0.00 (Funded from reserve)", impact: "-3.85" },
+      { label: "Known Trusted Counterparty", value: "Recurring employee account", impact: "-2.90" },
+      { label: "Historical Amount Z-Score", value: "+0.25 SD (Normal salary)", impact: "-1.60" }
+    ],
+    features: [
+      { name: "pass_through_ratio_15m", val: "0.00" },
+      { name: "counterparty_novelty", val: "0.0" },
+      { name: "rapid_turnover_flag", val: "0.0" },
+      { name: "fan_out_1h", val: "5.0" },
+      { name: "amount_zscore", val: "+0.25" },
+      { name: "time_since_credit_log", val: "11.36" }
+    ],
+    prev_hash: "c30491e82a71d553",
+    audit_sha256: "e71904b28c61f33901a45d82e7c31094b8821f63d09a4128c55e7019a38b410f"
+  },
+  retail_normal: {
+    id: "retail_normal",
+    title: "Routine Retail Merchant Payment (INR 1,850 Credit Card)",
+    decision: "ALLOW",
+    score: 0.002,
+    latency_ms: "0.03 ms",
+    from_hash: "ACCT_88A10F42C901",
+    to_hash: "ACCT_MERCH9021A4",
+    from_bank: 15,
+    to_bank: 15,
+    amount: 1850,
+    currency: "INR",
+    format: "Credit Card",
+    typology: "Legitimate Retail Spend",
+    static_rules_score: 0.0,
+    static_rules_flagged: false,
+    static_rules_label: "Static Velocity Baseline: 0.00 (PASSED)",
+    differentiator_note: "Zero friction for everyday retail payments: scored in 30 microseconds on-platform with zero external network hop.",
+    shap_reasons: [
+      { label: "Rapid 15m Pass-Through Ratio", value: "0.00 (No rapid drain)", impact: "-4.10" },
+      { label: "Known Trusted Counterparty", value: "Established merchant", impact: "-2.40" },
+      { label: "Transfer Amount Z-Score", value: "-0.10 SD (Routine spend)", impact: "-1.95" }
+    ],
+    features: [
+      { name: "pass_through_ratio_15m", val: "0.00" },
+      { name: "fan_out_1h", val: "1.0" },
+      { name: "counterparty_novelty", val: "0.0" },
+      { name: "rapid_turnover_flag", val: "0.0" },
+      { name: "amount_zscore", val: "-0.10" },
+      { name: "payment_format_risk", val: "0.30" }
+    ],
+    prev_hash: "e71904b28c61f339",
+    audit_sha256: "9a02f418c73e6120d84519a3b7c20914e6632a81f09d4312b77c8012e45a913b"
   }
-  function hideTooltip() {
-    tooltipEl.classList.remove('visible');
-    tooltipEl.setAttribute('aria-hidden', 'true');
-  }
+};
 
-  // Cursor spotlight tracking
-  document.addEventListener('mousemove', (e) => {
-    document.querySelectorAll('.bento-card').forEach((card) => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-      card.style.setProperty('--my', `${e.clientY - r.top}px`);
-    });
+// 2. Alert-Budget Scaling Table (0.5% to 2.5%)
+const BUDGET_SCALING = {
+  "0.5": { hopRecall: "41.2%", rulesRecall: "31.6%", lift: "+30.4%", chainsFrozen: "88.0%", chainsCount: "44/50" },
+  "1.0": { hopRecall: "53.3%", rulesRecall: "44.5%", lift: "+19.8%", chainsFrozen: "94.0%", chainsCount: "47/50" },
+  "1.5": { hopRecall: "64.7%", rulesRecall: "54.0%", lift: "+19.8%", chainsFrozen: "96.0%", chainsCount: "48/50" },
+  "2.0": { hopRecall: "72.8%", rulesRecall: "62.9%", lift: "+15.7%", chainsFrozen: "98.0%", chainsCount: "49/50" },
+  "2.5": { hopRecall: "79.4%", rulesRecall: "68.4%", lift: "+16.1%", chainsFrozen: "98.0%", chainsCount: "49/50" }
+};
+
+// 3. Multi-Hop Laundering Chains for Topology Stage
+const TOPOLOGY_CHAINS = [
+  {
+    chain_id: 5,
+    typology: "Fan-Out Dispersal",
+    interrupted_at_hop: 1,
+    hops: [
+      { hop: 1, from: "ACC104821", to: "ACC109312", banks: "14→27", amount: 185000, score: "0.9940", decision: "HOLD" },
+      { hop: 2, from: "ACC109312", to: "ACC102410", banks: "27→19", amount: 61000, score: "0.9912", decision: "BLOCKED_UPSTREAM" },
+      { hop: 2, from: "ACC109312", to: "ACC103881", banks: "27→22", amount: 61000, score: "0.9895", decision: "BLOCKED_UPSTREAM" },
+      { hop: 3, from: "ACC102410", to: "ACC107901", banks: "19→31", amount: 59500, score: "0.9840", decision: "BLOCKED_UPSTREAM" }
+    ]
+  },
+  {
+    chain_id: 12,
+    typology: "Simple-Cycle Layering",
+    interrupted_at_hop: 2,
+    hops: [
+      { hop: 1, from: "ACC101140", to: "ACC103299", banks: "11→16", amount: 142000, score: "0.9904", decision: "STEP_UP" },
+      { hop: 2, from: "ACC103299", to: "ACC104512", banks: "16→24", amount: 138000, score: "0.9944", decision: "HOLD" },
+      { hop: 3, from: "ACC104512", to: "ACC108119", banks: "24→12", amount: 134000, score: "0.9918", decision: "BLOCKED_UPSTREAM" },
+      { hop: 4, from: "ACC108119", to: "ACC101140", banks: "12→11", amount: 130000, score: "0.9890", decision: "BLOCKED_UPSTREAM" }
+    ]
+  },
+  {
+    chain_id: 19,
+    typology: "Gather-Scatter Aggregator",
+    interrupted_at_hop: 2,
+    hops: [
+      { hop: 1, from: "ACC100912", to: "ACC102190", banks: "13→11", amount: 80000, score: "0.9899", decision: "STEP_UP" },
+      { hop: 2, from: "ACC102190", to: "ACC108841", banks: "11→19", amount: 240000, score: "0.9942", decision: "HOLD" },
+      { hop: 3, from: "ACC108841", to: "ACC109440", banks: "19→28", amount: 118000, score: "0.9910", decision: "BLOCKED_UPSTREAM" },
+      { hop: 3, from: "ACC108841", to: "ACC109712", banks: "19→30", amount: 118000, score: "0.9905", decision: "BLOCKED_UPSTREAM" }
+    ]
+  },
+  {
+    chain_id: 28,
+    typology: "Scatter-Gather Funnel",
+    interrupted_at_hop: 1,
+    hops: [
+      { hop: 1, from: "ACC101802", to: "ACC105019", banks: "15→21", amount: 210000, score: "0.9948", decision: "HOLD" },
+      { hop: 2, from: "ACC105019", to: "ACC106331", banks: "21→18", amount: 69000, score: "0.9921", decision: "BLOCKED_UPSTREAM" },
+      { hop: 2, from: "ACC105019", to: "ACC106890", banks: "21→25", amount: 69000, score: "0.9915", decision: "BLOCKED_UPSTREAM" },
+      { hop: 3, from: "ACC106331", to: "ACC109904", banks: "18→33", amount: 136000, score: "0.9882", decision: "BLOCKED_UPSTREAM" }
+    ]
+  }
+];
+
+// 4. Live Stream Alert Feed Pool
+const STREAM_ALERTS = [
+  {
+    tx_id: 35861, timestamp: "2026/09/08 05:11:55",
+    from_hash: "ACCT_1E0121085B98", to_hash: "ACCT_8E7D38C59B78",
+    amount: 49848.99, currency: "INR", format: "Wire", typology: "Scatter-Gather", hop: 1,
+    score: 0.9944, action: "HOLD",
+    prev_hash: "41fe823e5fae9644", audit_hash: "05cd88d9553492d8",
+    reasons: [
+      { label: "Rapid Credit-to-Debit Drain", value: "Yes" },
+      { label: "Anomalous Transfer Size (Z-Score)", value: "+4.10" },
+      { label: "Outbound Fan-Out Dispersal", value: "4 peers" }
+    ]
+  },
+  {
+    tx_id: 35855, timestamp: "2026/09/08 05:09:35",
+    from_hash: "ACCT_B030C907DC92", to_hash: "ACCT_8E7D38C59B78",
+    amount: 67214.50, currency: "INR", format: "ACH", typology: "Gather-Scatter", hop: 2,
+    score: 0.9940, action: "HOLD",
+    prev_hash: "05cd88d9553492d8", audit_hash: "7a19c4e82b01f63d",
+    reasons: [
+      { label: "Rapid 15m Pass-Through Ratio", value: "0.96x inflow" },
+      { label: "Inbound Fan-In Burst (1h)", value: "3 peers" },
+      { label: "Rapid Credit-to-Debit Drain", value: "Yes" }
+    ]
+  },
+  {
+    tx_id: 35848, timestamp: "2026/09/08 05:05:45",
+    from_hash: "ACCT_5DA0359FB154", to_hash: "ACCT_B030C907DC92",
+    amount: 51926.03, currency: "INR", format: "Wire", typology: "Scatter-Gather", hop: 1,
+    score: 0.9935, action: "STEP_UP",
+    prev_hash: "7a19c4e82b01f63d", audit_hash: "9e42b108c73a519f",
+    reasons: [
+      { label: "First-Time Counterparty Transfer", value: "Yes" },
+      { label: "High-Risk Instant Rail (Wire/ACH)", value: "Wire" },
+      { label: "Immediate Post-Credit Dispersal", value: "145s" }
+    ]
+  },
+  {
+    tx_id: 35749, timestamp: "2026/09/08 02:52:23",
+    from_hash: "ACCT_E178CF7EA414", to_hash: "ACCT_DD95AE01CA42",
+    amount: 185000.00, currency: "INR", format: "Wire", typology: "Fan-Out", hop: 1,
+    score: 0.9942, action: "HOLD",
+    prev_hash: "9e42b108c73a519f", audit_hash: "3c80d174e92a604b",
+    reasons: [
+      { label: "Rapid Credit-to-Debit Drain", value: "Yes" },
+      { label: "Outbound Fan-Out Dispersal", value: "5 peers" },
+      { label: "High Outgoing Transfer Velocity", value: "5 tx/1h" }
+    ]
+  },
+  {
+    tx_id: 35712, timestamp: "2026/09/08 02:18:10",
+    from_hash: "ACCT_44C91E02A71B", to_hash: "ACCT_91F02D88E31C",
+    amount: 44200.00, currency: "INR", format: "ACH", typology: "Simple-Cycle", hop: 1,
+    score: 0.9908, action: "STEP_UP",
+    prev_hash: "3c80d174e92a604b", audit_hash: "6b21f904d83e712a",
+    reasons: [
+      { label: "Immediate Post-Credit Dispersal", value: "210s" },
+      { label: "First-Time Counterparty Transfer", value: "Yes" },
+      { label: "Rapid 15m Pass-Through Ratio", value: "0.89x inflow" }
+    ]
+  },
+  {
+    tx_id: 35690, timestamp: "2026/09/08 01:49:02",
+    from_hash: "ACCT_72A81D39F04E", to_hash: "ACCT_19C40B77E82D",
+    amount: 128400.00, currency: "INR", format: "Wire", typology: "Fan-In", hop: 2,
+    score: 0.9946, action: "HOLD",
+    prev_hash: "6b21f904d83e712a", audit_hash: "d410e829a73c501f",
+    reasons: [
+      { label: "Inbound Fan-In Burst (1h)", value: "4 peers" },
+      { label: "Rapid Credit-to-Debit Drain", value: "Yes" },
+      { label: "Anomalous Transfer Size (Z-Score)", value: "+3.95" }
+    ]
+  }
+];
+
+const FEATURE_IMPORTANCES = [
+  { label: "Rapid Credit-to-Debit Drain", pct: 25.0 },
+  { label: "Anomalous Transfer Size (Z-Score)", pct: 24.3 },
+  { label: "High-Risk Instant Rail (Wire/ACH)", pct: 23.6 },
+  { label: "First-Time Counterparty Transfer", pct: 12.5 },
+  { label: "Inbound Fan-In Burst (1h)", pct: 8.3 },
+  { label: "Immediate Post-Credit Dispersal", pct: 3.5 },
+  { label: "Rapid 15m Pass-Through Ratio", pct: 2.8 }
+];
+
+const TELEMETRY_ROWS = [
+  ["Target Platform", "IBM Z / LinuxONE (s390x Container Ready)"],
+  ["Telum NNPA Probe", "libzdnn zdnn_is_nnpa_installed() auto-detect"],
+  ["Snap ML Engine", "tree_format='auto' (Telum NNPA / CPU Tensor-Trees)"],
+  ["Hardware Crypto", "CPACF AES-256-GCM & Salted SHA-256 Audit Chain"],
+  ["Chronological Split", "35,648 train (Days 1–7) / 15,232 test (Days 8–10)"]
+];
+
+let currentStreamFilter = "ALL";
+let streamIdx = 0;
+let streamInterval = null;
+
+// Ambient mouse spotlight tracking
+document.addEventListener("mousemove", (e) => {
+  const xPct = ((e.clientX / window.innerWidth) * 100).toFixed(1) + "%";
+  const yPct = ((e.clientY / window.innerHeight) * 100).toFixed(1) + "%";
+  document.body.style.setProperty("--mouse-x", xPct);
+  document.body.style.setProperty("--mouse-y", yPct);
+
+  document.querySelectorAll(".glass-card").forEach((card) => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--card-x", `${e.clientX - r.left}px`);
+    card.style.setProperty("--card-y", `${e.clientY - r.top}px`);
+  });
+});
+
+// Render Hero Sandbox State Machine
+function selectScenario(key) {
+  const s = SCENARIO_STATES[key] || SCENARIO_STATES.fan_out_mule;
+  document.querySelectorAll("#scenarioTabs .seg-tab").forEach((btn) => {
+    btn.classList.toggle("active", btn.id === "tab_" + key);
   });
 
-  // Keyboard shortcuts for accessibility (Space, N, 1-5, ArrowLeft/Right)
-  document.addEventListener('keydown', (e) => {
-    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
-    if (e.code === 'Space') { e.preventDefault(); toggleStream(); }
-    else if (e.key === 'n' || e.key === 'N') { e.preventDefault(); stepStream(); }
-    else if (e.key === '1') runPreset('fan_out_mule');
-    else if (e.key === '2') runPreset('gather_scatter_mule');
-    else if (e.key === '3') runPreset('step_up_borderline');
-    else if (e.key === '4') runPreset('corporate_payroll');
-    else if (e.key === '5') runPreset('retail_normal');
-    else if (e.key === 'ArrowRight') {
-      const next = (state.chainIdx + 1) % BENCH.sample_interrupted_chains.length;
-      document.getElementById('chainSelect').value = String(next);
-      renderChain(next);
-    } else if (e.key === 'ArrowLeft') {
-      const prev = (state.chainIdx - 1 + BENCH.sample_interrupted_chains.length) % BENCH.sample_interrupted_chains.length;
-      document.getElementById('chainSelect').value = String(prev);
-      renderChain(prev);
-    }
-  });
+  const stage = document.getElementById("sandboxStage");
+  stage.classList.add("morph-active");
 
-  /* --- SVG Chart 1: Interactive Alert-Budget Recall Curve --- */
-  function renderRecallCurve(selectedRate) {
-    const w = 290, h = 132, padL = 28, padR = 12, padT = 12, padB = 22;
-    const plotW = w - padL - padR;
-    const plotH = h - padT - padB;
-    const xPos = (rate) => padL + ((rate - 0.5) / 2.0) * plotW;
-    const yPos = (pct) => padT + plotH - ((pct - 20) / 75.0) * plotH;
+  setTimeout(() => {
+    const scoreColor = s.decision === "HOLD" ? "#f43f5e" : (s.decision === "STEP_UP" ? "#f59e0b" : "#10b981");
+    const barWidth = Math.max(3, Math.min(100, s.score * 100)).toFixed(1);
+    const rulesClass = s.static_rules_flagged ? "STEP_UP" : "ALLOW";
 
-    const hopPts = budgetCurveData.map(d => `${xPos(d.rate).toFixed(1)},${yPos(d.hop).toFixed(1)}`).join(' ');
-    const rulesPts = budgetCurveData.map(d => `${xPos(d.rate).toFixed(1)},${yPos(d.rules).toFixed(1)}`).join(' ');
-    const areaPts = `${xPos(0.5).toFixed(1)},${(padT + plotH).toFixed(1)} ${hopPts} ${xPos(2.5).toFixed(1)},${(padT + plotH).toFixed(1)}`;
-
-    const selObj = budgetCurveData.find(d => d.rate === selectedRate) || budgetCurveData[1];
-    const cx = xPos(selObj.rate).toFixed(1);
-
-    document.getElementById('curveReadout').textContent = `HopStop: ${selObj.hop}% vs Rules: ${selObj.rules}%`;
-
-    const dotsHtml = budgetCurveData.map(d => {
-      const hx = xPos(d.rate).toFixed(1), hy = yPos(d.hop).toFixed(1);
-      const rx = xPos(d.rate).toFixed(1), ry = yPos(d.rules).toFixed(1);
-      const activeR = d.rate === selectedRate ? 5 : 3.2;
-      return `
-        <circle cx="${rx}" cy="${ry}" r="3" fill="#64748b" />
-        <circle cx="${hx}" cy="${hy}" r="${activeR}" fill="#38bdf8" stroke="#050609" stroke-width="1.5"
-          style="cursor:pointer;"
-          onmousemove="HopStopApp.tip(event, '<b>Alert Budget: ${d.rate.toFixed(1)}%</b><br/>HopStop Recall: <b style=color:#34d399>${d.hop}%</b><br/>Static Rules Recall: <b>${d.rules}%</b><br/>Chains Stopped &le; Hop 2: <b style=color:#38bdf8>${d.chains}%</b>')"
-          onmouseleave="HopStopApp.untip()"
-          onclick="document.getElementById('budgetSlider').value='${d.rate}';HopStopApp.updateBudget(${d.rate})" />
-      `;
-    }).join('');
-
-    document.getElementById('svgRecallCurve').innerHTML = `
-      <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" role="img" aria-label="Recall versus alert budget curve">
-        <defs>
-          <linearGradient id="hopAreaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.32"/>
-            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
-          </linearGradient>
-        </defs>
-        <line x1="${padL}" y1="${padT + plotH}" x2="${w - padR}" y2="${padT + plotH}" stroke="rgba(255,255,255,0.1)" />
-        <line x1="${cx}" y1="${padT}" x2="${cx}" y2="${padT + plotH}" stroke="#38bdf8" stroke-dasharray="3 3" stroke-width="1.2" />
-        <polygon points="${areaPts}" fill="url(#hopAreaGrad)" />
-        <polyline fill="none" stroke="#64748b" stroke-width="1.8" stroke-dasharray="4 3" points="${rulesPts}" />
-        <polyline fill="none" stroke="#38bdf8" stroke-width="2.4" points="${hopPts}" />
-        ${dotsHtml}
-        <text x="${padL}" y="${h - 5}" fill="#64748b" font-size="9.5" font-family="JetBrains Mono">0.5%</text>
-        <text x="${xPos(1.0) - 10}" y="${h - 5}" fill="#93c5fd" font-size="9.5" font-family="JetBrains Mono">1.0%</text>
-        <text x="${xPos(2.0) - 10}" y="${h - 5}" fill="#64748b" font-size="9.5" font-family="JetBrains Mono">2.0%</text>
-        <text x="${w - padR - 22}" y="${h - 5}" fill="#64748b" font-size="9.5" font-family="JetBrains Mono">2.5%</text>
-      </svg>
-    `;
-  }
-
-  /* --- SVG Chart 2: Per-Typology Chain Interruption Matrix --- */
-  function renderTypologyChart() {
-    const byTyp = BENCH.chain_interruption.by_typology || {};
-    const entries = Object.entries(byTyp);
-    const rowsHtml = entries.map(([name, st]) => {
-      const mlPct = Math.round((st.stopped_hop2_ml / Math.max(1, st.total)) * 100);
-      const rlPct = Math.round((st.stopped_hop2_rules / Math.max(1, st.total)) * 100);
-      return `
-        <div style="display:grid;grid-template-columns:88px 1fr 36px;align-items:center;gap:6px;margin:3.5px 0;font-size:10.5px;"
-             onmousemove="HopStopApp.tip(event, '<b>${name} (${st.total} test chains)</b><br/>HopStop Stopped &le; Hop 2: <b style=color:#34d399>${st.stopped_hop2_ml}/${st.total} (${mlPct}%)</b><br/>Static Rules: <b>${st.stopped_hop2_rules}/${st.total} (${rlPct}%)</b>')"
-             onmouseleave="HopStopApp.untip()">
-          <span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</span>
-          <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:999px;position:relative;overflow:hidden;">
-            <div style="position:absolute;inset:0;width:${mlPct}%;background:linear-gradient(90deg,#10b981,#06b6d4);border-radius:999px;"></div>
-          </div>
-          <span class="mono" style="text-align:right;color:#e2e8f0;font-size:10px;">${mlPct}%</span>
-        </div>
-      `;
-    }).join('');
-    document.getElementById('svgTypologyChart').innerHTML = rowsHtml;
-  }
-
-  /* --- SVG Chart 3: Animated Directed Network Graph for Multi-Hop Chains --- */
-  function renderChain(idx) {
-    state.chainIdx = parseInt(idx, 10) || 0;
-    const c = BENCH.sample_interrupted_chains[state.chainIdx];
-    if (!c) return;
-    document.getElementById('chainMeta').textContent = `Chain #${c.chain_id} (${c.typology}) • Frozen at Hop ${c.interrupted_at_hop}`;
-
-    const hops = c.hops.slice(0, 5);
-    const n = hops.length;
-    const svgW = 860, svgH = 158;
-    const stepX = (svgW - 170) / Math.max(1, n - 1);
-
-    let edgesSvg = '';
-    let nodesSvg = '';
-
-    hops.forEach((h, i) => {
-      const x = 85 + i * stepX;
-      const y = 78;
-      const isBlocked = h.decision === 'BLOCKED_UPSTREAM';
-      const isHeld = h.decision === 'HOLD' || h.decision === 'STEP_UP';
-
-      if (i < n - 1) {
-        const nx = 85 + (i + 1) * stepX;
-        const nextBlocked = hops[i + 1].decision === 'BLOCKED_UPSTREAM';
-        const strokeCol = nextBlocked ? '#10b981' : '#38bdf8';
-        const cls = nextBlocked ? '' : 'edge-animated';
-        const dash = nextBlocked ? 'stroke-dasharray="4 5"' : '';
-        edgesSvg += `
-          <line x1="${x + 62}" y1="${y}" x2="${nx - 62}" y2="${y}"
-                stroke="${strokeCol}" stroke-width="2.2" class="${cls}" ${dash} />
-          <text x="${(x + nx) / 2}" y="${y - 10}" text-anchor="middle" fill="${strokeCol}" font-size="9.5" font-family="JetBrains Mono">
-            ${nextBlocked ? '✕ SEVERED' : '⟶ LIVE'}
-          </text>
-        `;
-      }
-
-      const boxStroke = isBlocked ? '#10b981' : (isHeld ? '#f43f5e' : '#3b82f6');
-      const boxFill = isBlocked ? 'rgba(6, 46, 34, 0.85)' : (isHeld ? 'rgba(69, 10, 20, 0.9)' : 'rgba(15, 23, 42, 0.9)');
-      const badgeCol = isBlocked ? '#6ee7b7' : (isHeld ? '#fda4af' : '#93c5fd');
-
-      nodesSvg += `
-        <g transform="translate(${x - 60}, ${y - 46})" style="cursor:pointer;"
-           onmousemove="HopStopApp.tip(event, '<b>Hop ${h.hop}: ${h.from_account} &rarr; ${h.to_account}</b><br/>Bank ${h.from_bank} &rarr; Bank ${h.to_bank}<br/>Amount: <b>INR ${h.amount.toLocaleString()}</b><br/>HopStop Score: <b style=color:#38bdf8>${h.risk_score}</b><br/>Action: <b>${h.decision}</b>')"
-           onmouseleave="HopStopApp.untip()">
-          <rect width="120" height="92" rx="8" fill="${boxFill}" stroke="${boxStroke}" stroke-width="${isHeld ? 2 : 1.3}" />
-          <text x="10" y="18" fill="#93c5fd" font-size="9.5" font-weight="700" font-family="JetBrains Mono">HOP ${h.hop}</text>
-          <text x="110" y="18" text-anchor="end" fill="${badgeCol}" font-size="9" font-weight="700" font-family="JetBrains Mono">${h.decision === 'BLOCKED_UPSTREAM' ? 'PROTECTED' : h.decision}</text>
-          <text x="10" y="36" fill="#ffffff" font-size="10" font-weight="600" font-family="JetBrains Mono">${h.from_account}</text>
-          <text x="10" y="50" fill="#94a3b8" font-size="9.5" font-family="JetBrains Mono">→ ${h.to_account}</text>
-          <text x="10" y="68" fill="#e2e8f0" font-size="10" font-weight="600">INR ${h.amount.toLocaleString()}</text>
-          <text x="10" y="82" fill="#38bdf8" font-size="9.5" font-family="JetBrains Mono">p = ${h.risk_score}</text>
-        </g>
-      `;
-    });
-
-    document.getElementById('svgChainStage').innerHTML = `
-      <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="${svgH}" role="img" aria-label="Multi-hop laundering chain topology">
-        ${edgesSvg}
-        ${nodesSvg}
-      </svg>
-    `;
-  }
-
-  /* --- SVG Chart 4: Causal Feature Attribution & Latency Percentile Strip --- */
-  function renderFeaturesAndLatency() {
-    const maxW = Math.max(...BENCH.feature_importances.map(f => f.weight), 0.01);
-    document.getElementById('svgFeatureBars').innerHTML = BENCH.feature_importances.slice(0, 6).map(f => {
-      const wPct = ((f.weight / maxW) * 100).toFixed(1);
-      const dispPct = (f.weight * 100).toFixed(1);
-      return `
-        <div style="display:grid;grid-template-columns:185px 1fr 46px;align-items:center;gap:10px;padding:3.5px 0;font-size:11.3px;"
-             onmousemove="HopStopApp.tip(event, '<b>${f.label}</b> (<code>${f.feature}</code>)<br/>Relative GBDT Split Attribution: <b style=color:#38bdf8>${dispPct}%</b>')"
-             onmouseleave="HopStopApp.untip()">
-          <span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.label}</span>
-          <div style="height:7px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;">
-            <div style="height:100%;width:${wPct}%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:999px;"></div>
-          </div>
-          <span class="mono" style="text-align:right;color:#e2e8f0;font-size:11px;">${dispPct}%</span>
-        </div>
-      `;
-    }).join('');
-
-    const lb = BENCH.latency_benchmark;
-    document.getElementById('svgLatencyStrip').innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:5px;">
-        <span style="color:var(--text-secondary);">IN-TRANSACTION LATENCY DISTRIBUTION (SLA CEILING: 10.0 MS)</span>
-        <span class="mono" style="color:#34d399;">p50: ${lb.batch_1_end_to_end_p50_ms}ms &bull; p95: ${lb.batch_1_end_to_end_p95_ms}ms &bull; p99: ${lb.batch_1_end_to_end_p99_ms}ms</span>
+    const shapHtml = s.shap_reasons.map((r) => `
+      <div class="shap-row">
+        <span><b>${r.label}:</b> <span class="mono" style="color:#93c5fd;">${r.value}</span></span>
+        <span class="mono" style="font-size:10.5px;color:#cbd5e1;">${r.impact}</span>
       </div>
-      <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:999px;position:relative;overflow:hidden;">
-        <div style="position:absolute;left:0;top:0;bottom:0;width:4.5%;background:linear-gradient(90deg,#10b981,#38bdf8);border-radius:999px;box-shadow:0 0 10px #10b981;"></div>
+    `).join("");
+
+    const featGridHtml = s.features.map((f) => `
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-translucent);border-radius:6px;padding:5px 8px;">
+        <div style="font-size:9.5px;color:var(--text-muted);">${f.name}</div>
+        <div class="mono" style="font-size:12px;font-weight:600;color:#f1f5f9;">${f.val}</div>
       </div>
-    `;
-  }
+    `).join("");
 
-  /* --- Live Scoring Sandbox Controller --- */
-  async function runPreset(type) {
-    state.activePreset = type;
-    document.querySelectorAll('.sandbox-card .pill-btn').forEach(b => {
-      const isMatch = b.id === 'btn_' + type;
-      b.classList.toggle('active', isMatch);
-      b.setAttribute('aria-selected', isMatch ? 'true' : 'false');
-    });
-
-    const container = document.getElementById('sandboxContainer');
-    container.querySelectorAll('.inset-box').forEach(el => el.classList.add('transitioning'));
-
-    let data = EMBEDDED_SCENARIOS[type];
-    try {
-      const res = await fetch('/api/score_preset?type=' + encodeURIComponent(type));
-      if (res.ok) data = await res.json();
-    } catch (e) {}
-    if (!data) return;
-
-    renderSandboxData(data);
-  }
-
-  function renderSandboxData(data) {
-    const container = document.getElementById('sandboxContainer');
-    const reasonsHtml = (data.reason_codes && data.reason_codes.length)
-      ? data.reason_codes.map(r => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;margin-top:4px;border-radius:6px;background:rgba(255,255,255,0.035);border-left:3px solid #06b6d4;font-size:11.2px;">
-            <span><b>${r.label}:</b> <span class="mono" style="color:#93c5fd;">${r.value}</span></span>
-            <span class="mono" style="font-size:10px;color:var(--text-tertiary);">+${r.impact}</span>
-          </div>
-        `).join('')
-      : `<div style="padding:6px 9px;margin-top:4px;border-radius:6px;background:rgba(16,185,129,0.08);border-left:3px solid #10b981;font-size:11.2px;color:#6ee7b7;">Zero anomalous pass-through or counterparty novelty signals triggered</div>`;
-
-    const rulesComp = data.rules_would_flag
-      ? `<span class="status-badge STEP_UP" style="font-size:9.8px;padding:2px 8px;">Rules Baseline: FLAGGED (${data.rules_baseline_score})</span>`
-      : `<span class="status-badge ALLOW" style="font-size:9.8px;padding:2px 8px;">Rules Baseline: PASSED (${data.rules_baseline_score})</span>`;
-
-    const featPills = (data.feature_breakdown || []).slice(0, 6).map(f => `
-      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);border-radius:6px;padding:4px 7px;">
-        <div style="font-size:9.5px;color:var(--text-tertiary);">${f.name}</div>
-        <div class="mono" style="font-size:11.5px;font-weight:600;color:#e2e8f0;">${f.value}</div>
-      </div>
-    `).join('');
-
-    const pctScore = Math.min(100, Math.max(2, (data.risk_score * 100))).toFixed(1);
-    const barColor = data.action === 'HOLD' ? '#f43f5e' : (data.action === 'STEP_UP' ? '#f59e0b' : '#10b981');
-
-    container.innerHTML = `
-      <div class="inset-box">
+    stage.innerHTML = `
+      <div class="inset-panel">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
             <div>
-              <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Inspected Payment Payload</div>
-              <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px;">${data.title}</div>
+              <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Live Payment Payload</div>
+              <div style="font-size:13.5px;font-weight:700;color:#fff;margin-top:2px;">${s.title}</div>
             </div>
-            <span class="status-badge ${data.action}">${data.action}</span>
+            <span class="badge-decision ${s.decision}">DECISION: ${s.decision}</span>
           </div>
-          <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;">
-            <div style="background:rgba(255,255,255,0.025);padding:5px 8px;border-radius:6px;border:1px solid var(--border-subtle);">
-              <div style="font-size:9.5px;color:var(--text-tertiary);">SENDER (SALTED SHA-256)</div>
-              <div class="mono" style="color:#93c5fd;">${data.from_account_hash}</div>
-              <div style="font-size:10px;color:var(--text-secondary);">Bank #${data.from_bank}</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+            <div style="background:rgba(255,255,255,0.025);padding:6px 9px;border-radius:6px;border:1px solid var(--border-translucent);">
+              <div style="font-size:9.5px;color:var(--text-muted);">SENDER (SHA-256)</div>
+              <div class="mono" style="font-size:11.5px;color:#93c5fd;">${s.from_hash}</div>
+              <div style="font-size:10.5px;color:var(--text-secondary);">Bank #${s.from_bank}</div>
             </div>
-            <div style="background:rgba(255,255,255,0.025);padding:5px 8px;border-radius:6px;border:1px solid var(--border-subtle);">
-              <div style="font-size:9.5px;color:var(--text-tertiary);">RECEIVER (SALTED SHA-256)</div>
-              <div class="mono" style="color:#93c5fd;">${data.to_account_hash}</div>
-              <div style="font-size:10px;color:var(--text-secondary);">Bank #${data.to_bank}</div>
+            <div style="background:rgba(255,255,255,0.025);padding:6px 9px;border-radius:6px;border:1px solid var(--border-translucent);">
+              <div style="font-size:9.5px;color:var(--text-muted);">RECEIVER (SHA-256)</div>
+              <div class="mono" style="font-size:11.5px;color:#93c5fd;">${s.to_hash}</div>
+              <div style="font-size:10.5px;color:var(--text-secondary);">Bank #${s.to_bank}</div>
             </div>
+          </div>
+
+          <div style="margin-top:8px;padding:7px 9px;border-radius:6px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);font-size:11.2px;color:#dbeafe;">
+            ${s.differentiator_note}
           </div>
         </div>
-        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-secondary);border-top:1px solid var(--border-subtle);padding-top:7px;">
-          <span>Amount: <b style="color:#fff;">${data.currency} ${data.amount.toLocaleString()}</b> (${data.payment_format})</span>
-          <span>Typology: <b style="color:#e2e8f0;">${data.typology}</b></span>
+
+        <div style="margin-top:9px;padding-top:7px;border-top:1px solid var(--border-translucent);display:flex;justify-content:space-between;font-size:11.2px;color:var(--text-secondary);">
+          <span>Amount: <b class="mono" style="color:#fff;">${s.currency} ${s.amount.toLocaleString()}</b> (${s.format})</span>
+          <span>Profile: <b style="color:#e2e8f0;">${s.typology}</b></span>
         </div>
       </div>
 
-      <div class="inset-box">
+      <div class="inset-panel">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Top-3 Analyst Reason Codes</span>
-            <span class="mono" style="font-size:10.5px;color:#34d399;">Scored in ${data.latency_ms || '0.041'} ms</span>
+            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">SHAP Reason Codes (Top-3 Attributions)</span>
+            <span class="mono" style="font-size:11px;color:#34d399;font-weight:600;">Latency: ${s.latency_ms}</span>
           </div>
-          <div style="margin-top:4px;">${reasonsHtml}</div>
+          <div style="margin-top:4px;">${shapHtml}</div>
         </div>
-        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border-subtle);padding-top:7px;">
-          ${rulesComp}
-          <span class="mono" style="font-size:10px;color:var(--text-tertiary);">SHA-256: ${data.audit_hash}...</span>
+
+        <div style="margin-top:9px;padding-top:7px;border-top:1px solid var(--border-translucent);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span class="badge-decision ${rulesClass}" style="font-size:10px;padding:2px 8px;">${s.static_rules_label}</span>
+          </div>
+          <div class="mono" style="font-size:10px;color:var(--text-muted);word-break:break-all;">
+            SHA-256 Audit: <span style="color:#34d399;">${s.audit_sha256}</span>
+          </div>
         </div>
       </div>
 
-      <div class="inset-box">
+      <div class="inset-panel">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;">
-            <span style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Snap ML Tensor-Tree Probability</span>
-            <span class="mono" style="font-size:19px;font-weight:700;color:${barColor};">${Number(data.risk_score).toFixed(4)}</span>
+            <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">HopStop ML Probability</span>
+            <span class="mono tracking-tight" style="font-size:21px;font-weight:700;color:${scoreColor};">${s.score.toFixed(3)}</span>
           </div>
-          <div style="height:7px;background:rgba(255,255,255,0.07);border-radius:999px;overflow:hidden;margin:5px 0 9px;">
-            <div style="height:100%;width:${pctScore}%;background:${barColor};box-shadow:0 0 12px ${barColor};transition:width 0.4s var(--spring-smooth);"></div>
+          <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:9999px;overflow:hidden;margin:6px 0 10px;">
+            <div style="height:100%;width:${barWidth}%;background:${scoreColor};box-shadow:0 0 12px ${scoreColor};transition:width 0.35s var(--ease-morph);"></div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:5px;">
-            ${featPills}
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;">
+            ${featGridHtml}
           </div>
         </div>
       </div>
     `;
-  }
+    stage.classList.remove("morph-active");
+  }, 90);
+}
 
-  /* --- Stream & Row-Click Forensics --- */
-  function setFilter(filterVal, btnEl) {
-    state.filter = filterVal;
-    btnEl.parentElement.querySelectorAll('.pill-btn').forEach(b => {
-      b.classList.toggle('active', b === btnEl);
-      b.setAttribute('aria-selected', b === btnEl ? 'true' : 'false');
-    });
-    document.getElementById('alertTableBody').innerHTML = '';
-    for (let i = 0; i < 6; i++) stepStream();
-  }
+// Render Multi-Hop Laundering Chain Topology Stage
+function renderTopologyChain(indexVal) {
+  const c = TOPOLOGY_CHAINS[parseInt(indexVal, 10) || 0] || TOPOLOGY_CHAINS[0];
+  document.getElementById("topologySummary").textContent =
+    `Chain #${c.chain_id} (${c.typology}) • Frozen at Hop ${c.interrupted_at_hop}`;
 
-  function stepStream() {
-    if (!BENCH || !BENCH.sample_held_alerts.length) return;
-    const filtered = BENCH.sample_held_alerts.filter(a => state.filter === 'ALL' || a.action === state.filter);
-    const pool = filtered.length ? filtered : BENCH.sample_held_alerts;
-    const item = pool[state.streamCursor % pool.length];
-    state.streamCursor++;
-    document.getElementById('queueCounter').textContent = `SCORED: ${(15232 + state.streamCursor).toLocaleString()} TX • ALERT #${state.streamCursor}`;
+  const html = c.hops.map((h, i) => {
+    const isBlocked = h.decision === "BLOCKED_UPSTREAM";
+    const isHoldOrStep = h.decision === "HOLD" || h.decision === "STEP_UP";
+    const cardClass = isBlocked
+      ? "hop-card emerald-protected"
+      : (isHoldOrStep ? "hop-card crimson-barrier" : "hop-card");
 
-    const tbody = document.getElementById('alertTableBody');
-    const reasonsHtml = (item.reason_codes || []).map(r =>
-      `<span style="display:inline-block;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-left:2px solid #06b6d4;padding:2px 6px;border-radius:4px;font-size:10px;margin:1px 3px 1px 0;"><b>${r.label}:</b> ${r.value}</span>`
-    ).join('');
+    const nextBlocked = (i < c.hops.length - 1) && c.hops[i + 1].decision === "BLOCKED_UPSTREAM";
+    const edgeHtml = (i < c.hops.length - 1)
+      ? `<div class="hop-edge ${nextBlocked ? 'severed' : ''}">
+           <span style="font-size:15px;">${nextBlocked ? '✕' : '⟶'}</span>
+           <span class="severed-pill">${nextBlocked ? '✕ BLOCKED_UPSTREAM' : 'LIVE RAIL'}</span>
+         </div>`
+      : "";
 
-    const tr = document.createElement('tr');
-    tr.className = 'row-animate';
-    tr.onclick = () => {
-      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected-row'));
-      tr.classList.add('selected-row');
-      renderSandboxData({
-        ...item,
-        title: `Stream Alert #${item.tx_id} — ${item.typology} (Hop ${item.hop_number})`,
-        latency_ms: '0.040',
-        rules_baseline_score: 0.45,
-        rules_would_flag: true,
-        feature_breakdown: [
-          { name: 'hop_number', value: item.hop_number },
-          { name: 'from_bank', value: item.from_bank },
-          { name: 'to_bank', value: item.to_bank },
-          { name: 'format', value: item.payment_format },
-          { name: 'risk_score', value: item.risk_score },
-          { name: 'action', value: item.action }
-        ]
-      });
-    };
-
-    tr.innerHTML = `
-      <td><div class="mono" style="color:#fff;font-weight:600;">#${item.tx_id}</div><div style="font-size:10px;color:var(--text-tertiary);">${item.timestamp}</div></td>
-      <td class="mono" style="font-size:10.5px;color:#93c5fd;">${item.from_account_hash}<br/><span style="color:var(--text-tertiary);">&rarr;</span> ${item.to_account_hash}</td>
-      <td><div class="tabular" style="font-weight:600;color:#fff;">${item.currency} ${item.amount.toLocaleString()}</div><div style="font-size:10px;color:var(--text-secondary);">${item.payment_format}</div></td>
-      <td><div style="font-weight:500;color:#e2e8f0;">${item.typology}</div><div class="mono" style="font-size:10px;color:#38bdf8;">Hop ${item.hop_number}</div></td>
-      <td class="mono" style="font-weight:700;color:#fda4af;">${item.risk_score.toFixed(4)}</td>
-      <td><span class="status-badge ${item.action}">${item.action}</span></td>
-      <td>${reasonsHtml}</td>
+    return `
+      <div class="${cardClass}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <span class="mono" style="font-size:10.5px;font-weight:700;color:#93c5fd;">HOP ${h.hop}</span>
+          <span class="badge-decision ${h.decision}" style="font-size:9.5px;padding:2px 7px;">${h.decision}</span>
+        </div>
+        <div class="mono" style="font-size:11.5px;font-weight:600;color:#fff;">${h.from} &rarr; ${h.to}</div>
+        <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">Bank ${h.banks}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;">
+          <span class="mono" style="font-weight:600;color:#f1f5f9;">INR ${h.amount.toLocaleString()}</span>
+          <span class="mono" style="color:#38bdf8;">p=${h.score}</span>
+        </div>
+      </div>
+      ${edgeHtml}
     `;
-    tbody.insertBefore(tr, tbody.firstChild);
-    while (tbody.children.length > 6) tbody.removeChild(tbody.lastChild);
+  }).join("");
 
-    const auditBody = document.getElementById('auditTableBody');
-    const atr = document.createElement('tr');
-    atr.className = 'row-animate';
-    atr.innerHTML = `
-      <td class="mono" style="color:#e2e8f0;">#${item.tx_id}</td>
-      <td><span class="status-badge ${item.action}" style="font-size:9px;padding:2px 6px;">${item.action}</span></td>
-      <td class="mono" style="color:var(--text-tertiary);font-size:10.5px;">${item.prev_audit_hash}...</td>
-      <td class="mono" style="color:#34d399;font-size:10.5px;">${item.audit_hash}...</td>
+  document.getElementById("topologyContainer").innerHTML = `<div class="hop-track">${html}</div>`;
+}
+
+// Alert-Budget Slider & Real-Time SVG Curve Update
+function onBudgetSliderChange(val) {
+  const key = parseFloat(val).toFixed(1);
+  const entry = BUDGET_SCALING[key] || BUDGET_SCALING["1.0"];
+
+  document.getElementById("sliderRateBadge").textContent = `${key}% Alert Budget`;
+  document.getElementById("sliderHopRecall").textContent = entry.hopRecall;
+  document.getElementById("sliderRulesRecall").textContent = entry.rulesRecall;
+  document.getElementById("sliderChainsFrozen").textContent = entry.chainsFrozen;
+
+  // Sync top KPI cards dynamically
+  document.getElementById("kpiBudgetTag").textContent = `${key}% CAP`;
+  document.getElementById("kpiRecall").textContent = entry.hopRecall;
+  document.getElementById("kpiRecallSub").textContent = `${entry.lift} lift over Rules (${entry.rulesRecall})`;
+  document.getElementById("kpiHop2").textContent = entry.chainsFrozen;
+  document.getElementById("kpiHop2Sub").textContent = `${entry.chainsCount} test chains interdicted`;
+
+  renderSvgBudgetChart(parseFloat(key));
+}
+
+function renderSvgBudgetChart(activeRate) {
+  const pts = [
+    { r: 0.5, hop: 41.2, rules: 31.6 },
+    { r: 1.0, hop: 53.3, rules: 44.5 },
+    { r: 1.5, hop: 64.7, rules: 54.0 },
+    { r: 2.0, hop: 72.8, rules: 62.9 },
+    { r: 2.5, hop: 79.4, rules: 68.4 }
+  ];
+  const w = 440, h = 110, padL = 32, padR = 16, padT = 12, padB = 22;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const xOf = (r) => padL + ((r - 0.5) / 2.0) * pw;
+  const yOf = (v) => padT + ph - ((v - 25) / 60.0) * ph;
+
+  const hopLine = pts.map(p => `${xOf(p.r).toFixed(1)},${yOf(p.hop).toFixed(1)}`).join(" ");
+  const rulesLine = pts.map(p => `${xOf(p.r).toFixed(1)},${yOf(p.rules).toFixed(1)}`).join(" ");
+  const areaPoly = `${xOf(0.5).toFixed(1)},${(padT + ph).toFixed(1)} ${hopLine} ${xOf(2.5).toFixed(1)},${(padT + ph).toFixed(1)}`;
+  const activeX = xOf(activeRate).toFixed(1);
+
+  const circles = pts.map(p => {
+    const isSel = Math.abs(p.r - activeRate) < 0.05;
+    return `
+      <circle cx="${xOf(p.r).toFixed(1)}" cy="${yOf(p.rules).toFixed(1)}" r="3" fill="#64748b" />
+      <circle cx="${xOf(p.r).toFixed(1)}" cy="${yOf(p.hop).toFixed(1)}" r="${isSel ? 5.5 : 3.5}" fill="${isSel ? '#34d399' : '#38bdf8'}" stroke="#06070a" stroke-width="1.5" />
     `;
-    auditBody.insertBefore(atr, auditBody.firstChild);
-    while (auditBody.children.length > 5) auditBody.removeChild(auditBody.lastChild);
+  }).join("");
+
+  document.getElementById("svgBudgetChartWrap").innerHTML = `
+    <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}">
+      <defs>
+        <linearGradient id="hopGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.32" />
+          <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02" />
+        </linearGradient>
+      </defs>
+      <line x1="${padL}" y1="${padT + ph}" x2="${w - padR}" y2="${padT + ph}" stroke="rgba(255,255,255,0.1)" />
+      <line x1="${activeX}" y1="${padT}" x2="${activeX}" y2="${padT + ph}" stroke="#34d399" stroke-width="1.4" stroke-dasharray="3 3" />
+      <polygon points="${areaPoly}" fill="url(#hopGrad)" />
+      <polyline fill="none" stroke="#64748b" stroke-width="1.8" stroke-dasharray="4 3" points="${rulesLine}" />
+      <polyline fill="none" stroke="#38bdf8" stroke-width="2.4" points="${hopLine}" />
+      ${circles}
+      <text x="${xOf(0.5)}" y="${h - 4}" fill="#94a3b8" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono">0.5%</text>
+      <text x="${xOf(1.0)}" y="${h - 4}" fill="#94a3b8" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono">1.0%</text>
+      <text x="${xOf(1.5)}" y="${h - 4}" fill="#94a3b8" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono">1.5%</text>
+      <text x="${xOf(2.0)}" y="${h - 4}" fill="#94a3b8" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono">2.0%</text>
+      <text x="${xOf(2.5)}" y="${h - 4}" fill="#94a3b8" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono">2.5%</text>
+    </svg>
+  `;
+}
+
+// Live Stream Filter & Animated Feed
+function setStreamFilter(mode, btnEl) {
+  currentStreamFilter = mode;
+  document.querySelectorAll("#filterChipGroup .seg-tab").forEach((b) => {
+    b.classList.toggle("active", b === btnEl);
+  });
+  document.getElementById("streamTableBody").innerHTML = "";
+  for (let i = 0; i < 5; i++) injectNextStreamItem();
+}
+
+function injectNextStreamItem() {
+  const pool = STREAM_ALERTS.filter((item) => currentStreamFilter === "ALL" || item.action === currentStreamFilter);
+  const activePool = pool.length ? pool : STREAM_ALERTS;
+  const item = activePool[streamIdx % activePool.length];
+  streamIdx++;
+
+  document.getElementById("streamCounterLabel").textContent =
+    `PROCESSED: ${(15232 + streamIdx).toLocaleString()} TX • EVENT #${streamIdx}`;
+
+  const tbody = document.getElementById("streamTableBody");
+  const reasonsHtml = item.reasons.map((r) =>
+    `<span style="display:inline-block;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:2px solid #06b6d4;padding:2px 6px;border-radius:4px;font-size:10px;margin:1px 3px 1px 0;"><b>${r.label}:</b> ${r.value}</span>`
+  ).join("");
+
+  const tr = document.createElement("tr");
+  tr.className = "row-enter";
+  tr.innerHTML = `
+    <td><div class="mono" style="color:#fff;font-weight:600;">#${item.tx_id}</div><div style="font-size:10px;color:var(--text-muted);">${item.timestamp}</div></td>
+    <td class="mono" style="font-size:10.5px;color:#93c5fd;">${item.from_hash}<br/><span style="color:var(--text-muted);">&rarr;</span> ${item.to_hash}</td>
+    <td><div class="mono" style="font-weight:600;color:#fff;">${item.currency} ${item.amount.toLocaleString()}</div><div style="font-size:10px;color:var(--text-secondary);">${item.format}</div></td>
+    <td><div style="font-weight:500;color:#e2e8f0;">${item.typology}</div><div class="mono" style="font-size:10px;color:#38bdf8;">Hop ${item.hop}</div></td>
+    <td class="mono" style="font-weight:700;color:#fda4af;">${item.score.toFixed(4)}</td>
+    <td><span class="badge-decision ${item.action}">${item.action}</span></td>
+    <td>${reasonsHtml}</td>
+  `;
+  tbody.insertBefore(tr, tbody.firstChild);
+  while (tbody.children.length > 6) tbody.removeChild(tbody.lastChild);
+
+  const auditBody = document.getElementById("auditLogTableBody");
+  const atr = document.createElement("tr");
+  atr.className = "row-enter";
+  atr.innerHTML = `
+    <td class="mono" style="color:#fff;">#${item.tx_id}</td>
+    <td><span class="badge-decision ${item.action}" style="font-size:9.5px;padding:2px 7px;">${item.action}</span></td>
+    <td class="mono" style="color:var(--text-muted);font-size:10.5px;">${item.prev_hash}...</td>
+    <td class="mono" style="color:#34d399;font-size:10.5px;">${item.audit_hash}...</td>
+  `;
+  auditBody.insertBefore(atr, auditBody.firstChild);
+  while (auditBody.children.length > 5) auditBody.removeChild(auditBody.lastChild);
+}
+
+function toggleLiveStream() {
+  const txt = document.getElementById("streamStatusText");
+  const dot = document.getElementById("streamBeacon");
+  if (streamInterval) {
+    clearInterval(streamInterval);
+    streamInterval = null;
+    txt.textContent = "Auto-Stream: PAUSED";
+    dot.style.background = "#f59e0b";
+  } else {
+    streamInterval = setInterval(injectNextStreamItem, 2400);
+    txt.textContent = "Auto-Stream: ON";
+    dot.style.background = "#10b981";
   }
+}
 
-  function toggleStream() {
-    const btn = document.getElementById('btnAuto');
-    const txt = document.getElementById('autoText');
-    const dot = document.getElementById('autoDot');
-    if (state.autoTimer) {
-      clearInterval(state.autoTimer);
-      state.autoTimer = null;
-      txt.textContent = 'Stream: Paused';
-      dot.style.background = '#f59e0b';
-      btn.setAttribute('aria-pressed', 'false');
-    } else {
-      state.autoTimer = setInterval(stepStream, 2400);
-      txt.textContent = 'Stream: Live';
-      dot.style.background = '#10b981';
-      btn.setAttribute('aria-pressed', 'true');
-    }
-  }
+function initHopStopConsole() {
+  // Populate Chain Selector
+  const sel = document.getElementById("chainSelector");
+  sel.innerHTML = TOPOLOGY_CHAINS.map((c, idx) =>
+    `<option value="${idx}">Chain #${c.chain_id} (${c.typology}) — Stopped at Hop ${c.interrupted_at_hop}</option>`
+  ).join("");
 
-  function updateBudget(val) {
-    state.budgetRate = parseFloat(val);
-    document.getElementById('budgetLabel').textContent = `${state.budgetRate.toFixed(1)}% Alert Budget`;
-    renderRecallCurve(state.budgetRate);
-  }
+  // Populate Feature Importances
+  const maxPct = 25.0;
+  document.getElementById("featureImportanceList").innerHTML = FEATURE_IMPORTANCES.map((f) => `
+    <div class="feat-bar-row">
+      <span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.label}</span>
+      <div class="feat-track"><div class="feat-fill" style="width:${((f.pct / maxPct) * 100).toFixed(0)}%;"></div></div>
+      <span class="mono" style="text-align:right;color:#e2e8f0;font-size:11px;">${f.pct.toFixed(1)}%</span>
+    </div>
+  `).join("");
 
-  async function init() {
-    try {
-      const res = await fetch('/api/benchmarks');
-      if (res.ok) BENCH = await res.json();
-    } catch (e) {}
+  // Populate Telemetry Table
+  document.getElementById("telemetryTableBody").innerHTML = TELEMETRY_ROWS.map((r) => `
+    <tr>
+      <td style="color:var(--text-secondary);font-size:11px;">${r[0]}</td>
+      <td class="mono" style="color:#e2e8f0;font-size:10.5px;">${r[1]}</td>
+    </tr>
+  `).join("");
 
-    document.getElementById('kpiP99').textContent = BENCH.latency_benchmark.batch_1_end_to_end_p99_ms;
-    document.getElementById('kpiPrauc').textContent = BENCH.model_metrics.hopstop_gbdt.pr_auc.toFixed(4);
-    document.getElementById('kpiRecall').textContent = (BENCH.model_metrics.hopstop_gbdt.recall_at_1pct_alert_rate * 100).toFixed(1) + '%';
-    document.getElementById('kpiHop2').textContent = BENCH.chain_interruption.hopstop_stopped_by_hop2_pct + '%';
-    document.getElementById('kpiTps').textContent = BENCH.latency_benchmark.microbatch_64_scoring_tps.toLocaleString();
+  selectScenario("fan_out_mule");
+  renderTopologyChain(0);
+  renderSvgBudgetChart(1.0);
 
-    const env = BENCH.environment;
-    const envRows = [
-      ['Target Platform', 'IBM Z / LinuxONE (s390x Container Ready)'],
-      ['Detected Host', `${env.architecture} (${env.os_platform})`],
-      ['Telum NNPA Probe', env.zdnn_status],
-      ['Snap ML Mode', env.tree_format_mode],
-      ['CPACF Crypto', env.cpacf_crypto_mode],
-      ['Chronological Split', `${BENCH.dataset.train_transactions.toLocaleString()} train (Days 1-7) / ${BENCH.dataset.test_transactions.toLocaleString()} test (Days 8-10)`]
-    ];
-    document.getElementById('envTableBody').innerHTML = envRows
-      .map(r => `<tr><td style="color:var(--text-secondary);font-size:11px;">${r[0]}</td><td class="mono" style="font-size:10.5px;color:#e2e8f0;">${r[1]}</td></tr>`)
-      .join('');
+  for (let i = 0; i < 5; i++) injectNextStreamItem();
+  streamInterval = setInterval(injectNextStreamItem, 2400);
+}
 
-    const sel = document.getElementById('chainSelect');
-    sel.innerHTML = BENCH.sample_interrupted_chains.map((c, idx) =>
-      `<option value="${idx}">Chain #${c.chain_id} (${c.typology}) — Stopped at Hop ${c.interrupted_at_hop}</option>`
-    ).join('');
-
-    renderChain(0);
-    renderRecallCurve(1.0);
-    renderTypologyChart();
-    renderFeaturesAndLatency();
-    runPreset('fan_out_mule');
-
-    for (let i = 0; i < 6; i++) stepStream();
-    state.autoTimer = setInterval(stepStream, 2400);
-  }
-
-  return {
-    init,
-    runPreset,
-    renderChain,
-    setFilter,
-    stepStream,
-    toggleStream,
-    updateBudget,
-    tip: showTooltip,
-    untip: hideTooltip
-  };
-})();
-
-window.addEventListener('DOMContentLoaded', HopStopApp.init);
+window.addEventListener("DOMContentLoaded", initHopStopConsole);
 </script>
 </body>
 </html>
