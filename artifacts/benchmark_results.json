@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18 12:29:18 IST",
+  "generated_at": "2026-10-18 15:23:18 IST",
   "environment": {
     "architecture": "amd64",
     "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
@@ -55,7 +55,7 @@
       "realized_test_alert_rate": 0.0083,
       "realized_test_alerts_count": 127,
       "realized_test_holds_count": 58,
-      "train_time_sec": 3.523
+      "train_time_sec": 4.596
     },
     "logistic_regression_12feat": {
       "roc_auc": 0.9804,
@@ -87,6 +87,30 @@
       "precision_at_1pct_alert_rate": 0.6382,
       "recall_at_2pct_alert_rate": 0.489
     },
+    "paired_bootstrap_comparisons": {
+      "gbdt_minus_logreg": {
+        "delta_pr_auc_mean": 0.0224,
+        "delta_pr_auc_95ci": [
+          0.0038,
+          0.041
+        ],
+        "delta_recall_1pct_95ci": [
+          -0.0037,
+          0.0294
+        ]
+      },
+      "gbdt_minus_rules": {
+        "delta_pr_auc_mean": 0.2797,
+        "delta_pr_auc_95ci": [
+          0.2383,
+          0.3267
+        ],
+        "delta_recall_1pct_95ci": [
+          0.1434,
+          0.239
+        ]
+      }
+    },
     "relative_lift": {
       "recall_lift_vs_rules_at_1pct": 50.5,
       "pr_auc_lift_vs_rules_pct": 81.1,
@@ -106,7 +130,11 @@
     "delayed_evasion_22m_chains": {
       "total": 12,
       "hopstop_stopped_by_hop2": 6,
-      "rules_stopped_by_hop2": 1
+      "rules_stopped_by_hop2": 1,
+      "wilson_95ci_pct": [
+        25.4,
+        74.6
+      ]
     },
     "by_typology": {
       "Scatter-Gather": {
@@ -161,26 +189,29 @@
   },
   "audit_chain_verification": {
     "verified": true,
-    "records_verified": 127,
-    "message": "Verified 127 hash-chained audit records from genesis.",
-    "head_sha256": "1e662e50e03741b1cc0ce791662d844eed1c9c791a6c2444d2ee35b46845a293"
+    "records_verified": 15232,
+    "includes_allow_decisions": true,
+    "message": "Verified 15232 hash-chained audit records from genesis.",
+    "head_sha256": "273b9ead430976cc898543751deac60636e0ba2efcd2871fa8d564383da19ec8"
   },
   "latency_benchmark": {
     "measured_on_hardware": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel (amd64, Windows 11)",
     "active_backend": "portable_python_depth2_gbdt (snapml package not installed on host)",
-    "includes_stages": "O(1) Feature Extraction + GBDT Scoring + TreeSHAP + Policy & SHA-256 Audit",
+    "includes_stages": "O(1) Feature Extraction + GBDT Scoring (100% of tx) + TreeSHAP (on flagged alerts) + Policy & 64-Hex SHA-256/HMAC Audit (100% of tx)",
     "component_p50_ms": {
-      "feature_extraction_ms": 0.0256,
-      "model_and_treeshap_ms": 0.0059,
-      "policy_and_audit_ms": 0.027
+      "feature_extraction_ms": 0.0315,
+      "gbdt_scoring_only_ms": 0.0073,
+      "policy_and_audit_ms": 0.0319,
+      "treeshap_explanation_on_alert_p50_ms": 0.1124,
+      "treeshap_explanation_on_alert_p99_ms": 0.2587
     },
-    "batch_1_end_to_end_p50_ms": 0.0589,
-    "batch_1_end_to_end_p95_ms": 0.1145,
-    "batch_1_end_to_end_p99_ms": 0.1881,
-    "batch_1_end_to_end_mean_ms": 0.0673,
+    "batch_1_end_to_end_p50_ms": 0.0717,
+    "batch_1_end_to_end_p95_ms": 0.183,
+    "batch_1_end_to_end_p99_ms": 0.3174,
+    "batch_1_end_to_end_mean_ms": 0.1216,
     "target_p99_ms": 10.0,
-    "single_worker_stream_tps": 14858,
-    "microbatch_64_scoring_tps": 174828
+    "single_worker_stream_tps": 8223,
+    "microbatch_64_scoring_tps": 147938
   },
   "feature_importances": [
     {
@@ -245,7 +276,57 @@
     }
   ],
   "real_test_case_examples": {
-    "real_test_mule_hold": {
+    "selection_rule": "Deterministic chronological scan of unseen Test Split (Days 8-10): (1) first interior HOLD where risk_score > hold_threshold, (2) first boundary HOLD where risk_score == hold_threshold, (3) first benign corporate batch ALLOW where fan_out_1h >= 3, pass_through_15m == 0, and rules_score >= 0.45, (4) first missed laundering transfer (False Negative) where is_laundering == 1 and action == ALLOW.",
+    "real_test_missed_mule_false_negative": {
+      "tx_id": 35747,
+      "timestamp": "2026/09/08 02:51:18",
+      "typology": "Gather-Scatter",
+      "hop_number": 2,
+      "amount": 67214.5,
+      "payment_format": "ACH",
+      "features": [
+        3.0,
+        1.0,
+        4.0,
+        1.0,
+        0.64,
+        0.64,
+        5.112,
+        0.0,
+        1.0,
+        2.2649,
+        1.0,
+        0.75
+      ],
+      "hopstop_score": 0.987027,
+      "hopstop_action": "ALLOW",
+      "rules_baseline_score": 0.4,
+      "rules_would_flag": false,
+      "reason_codes": [
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "165s after credit",
+          "shap_log_odds": 1.6349,
+          "impact": "+1.635"
+        },
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "2.26",
+          "shap_log_odds": 1.6125,
+          "impact": "+1.613"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "0.75",
+          "shap_log_odds": 1.563,
+          "impact": "+1.563"
+        }
+      ]
+    },
+    "real_test_mule_hold_boundary": {
       "tx_id": 35893,
       "timestamp": "2026/09/08 05:33:15",
       "typology": "Scatter-Gather",
@@ -342,14 +423,63 @@
           "impact": "-0.314"
         }
       ]
+    },
+    "real_test_mule_hold": {
+      "tx_id": 35896,
+      "timestamp": "2026/09/08 05:34:25",
+      "typology": "Scatter-Gather",
+      "hop_number": 3,
+      "amount": 49848.99,
+      "payment_format": "Wire",
+      "features": [
+        1.0,
+        0.0,
+        3.0,
+        0.0,
+        0.96,
+        0.96,
+        5.5645,
+        1.0,
+        1.0,
+        10.0,
+        0.0,
+        1.0
+      ],
+      "hopstop_score": 0.9938,
+      "hopstop_action": "HOLD",
+      "rules_baseline_score": 0.63,
+      "rules_would_flag": true,
+      "reason_codes": [
+        {
+          "feature": "amount_zscore",
+          "label": "Anomalous Transfer Size (Z-Score)",
+          "value": "10.00",
+          "shap_log_odds": 1.8598,
+          "impact": "+1.860"
+        },
+        {
+          "feature": "time_since_last_credit_log",
+          "label": "Immediate Post-Credit Dispersal",
+          "value": "260s after credit",
+          "shap_log_odds": 1.6349,
+          "impact": "+1.635"
+        },
+        {
+          "feature": "payment_format_risk",
+          "label": "High-Risk Instant Rail (Wire/ACH)",
+          "value": "1.00",
+          "shap_log_odds": 1.5031,
+          "impact": "+1.503"
+        }
+      ]
     }
   },
   "sample_held_alerts": [
     {
       "tx_id": 35746,
       "timestamp": "2026/09/08 02:50:13",
-      "from_account_hash": "ACCT_008D9EC47D3BF6A2C99AB299BC60FDC2",
-      "to_account_hash": "ACCT_B12ECF5CE0052775947B70A956511098",
+      "from_account_hash": "ACCT_25075A183A899380AF3E679D561C903F",
+      "to_account_hash": "ACCT_2D235D49FFA2112530F14E10CA0C398D",
       "from_bank": 21,
       "to_bank": 28,
       "amount": 67214.5,
@@ -383,15 +513,15 @@
           "impact": "+1.586"
         }
       ],
-      "prev_audit_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-      "audit_hash": "2e7a87e00d5a99ab50a100b556979664739b897d4596b0591d02350268524c85",
-      "hmac_signature": "48d6c198963717b9343ce982c2531eba3fcc58c97757d16a08635da849762ff5"
+      "prev_audit_hash": "488d4dd49f3f1ccee459322f647da9960f56565712948cd39740285ddb3fc66c",
+      "audit_hash": "95c5ba3a34cc6b6af2f2de564dc6f2f59c73470b373387c7a4380dafd0f82283",
+      "hmac_signature": "bdae4c4a2432ae19a520d301f7d1f46c0d383075dd909f5ab08c7f4a101bf9eb"
     },
     {
       "tx_id": 35749,
       "timestamp": "2026/09/08 02:52:23",
-      "from_account_hash": "ACCT_008D9EC47D3BF6A2C99AB299BC60FDC2",
-      "to_account_hash": "ACCT_95D66F78D527D31FEF5DDC5C93753983",
+      "from_account_hash": "ACCT_25075A183A899380AF3E679D561C903F",
+      "to_account_hash": "ACCT_70E10AC8865F2CD33F39E4368763E191",
       "from_bank": 21,
       "to_bank": 17,
       "amount": 67214.5,
@@ -425,15 +555,15 @@
           "impact": "+1.081"
         }
       ],
-      "prev_audit_hash": "2e7a87e00d5a99ab50a100b556979664739b897d4596b0591d02350268524c85",
-      "audit_hash": "4376c604128005bfaf829a6eb80478e84cc245e9f5491e9926754c8b666cd6c0",
-      "hmac_signature": "bad774286223046c125fcb270182dbcce126ebaacda1014877999a47c01004f8"
+      "prev_audit_hash": "a80a9a0a85916b5da4882e99cbb293b6e8de6417393f6781adde682f383e6eb1",
+      "audit_hash": "a0c48815cff0d85d77315aa8339a7b35f362e3227562f3db0eb203fbe1ec55ae",
+      "hmac_signature": "e29598d3eec7ac6dc4666f067b1f0008969d844d3e1d0a65954d4eb43e51aa3b"
     },
     {
       "tx_id": 35886,
       "timestamp": "2026/09/08 05:32:05",
-      "from_account_hash": "ACCT_3762B906FE51D34EE30AAE4A7D217356",
-      "to_account_hash": "ACCT_D5EA5BD08E68905FC8EB24439FB73A98",
+      "from_account_hash": "ACCT_21A578849E7C06D72C8DAD7D440D82E4",
+      "to_account_hash": "ACCT_F8CFF88D8CC22FAA59976E1A86FC280B",
       "from_bank": 22,
       "to_bank": 32,
       "amount": 49848.99,
@@ -467,15 +597,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "4376c604128005bfaf829a6eb80478e84cc245e9f5491e9926754c8b666cd6c0",
-      "audit_hash": "5234510e86dd1470d43d57b7bfd8a90e6ab805c9543eeb821ecb686d950c5b26",
-      "hmac_signature": "170631ec402573d061ec185b24351e214c7c515d4d35b45a5f07f08e29ed3410"
+      "prev_audit_hash": "cab69303cc21c5eb4630610353c6e222fa95a5d60619f8f4f3716f30343be3a1",
+      "audit_hash": "69ffdb5d69f0b6a8850415d93fe3877710f5132723ecd3c358f42e2aa55eef25",
+      "hmac_signature": "376391b3e583b44ece8a0dc657d0a1a14fb3e46ed4d7cfd8b879fd6e71ae0875"
     },
     {
       "tx_id": 35893,
       "timestamp": "2026/09/08 05:33:15",
-      "from_account_hash": "ACCT_0729AFEE5479472621523336C2AB5FD0",
-      "to_account_hash": "ACCT_D5EA5BD08E68905FC8EB24439FB73A98",
+      "from_account_hash": "ACCT_006997EAE9DDD32701C1BD39E8017024",
+      "to_account_hash": "ACCT_F8CFF88D8CC22FAA59976E1A86FC280B",
       "from_bank": 23,
       "to_bank": 32,
       "amount": 49848.99,
@@ -509,15 +639,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "5234510e86dd1470d43d57b7bfd8a90e6ab805c9543eeb821ecb686d950c5b26",
-      "audit_hash": "49dc0a6a9f1b3c56a60d7d1ac2fe7540638f2d387da7c522f7a7adb100c5af08",
-      "hmac_signature": "258cf34cd8940831ffd22926b60e14e80a762af07e0404d4242459651d448eb2"
+      "prev_audit_hash": "4663340b141740193af1952be3e6f354997d2eed4cb1c115eb25753b8ea7c1da",
+      "audit_hash": "b70e691d4d98532933903a3ac4fee9c1aaabff8acef374d1880061ba28fd297f",
+      "hmac_signature": "65a2c0abd22b81c6aa8547f6dd2628da173fe2b571e6547750951080a5de4771"
     },
     {
       "tx_id": 35896,
       "timestamp": "2026/09/08 05:34:25",
-      "from_account_hash": "ACCT_B6E165504C915990A8844BD53FB1DCD3",
-      "to_account_hash": "ACCT_D5EA5BD08E68905FC8EB24439FB73A98",
+      "from_account_hash": "ACCT_5F5E998B407C47ADEFFF092D6F5E66BA",
+      "to_account_hash": "ACCT_F8CFF88D8CC22FAA59976E1A86FC280B",
       "from_bank": 26,
       "to_bank": 32,
       "amount": 49848.99,
@@ -551,15 +681,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "49dc0a6a9f1b3c56a60d7d1ac2fe7540638f2d387da7c522f7a7adb100c5af08",
-      "audit_hash": "5c0818c94c8f0faed164b316131d6daa8a73a1b7707a1dbb54b020af1397dbc9",
-      "hmac_signature": "910b01554bed561bee2b9b5d01f57f7d5abec1c7b841a02e1cb1f2d5c3a31fca"
+      "prev_audit_hash": "d3c1031efa0a7f865c34056e460b1da61c248714bebfc91d1a78b4dd2db1f52f",
+      "audit_hash": "8c7a2cfe2ce3f1eba8fcb3692721f3f4be2d66a3f0895108e26507b33025f7eb",
+      "hmac_signature": "b2b18205996e059fdb06743298d95ee00ae046bdc0b12635033bd182caf35c76"
     },
     {
       "tx_id": 35917,
       "timestamp": "2026/09/08 05:49:00",
-      "from_account_hash": "ACCT_8C099D33C1FF4E87104CFC115E3D49EE",
-      "to_account_hash": "ACCT_0295811E92CD738A439325A95D7DE1F6",
+      "from_account_hash": "ACCT_B1C5C6ECA75CB230C459A89486159F02",
+      "to_account_hash": "ACCT_5C52A99B7162754A9BCFA2FF9176F1B5",
       "from_bank": 15,
       "to_bank": 32,
       "amount": 157460.41,
@@ -593,15 +723,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "5c0818c94c8f0faed164b316131d6daa8a73a1b7707a1dbb54b020af1397dbc9",
-      "audit_hash": "c4a5e87d23ca26c1a05d0aacf1d09a6ad84fd648fac7e5d54a50dc5e525bb02f",
-      "hmac_signature": "673e532dc117a0fc644360a56a2d0a7247605b6b10dcca8a0e7d333897be5dbb"
+      "prev_audit_hash": "23a51d2dcac50f6aa5d1a9f98f99cc89e58ea51043cc8c8c27f50f25e5b64e49",
+      "audit_hash": "d9383ea9706dcebbbc08a5e32af150858db784821265ff45abcd945d9e4a5e19",
+      "hmac_signature": "ce151ab996dfcde91076f33ea4971d84148656d4564862a1480dd347e740fe7d"
     },
     {
       "tx_id": 35919,
       "timestamp": "2026/09/08 05:51:20",
-      "from_account_hash": "ACCT_0295811E92CD738A439325A95D7DE1F6",
-      "to_account_hash": "ACCT_39CFE55B13946CBD5AC70AC1BC6C6F69",
+      "from_account_hash": "ACCT_5C52A99B7162754A9BCFA2FF9176F1B5",
+      "to_account_hash": "ACCT_25658AA23238EA7871B05E304D84E618",
       "from_bank": 32,
       "to_bank": 17,
       "amount": 152736.6,
@@ -635,15 +765,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "c4a5e87d23ca26c1a05d0aacf1d09a6ad84fd648fac7e5d54a50dc5e525bb02f",
-      "audit_hash": "009844bd0213fdfb2acbe0185052249b3b0bc0b005f38337f6fa48d41cba8e3a",
-      "hmac_signature": "fa9cd5d2bd2bf22fc118f3d44e56ac3bfd4e051301720c95842e4692444e50c9"
+      "prev_audit_hash": "f3e105ffd23ac0347eef486b7b55fe6718199eb0e0953c71b00f05d348a2b3f8",
+      "audit_hash": "fbff449a71055585e003d40c7243c79a9ae9f7c3aeb827ed46f5ea891fa6ded9",
+      "hmac_signature": "e0691e6d6d7ada98be3d054b03441efe1f8d12f8e0bff0309a008b2a91ed5224"
     },
     {
       "tx_id": 35928,
       "timestamp": "2026/09/08 05:56:08",
-      "from_account_hash": "ACCT_2A139FCDD040380726995A895F89D66E",
-      "to_account_hash": "ACCT_FF3A2837230A1B7236F3B73B620AE7B7",
+      "from_account_hash": "ACCT_A10E821BAF3EB07CC97AF9BE31308247",
+      "to_account_hash": "ACCT_7650BF0A148F8910CC0A289E94076501",
       "from_bank": 20,
       "to_bank": 16,
       "amount": 118189.64,
@@ -677,15 +807,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "009844bd0213fdfb2acbe0185052249b3b0bc0b005f38337f6fa48d41cba8e3a",
-      "audit_hash": "1d49fbded13a8f2d967b493c3271484ee1e70f9ca2d5f5c0aceae531178c9951",
-      "hmac_signature": "284d8db117850c3c6fb0c66ff7cdc444b8171d7cc1bec083f9e45252d1569609"
+      "prev_audit_hash": "c9476f2ee4e34d3635b845c4606037e506126ccef133d9623193b253c1532a98",
+      "audit_hash": "46752960a6d5cbf2c854a266cbe7603aa97b3a0e18feeea52ddbf4fff404a5ac",
+      "hmac_signature": "a17f7f19b45364ff3cbfeaa876a0d650567329fae8c8afb66f6021d2ca1e85bd"
     },
     {
       "tx_id": 35932,
       "timestamp": "2026/09/08 05:58:38",
-      "from_account_hash": "ACCT_FF3A2837230A1B7236F3B73B620AE7B7",
-      "to_account_hash": "ACCT_1243BBF875A70ABDB79BF443807C6512",
+      "from_account_hash": "ACCT_7650BF0A148F8910CC0A289E94076501",
+      "to_account_hash": "ACCT_910521DFB60C8A853EBC33272506385A",
       "from_bank": 16,
       "to_bank": 15,
       "amount": 114534.29,
@@ -719,15 +849,15 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "1d49fbded13a8f2d967b493c3271484ee1e70f9ca2d5f5c0aceae531178c9951",
-      "audit_hash": "537d3b6a7931335dce87b2a12f6ebf8f14073c1d631b8949dcc4b2adee33bdf5",
-      "hmac_signature": "7e417e99de36a9e5e6fcaf54b4a3ce62991f9a927b839c5f81b51d514d128d87"
+      "prev_audit_hash": "14db35389c5220aa272c8038e8c475cad4b9be4a3858a3a1b015869cb10dd387",
+      "audit_hash": "56b3818388c763f7bcd78fcf5a44eceeb7ed44272748078bb9005fddbbb5efaa",
+      "hmac_signature": "3318a9c688430da4b2e14e51298eeece8a3e7e887509147afdf1fb788f9b3a4a"
     },
     {
       "tx_id": 35942,
       "timestamp": "2026/09/08 06:01:38",
-      "from_account_hash": "ACCT_1243BBF875A70ABDB79BF443807C6512",
-      "to_account_hash": "ACCT_187E98ACC85D3754868EE1FF0428F239",
+      "from_account_hash": "ACCT_910521DFB60C8A853EBC33272506385A",
+      "to_account_hash": "ACCT_79E03BB4E2B3F9B908C2A74A2EBE61BB",
       "from_bank": 15,
       "to_bank": 26,
       "amount": 110878.94,
@@ -761,15 +891,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "537d3b6a7931335dce87b2a12f6ebf8f14073c1d631b8949dcc4b2adee33bdf5",
-      "audit_hash": "10ecb45b567dfb92b497897f7f9a007d44592067cc58fc8d32fbab2a2dde7de6",
-      "hmac_signature": "612d91010168cb0b97cbe0e99a9f93772e31ac658834f1919f49e4adf9cdd0b7"
+      "prev_audit_hash": "6fbcb6f803de11b95c75216e01414a3cb246561835127d0a17afd52ab413b34d",
+      "audit_hash": "fa795b25c9193b5890b907b4264fd004ea799fc6773cd109c162c5233e32e5a4",
+      "hmac_signature": "ddbbde8918e3622541f5617df95abac03a74d17d3f7376492c5566bfabbed9ea"
     },
     {
       "tx_id": 36043,
       "timestamp": "2026/09/08 06:52:12",
-      "from_account_hash": "ACCT_CA814A5C75717244BC2C560A44C8D241",
-      "to_account_hash": "ACCT_1C98F8E1612FDB1582CF4417823852F5",
+      "from_account_hash": "ACCT_7D650C9A3807AEFFE4A21876B1EE1BD8",
+      "to_account_hash": "ACCT_C3505CEA9FC4863B00F4F63DB373158A",
       "from_bank": 26,
       "to_bank": 22,
       "amount": 14446.61,
@@ -803,15 +933,15 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "10ecb45b567dfb92b497897f7f9a007d44592067cc58fc8d32fbab2a2dde7de6",
-      "audit_hash": "c2d8c49f1a0c9fc9738a4404468768d90c8824ff8592d4f4943cb49b30020424",
-      "hmac_signature": "3cad6e1f03c3095866ce04d7f6e8da02a7a6bd628cc1afe8821862041f51126d"
+      "prev_audit_hash": "26183e7cafe14e9501acf18aa9f25d5d8886633612b580e48dde837e2a3ee5e8",
+      "audit_hash": "f357562a5a44a4727e267c427171b92e621986746c5a0d1944d3d28d4b65e961",
+      "hmac_signature": "5eb008d9c3fd1bf8c2a19228d8dca95edb9f93d12a76312cdafb2dacbe71b6f0"
     },
     {
       "tx_id": 36048,
       "timestamp": "2026/09/08 06:53:22",
-      "from_account_hash": "ACCT_30274E2A78333F35F49F9DECF459A2DA",
-      "to_account_hash": "ACCT_1C98F8E1612FDB1582CF4417823852F5",
+      "from_account_hash": "ACCT_E1DAA28BD5D96B8E6B4F3307CD63866A",
+      "to_account_hash": "ACCT_C3505CEA9FC4863B00F4F63DB373158A",
       "from_bank": 31,
       "to_bank": 22,
       "amount": 14446.61,
@@ -845,15 +975,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "c2d8c49f1a0c9fc9738a4404468768d90c8824ff8592d4f4943cb49b30020424",
-      "audit_hash": "ce8c69d4106cfa85fae2a271fa88c83ccd900e9e2a238ab83ff1dc2441ab894f",
-      "hmac_signature": "a9ce8599cf03d2608931ad67a0500ddc7f0db43a60f145ecc0a8cbbe5784e6d4"
+      "prev_audit_hash": "8db85954a0582cf022c51043a51a18ba4ea1f6f10e7bd8edade7dd5708c57e24",
+      "audit_hash": "1c957c5166b3267716c056f1946581cc8565add7ba67ec2488b4d1c6e0d2865c",
+      "hmac_signature": "27c7d61b5f21588e45a9fc2a992998327ab430e0635f8819ac5bf0f33607d481"
     },
     {
       "tx_id": 36053,
       "timestamp": "2026/09/08 06:54:32",
-      "from_account_hash": "ACCT_47A29B753219F03062B512867207B3F0",
-      "to_account_hash": "ACCT_1C98F8E1612FDB1582CF4417823852F5",
+      "from_account_hash": "ACCT_2E892041452A06A940B3166771F258B4",
+      "to_account_hash": "ACCT_C3505CEA9FC4863B00F4F63DB373158A",
       "from_bank": 24,
       "to_bank": 22,
       "amount": 14446.61,
@@ -887,15 +1017,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "ce8c69d4106cfa85fae2a271fa88c83ccd900e9e2a238ab83ff1dc2441ab894f",
-      "audit_hash": "7031230ce40dc84c1139fe48e75965fd9319de4f60d5810763688a7ca574fee4",
-      "hmac_signature": "f4a0ffe0e52aa8c507d5555f819f0fa2a8399d2837d9760234c3ade9113732e2"
+      "prev_audit_hash": "a47b133d476b00dae3bcc04ea78459512b7730644cc879aa1e3c2cf82060f49b",
+      "audit_hash": "db3b9478e205269532a8b1be7ca8443f92cf80290b996fb5f4f81e1471013000",
+      "hmac_signature": "ac7eab4690be25d0a505b4fe810e561f11230622fcb8d36209694ad31bde7816"
     },
     {
       "tx_id": 36472,
       "timestamp": "2026/09/08 09:16:17",
-      "from_account_hash": "ACCT_881C102DC854FAA1D679B72E939B7CE7",
-      "to_account_hash": "ACCT_E7A80E12DBB20042A2AB133EDE6736F8",
+      "from_account_hash": "ACCT_5558E734BCC9DCCFAD2495AC89011805",
+      "to_account_hash": "ACCT_C82E559E1371F6BB15B7D39DF8F30B00",
       "from_bank": 23,
       "to_bank": 32,
       "amount": 147354.43,
@@ -929,15 +1059,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "7031230ce40dc84c1139fe48e75965fd9319de4f60d5810763688a7ca574fee4",
-      "audit_hash": "d11c7e27057855cd30590fec68b24a67df942d107a6d71d393db3517ef2e962c",
-      "hmac_signature": "3b56e017d8066531106e923decb6d5f1c5a78a6bdf63304c510508957b16c726"
+      "prev_audit_hash": "7458de34916495878facf1192cc0b95764d37298206e02ffa1ec58e5fafebca5",
+      "audit_hash": "c64964c079e1ef032f25d6bd2ed801201dc9621ba8532b6a324515a8ff11d12e",
+      "hmac_signature": "df4e4edcaa509872df6f3fbd08e723db7fe595c2f8b91b657e4b1872686ab8e0"
     },
     {
       "tx_id": 36486,
       "timestamp": "2026/09/08 09:19:17",
-      "from_account_hash": "ACCT_E7A80E12DBB20042A2AB133EDE6736F8",
-      "to_account_hash": "ACCT_93D6C57491CDAFD40D33E34CF7DFD1A2",
+      "from_account_hash": "ACCT_C82E559E1371F6BB15B7D39DF8F30B00",
+      "to_account_hash": "ACCT_4B23B80DDBD919787F6AAA4A3AF07A77",
       "from_bank": 32,
       "to_bank": 19,
       "amount": 142651.63,
@@ -971,15 +1101,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "d11c7e27057855cd30590fec68b24a67df942d107a6d71d393db3517ef2e962c",
-      "audit_hash": "65db496d3d9837cef7ddb721a3b909c8714c200fbd35b944de60868bb3c9ad9e",
-      "hmac_signature": "e067f25a41a1432daf0655e99e18e0bc0bd2bca66f059740f2c6c4accf04bb7c"
+      "prev_audit_hash": "7d2f309c068e4b9d92aafcbf6967c5c570896c50b9d6420b1f5aaa8d7d471dfc",
+      "audit_hash": "fdfadcb8619ef95a906695fa68ddcace0797f3b6a5767bac6cf04e7278622a0d",
+      "hmac_signature": "1bf9d94e7a09271a8456fd050669f2afc178552ba76b44cb40f79e017cfa883a"
     },
     {
       "tx_id": 36973,
       "timestamp": "2026/09/08 10:47:35",
-      "from_account_hash": "ACCT_8D5660C1414B28387EF6D4A626E5AF3C",
-      "to_account_hash": "ACCT_20B21FF01169C5F123B415C04883F063",
+      "from_account_hash": "ACCT_F271C8DF95377F4E50F4057EE7C5C090",
+      "to_account_hash": "ACCT_78AAB171227C2B20B05F4A8AB07DA1CF",
       "from_bank": 14,
       "to_bank": 26,
       "amount": 39442.29,
@@ -1013,15 +1143,15 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "65db496d3d9837cef7ddb721a3b909c8714c200fbd35b944de60868bb3c9ad9e",
-      "audit_hash": "2c4150eaf18fa970a88847344c8cf473b2937ca31ab85651b4d9021062ced79c",
-      "hmac_signature": "26e5bbaae0b1f5393ac343d7381ba349523fe06e4d99740ce265741a28881750"
+      "prev_audit_hash": "63c08c8ef04a856113c8ef18c4369fde4365efc4b76254c05405d5ebf0fee8ed",
+      "audit_hash": "76c0e3399c94e1a2d07096b0c7576f4b84eeaa585f96db87fe53b265e5409dfe",
+      "hmac_signature": "c7bc952478e6d69213ac1e83a0d9c80af93d603cabed366129b3702d0b790526"
     },
     {
       "tx_id": 36987,
       "timestamp": "2026/09/08 10:50:05",
-      "from_account_hash": "ACCT_20B21FF01169C5F123B415C04883F063",
-      "to_account_hash": "ACCT_329045A820AEE1C147B8664C1E8894E9",
+      "from_account_hash": "ACCT_78AAB171227C2B20B05F4A8AB07DA1CF",
+      "to_account_hash": "ACCT_D3AFB318533B6E4B4E85D479FDD67D58",
       "from_bank": 26,
       "to_bank": 16,
       "amount": 38222.42,
@@ -1055,15 +1185,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "2c4150eaf18fa970a88847344c8cf473b2937ca31ab85651b4d9021062ced79c",
-      "audit_hash": "ddbbffa327b46a66d2ba808a184a0e37cd902c40bd84a1927895be718099fd9f",
-      "hmac_signature": "90f55e24fde3a87a147d176aed368b086a72f29b13bfa049cdaae8e3b1545386"
+      "prev_audit_hash": "053094e9bee059a4eac3850246cf5393af537f0b4bd0ac042167a0db6f01ab00",
+      "audit_hash": "9f0665e86485e431e5bf75e6aea844490c8d7cab037aaee82b50ea79b51480e1",
+      "hmac_signature": "cf9878bfe4420ec6eff5dd9c77a39f0c597d5bc49cbc4751fac0c25fc434c0f0"
     },
     {
       "tx_id": 37004,
       "timestamp": "2026/09/08 10:53:05",
-      "from_account_hash": "ACCT_329045A820AEE1C147B8664C1E8894E9",
-      "to_account_hash": "ACCT_3C4FAEA32144863FB9FD7CEF82E3C124",
+      "from_account_hash": "ACCT_D3AFB318533B6E4B4E85D479FDD67D58",
+      "to_account_hash": "ACCT_AEE8CD0F9E37B2B6F4622B6A16A15465",
       "from_bank": 16,
       "to_bank": 21,
       "amount": 37002.56,
@@ -1097,15 +1227,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "ddbbffa327b46a66d2ba808a184a0e37cd902c40bd84a1927895be718099fd9f",
-      "audit_hash": "810d576a62cc03ea866befd39678815e539a342e73c96d6eb65428783968ce39",
-      "hmac_signature": "b4fbc53e81971dedfad99a87343e99bd80c25be1ad9e744b1623fa5a2f142a22"
+      "prev_audit_hash": "5e0d8d027c2659d653f6efed16d2c08767afc54b43b536680863ac96b8e7936e",
+      "audit_hash": "a33ae03e2ef3eb5574e87be1becfda7b4cfefe08fb99d32c1b3ce5037013beba",
+      "hmac_signature": "fb746252a283d9a007102497f5a04427e85e3dad399cae4294a2f5532898d1a6"
     },
     {
       "tx_id": 37281,
       "timestamp": "2026/09/08 11:40:54",
-      "from_account_hash": "ACCT_BDD58DF6F4CF50643FC355CF1DEEABF0",
-      "to_account_hash": "ACCT_E96CE2F35E23F31FE656E920505A96A0",
+      "from_account_hash": "ACCT_56BD2835DE3FE0E75CC8AB86C2434DD3",
+      "to_account_hash": "ACCT_2677660262AC1E85A649287C7C3938CB",
       "from_bank": 23,
       "to_bank": 29,
       "amount": 118447.25,
@@ -1139,15 +1269,15 @@
           "impact": "+1.081"
         }
       ],
-      "prev_audit_hash": "810d576a62cc03ea866befd39678815e539a342e73c96d6eb65428783968ce39",
-      "audit_hash": "a8f8a918e15e00266b7a59a238fd2f3a0b5b927d83532be994e19cd2068336ef",
-      "hmac_signature": "b40eddd7b9d7f41c7e30e41d3a99d585da51731d095451258ce4eaf0daa5df99"
+      "prev_audit_hash": "cfd22f22d857cfe80cf111dd3b4a22d25fc3d0b05dfb79c67c14deae4db8307a",
+      "audit_hash": "00f5397d5171690d30999e0e49a0afd101cea53fd68a29bdf0fa7e0fd02e76d5",
+      "hmac_signature": "5a212583fcb624e724b734e2769acebbcf87dca221eff5d941b7abf12f8550ad"
     },
     {
       "tx_id": 37319,
       "timestamp": "2026/09/08 11:45:14",
-      "from_account_hash": "ACCT_E96CE2F35E23F31FE656E920505A96A0",
-      "to_account_hash": "ACCT_5468789107A225873C3D30B39990F56C",
+      "from_account_hash": "ACCT_2677660262AC1E85A649287C7C3938CB",
+      "to_account_hash": "ACCT_B29A5FA70F13777304FD1419E265E4A3",
       "from_bank": 29,
       "to_bank": 32,
       "amount": 114745.77,
@@ -1181,15 +1311,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "a8f8a918e15e00266b7a59a238fd2f3a0b5b927d83532be994e19cd2068336ef",
-      "audit_hash": "8495efc825df0347622fdcaa8fe6f5ed1dfd2f198fc5b09a0a6c1f5ccca94906",
-      "hmac_signature": "e0d10b34bd7f341ba1d19f66fcbd2f3a4c90f4c8c2c47f39d6713dd7bdd7693f"
+      "prev_audit_hash": "76f38600f4b98c3671db2bbc42aaf1d2484bd8e4df5c997b91870a5fef4ddc44",
+      "audit_hash": "3e1bdaf3c18d0c5c726268cd6a4f32cec4ca2d103d45d59f97c86084be771d12",
+      "hmac_signature": "fa24d1fac0ed8fd104b5387d0c7e9697a25f3bbdde25fd5dcc48b482afb24edd"
     },
     {
       "tx_id": 38561,
       "timestamp": "2026/09/08 14:38:59",
-      "from_account_hash": "ACCT_484E11D5FCFFDA7BFCCE68CBA617E525",
-      "to_account_hash": "ACCT_3D1E88A2DFA40A1830645589104873A3",
+      "from_account_hash": "ACCT_492DE4B982DAD28B9945F0B34EB818BA",
+      "to_account_hash": "ACCT_2825905223611D5BE18D455782A2E940",
       "from_bank": 16,
       "to_bank": 14,
       "amount": 106858.81,
@@ -1223,15 +1353,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "8495efc825df0347622fdcaa8fe6f5ed1dfd2f198fc5b09a0a6c1f5ccca94906",
-      "audit_hash": "c502d08a1571207322bf85457d68e0a7766b4acae56862c7dff5456ef4790c44",
-      "hmac_signature": "d0a4ad42c090f74bfa0da6f888e978fd71ee1eb5a48e8b8564ef8af65501b4fe"
+      "prev_audit_hash": "5f204dc9390bae904a024a3a3779a48c583d95a88cac95e349132241ff4984da",
+      "audit_hash": "8ab60629cb5401c9f4fd4821894709eb52153b645421e37b21c90bf465e0e175",
+      "hmac_signature": "af0d60fd298ffbf98b83a0fcb649d8071d3ac3d31424f8737c3719151c5c41d0"
     },
     {
       "tx_id": 39434,
       "timestamp": "2026/09/08 16:50:25",
-      "from_account_hash": "ACCT_A38FC0656E08676DDA1369F38546DE94",
-      "to_account_hash": "ACCT_48BA613B2CA2AD0CB5FA8C4B17F5AA6E",
+      "from_account_hash": "ACCT_C2EFCEFB177B2050FA78982E4F137BF7",
+      "to_account_hash": "ACCT_4632AC5E0C41C3D8883FC10A687C0BA0",
       "from_bank": 31,
       "to_bank": 12,
       "amount": 7231.43,
@@ -1265,15 +1395,15 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "c502d08a1571207322bf85457d68e0a7766b4acae56862c7dff5456ef4790c44",
-      "audit_hash": "e88a392a398f33788441ab82f3ec395e86c2dad67b2833a9a7b149a09d8fd101",
-      "hmac_signature": "dc6beee45cfde724f3d368a35753536e6711a12aa8b758ba59a301a18de18c70"
+      "prev_audit_hash": "df571ffe023adad91fc6215adda55360707788d12be93d34aac9849bfb0b42f1",
+      "audit_hash": "1e9c4a40bf34a0a7f00fad6522e07b81ce5e291b3736121af30b63a97ea53c0b",
+      "hmac_signature": "c9869b44a54c7e8238c1d1da5f9f5ce062b4e8473d0c6a8fb78c923a763906bc"
     },
     {
       "tx_id": 39620,
       "timestamp": "2026/09/08 17:16:56",
-      "from_account_hash": "ACCT_2B3433750AE40B49AB0C2739DA5737C6",
-      "to_account_hash": "ACCT_10092BD4D99ED9D050C45732DE556F70",
+      "from_account_hash": "ACCT_7201C0EA86F87A04FD657B4C31EC7097",
+      "to_account_hash": "ACCT_224BE47C92FE79C300C21A34FEC63189",
       "from_bank": 24,
       "to_bank": 31,
       "amount": 66482.21,
@@ -1307,15 +1437,15 @@
           "impact": "+1.480"
         }
       ],
-      "prev_audit_hash": "e88a392a398f33788441ab82f3ec395e86c2dad67b2833a9a7b149a09d8fd101",
-      "audit_hash": "7c4e3e36c86965e7416c5c319a00153c91f0188fc673f4065479d782a5427a74",
-      "hmac_signature": "423c190b9d919b0c82c327f1a3b312f6cf3759e59ca947a4e8d2ed56fbbadba6"
+      "prev_audit_hash": "af0cb22b1b147daff90dc0e7e2258f1149d615504371fea4554335b694e8655f",
+      "audit_hash": "b0c45dbf3f0690846b24ff6535159a35cfeb857e529875a067dbb299682cf612",
+      "hmac_signature": "79b95e117dbcd3733704894fb019d884bfff022137804426f41cc532a2078c06"
     },
     {
       "tx_id": 39645,
       "timestamp": "2026/09/08 17:21:16",
-      "from_account_hash": "ACCT_10092BD4D99ED9D050C45732DE556F70",
-      "to_account_hash": "ACCT_BBF92728C3718A453D5E2F05C0D779F7",
+      "from_account_hash": "ACCT_224BE47C92FE79C300C21A34FEC63189",
+      "to_account_hash": "ACCT_EF97D4D0B569B233990CA4883179B43B",
       "from_bank": 31,
       "to_bank": 10,
       "amount": 64404.64,
@@ -1349,15 +1479,15 @@
           "impact": "+1.503"
         }
       ],
-      "prev_audit_hash": "7c4e3e36c86965e7416c5c319a00153c91f0188fc673f4065479d782a5427a74",
-      "audit_hash": "f394de7326cb8cef19672d8023b806b1d182eaa1865016664b296cfce7923033",
-      "hmac_signature": "4e4eb984f146d46a62c7b77c3342a11398dce4973c93db4a2dcfda009c3b1e7a"
+      "prev_audit_hash": "bc7a09d08f6e3c6fe468371588e5ffb7be2ebe667863d02359cfd3e85023758a",
+      "audit_hash": "1645876de838f42d6c26971b79f0377e187d4114f49fdbef7c5965b13b55f05e",
+      "hmac_signature": "34552c41691837584074ff9bd18f642b8b7b914b35ee7f44b2a5fb6e44deb7c5"
     },
     {
       "tx_id": 39664,
       "timestamp": "2026/09/08 17:24:34",
-      "from_account_hash": "ACCT_F7AD666B39D7AE47A4FEDA896F61DD55",
-      "to_account_hash": "ACCT_B3FE53EBD53DECAB7FF129F93B57DECC",
+      "from_account_hash": "ACCT_A8773535E05CDBB00EAA115721A2130B",
+      "to_account_hash": "ACCT_AF883FA19B35AF185FDE7E13266A6061",
       "from_bank": 16,
       "to_bank": 28,
       "amount": 76403.82,
@@ -1391,9 +1521,9 @@
           "impact": "+1.206"
         }
       ],
-      "prev_audit_hash": "f394de7326cb8cef19672d8023b806b1d182eaa1865016664b296cfce7923033",
-      "audit_hash": "78421a3ea9e9196a51f0216a92fef34f71209ca1e320f9f4845fdb7848140f69",
-      "hmac_signature": "8f3afdf8c8631a22fd0e8c8db2b4a53c3c89a3d225e5048392dca4de0da1b553"
+      "prev_audit_hash": "85a16a1c301b5c75aa7c1f55db5237fe6c6b4b3aa33d10731fc882f8874f9ce6",
+      "audit_hash": "e85d2c34d8b302c9e43465a882a46a6999bafbb3c717841edb6b1bbab194ec62",
+      "hmac_signature": "f1f63882b03c842adc17f8ccf5a5cd4b7586b966f688dc2afb7775345e2322de"
     }
   ],
   "sample_interrupted_chains": [
@@ -1953,5 +2083,20 @@
         }
       ]
     }
-  ]
+  ],
+  "linux_snapml_verification": {
+    "platform": "Linux 6.6.87.2-microsoft-standard-WSL2 (x86_64)",
+    "python_version": "3.12.3",
+    "snapml_version": "1.17.2",
+    "active_backend": "snapml.BoostingMachineClassifier(tree_format='auto')",
+    "fit_and_optimize_trees_sec": 0.0178,
+    "test_pr_auc": 0.843,
+    "test_roc_auc": 0.9846,
+    "test_recall_at_1pct": 0.5551,
+    "test_precision_at_1pct": 0.9934,
+    "single_tx_predict_proba_p50_ms": 0.0087,
+    "single_tx_predict_proba_p99_ms": 0.0362,
+    "batch_64_scoring_tps": 5201772,
+    "batch_64_per_tx_us": 0.192
+  }
 }

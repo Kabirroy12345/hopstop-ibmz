@@ -1,20 +1,21 @@
 """Unit and property tests for HopStop's core guarantees:
 1. Amortized O(1) SlidingWindow exactness against a naive O(W) list-scan oracle.
 2. Receiver window eviction on append + idle-account TTL garbage collection.
-3. Large corporate payroll (5,000 recurring employees > 2,048 LRU cap) zero false-novelty via PayeeBloomFilter.
+3. Large corporate payroll (5,000 recurring employees > 2,048 LRU cap) zero false-novelty + dual-generation 64KB Bloom filter rotation.
 4. Strict causal ordering (no future data leakage).
-5. Exact TreeSHAP local accuracy (Σ φ_i + base_score == raw_margin to 1e-9 across 50 random vectors).
+5. Exact TreeSHAP local accuracy (Σ φ_i + expected_log_odds == raw_margin to 1e-9 across 50 random vectors).
 6. Exact TreeSHAP signed negative log-odds attributions on corporate payroll vs. positive on mule fan-out.
-7. Verifiable 64-hex SHA-256 + HMAC-SHA256 audit hash chain from genesis.
-8. Single-byte tamper detection across payload, hash link, and HMAC signature.
+7. Verifiable 64-hex SHA-256 + HMAC-SHA256 audit hash chain from genesis (including ALLOW records).
+8. Parametrized single-byte/field tamper detection across all 10 canonical payload & signature fields.
 """
 from __future__ import annotations
 
 import copy
 import random
+import pytest
 
 from hopstop.data_generator import TransactionRecord
-from hopstop.feature_engine import SlidingWindow, StreamingFeatureEngine
+from hopstop.feature_engine import PayeeBloomFilter, SlidingWindow, StreamingFeatureEngine, hash_account_id
 from hopstop.ibmz_runtime import SnapMLAcceleratedScorer
 from hopstop.policy_engine import PolicyEngine
 
@@ -51,7 +52,6 @@ def test_receiver_eviction_and_idle_account_ttl() -> None:
     """Verifies that receive-only accounts evict expired items on append and idle accounts are swept."""
     engine = StreamingFeatureEngine(max_known_payees=64, idle_ttl_seconds=3600.0, gc_interval=100000)
 
-    # Send 10 credits spaced by 1000s to a receive-only account Sink_A
     for i in range(10):
         tx = TransactionRecord(
             tx_id=i + 1,
@@ -69,24 +69,19 @@ def test_receiver_eviction_and_idle_account_ttl() -> None:
         )
         engine.extract_and_update(tx)
 
-    # At t = 10,000s, SINK_RECEIVE_ONLY's 15m window (cutoff 9,100s) must only have 1 item (from t=10,000s)
-    from hopstop.feature_engine import hash_account_id
-
     sink_key = hash_account_id("SINK_RECEIVE_ONLY")
     assert engine.states[sink_key].in_15m.tx_count == 1.0
-    assert engine.states[sink_key].in_1h.tx_count == 4.0  # t = 7000, 8000, 9000, 10000
+    assert engine.states[sink_key].in_1h.tx_count == 4.0
 
-    # Sweep idle accounts at t = 20,000s (TTL = 3,600s -> cutoff = 16,400s)
     evicted = engine.evict_idle_accounts(20000.0)
-    assert evicted == len(engine.states) + evicted and len(engine.states) == 0
+    assert evicted > 0 and len(engine.states) == 0
 
 
 def test_large_employer_payroll_5000_payees_bloom_filter() -> None:
     """Verifies that a corporate payroll account with 5,000 recurring employees (>2,048 LRU cap)
-    retains evicted employees in its 64-kbit PayeeBloomFilter and gets zero false novelty."""
+    retains evicted employees in its dual-generation 64KB PayeeBloomFilter (<0.1% FPR at 25k) and rotates cleanly."""
     engine = StreamingFeatureEngine(max_known_payees=2048, secret_key="test-payroll-key")
 
-    # Cycle 1 (Month 1): Employer pays 5,000 distinct employees for the first time -> novelty == 1.0
     for i in range(5000):
         tx = TransactionRecord(
             tx_id=i + 1,
@@ -103,16 +98,13 @@ def test_large_employer_payroll_5000_payees_bloom_filter() -> None:
             payment_format="ACH",
         )
         feats = engine.extract_and_update(tx)
-        assert feats[8] == 1.0  # First-ever payment to this employee is novel
-
-    # Verify exact LRU is capped at 2,048 while payee_bloom is allocated
-    from hopstop.feature_engine import hash_account_id
+        assert feats[8] == 1.0
 
     corp_key = hash_account_id("CORP_EMPLOYER_01", "test-payroll-key")
     assert len(engine.states[corp_key].known_payees) == 2048
     assert engine.states[corp_key].payee_bloom is not None
 
-    # Cycle 2 (Month 2): Employer pays the earliest 1,000 employees (who were evicted from the 2,048 LRU!)
+    # Paying the earliest 1,000 evicted employees in Month 2 must yield counterparty_novelty == 0.0
     for i in range(1000):
         tx = TransactionRecord(
             tx_id=6000 + i,
@@ -129,7 +121,16 @@ def test_large_employer_payroll_5000_payees_bloom_filter() -> None:
             payment_format="ACH",
         )
         feats = engine.extract_and_update(tx)
-        assert feats[8] == 0.0, f"Evicted employee EMP_{i:05d} falsely flagged as novel!"
+        assert feats[8] == 0.0
+
+    # Also verify generation rotation ages out ancient generations while keeping recent generation
+    bf = PayeeBloomFilter(max_generation_items=100, rotation_sec=3600.0)
+    bf.add("ACCT_GEN1_ITEM", current_ts=1000.0)
+    assert bf.contains("ACCT_GEN1_ITEM")
+    bf.add("ACCT_GEN2_ITEM", current_ts=5000.0)  # Triggers rotation: GEN1 -> prev_bits, GEN2 -> active_bits
+    assert bf.contains("ACCT_GEN1_ITEM") and bf.contains("ACCT_GEN2_ITEM")
+    bf.add("ACCT_GEN3_ITEM", current_ts=9000.0)  # Triggers 2nd rotation: GEN1 aged out!
+    assert not bf.contains("ACCT_GEN1_ITEM") and bf.contains("ACCT_GEN2_ITEM") and bf.contains("ACCT_GEN3_ITEM")
 
 
 def test_strict_causality_no_future_leakage() -> None:
@@ -224,7 +225,7 @@ def test_treeshap_signed_negative_attributions_on_payroll() -> None:
 
 
 def test_audit_hash_chain_verification() -> None:
-    """Verifies that PolicyEngine builds a valid 64-hex SHA-256 + HMAC-SHA256 chain from genesis."""
+    """Verifies that PolicyEngine builds a valid 64-hex SHA-256 + HMAC-SHA256 chain from genesis covering ALLOWs."""
     policy = PolicyEngine(
         hold_threshold=0.85,
         step_up_threshold=0.60,
@@ -257,8 +258,24 @@ def test_audit_hash_chain_verification() -> None:
     assert ok, msg
 
 
-def test_audit_chain_single_byte_tamper_detection() -> None:
-    """Verifies that flipping a single byte in risk_score, action, prev_audit_hash, or hmac_signature fails verify_chain()."""
+@pytest.mark.parametrize(
+    "tamper_field",
+    [
+        "risk_score",
+        "action",
+        "reason_codes",
+        "model_version",
+        "hold_threshold",
+        "step_up_threshold",
+        "amount",
+        "from_account_hash",
+        "prev_audit_hash",
+        "hmac_signature",
+        "delete_allow_record",
+    ],
+)
+def test_audit_chain_single_byte_tamper_detection(tamper_field: str) -> None:
+    """Parametrized test verifying that tampering with ANY canonical payload field or deleting an ALLOW record fails verify_chain()."""
     policy = PolicyEngine(
         hold_threshold=0.85,
         step_up_threshold=0.60,
@@ -280,31 +297,36 @@ def test_audit_chain_single_byte_tamper_detection() -> None:
             payment_currency="INR",
             payment_format="Wire",
         )
-        policy.evaluate(tx, 0.95, [{"feature": "fan_out_1h", "shap_log_odds": 1.1}], record_audit=True)
+        score = 0.05 if i == 1 else 0.95  # index 1 is an ALLOW record
+        policy.evaluate(tx, score, [{"feature": "fan_out_1h", "shap_log_odds": 1.1}], record_audit=True)
 
-    # 1. Tamper risk_score
-    t1 = copy.deepcopy(policy.audit_chain)
-    t1[1].risk_score = 0.01
-    ok1, _ = PolicyEngine.verify_chain(t1, audit_hmac_key="unit-test-hmac-secret")
-    assert not ok1
+    chain = copy.deepcopy(policy.audit_chain)
+    rec = chain[1]
 
-    # 2. Tamper action
-    t2 = copy.deepcopy(policy.audit_chain)
-    t2[2].action = "ALLOW"
-    ok2, _ = PolicyEngine.verify_chain(t2, audit_hmac_key="unit-test-hmac-secret")
-    assert not ok2
+    if tamper_field == "risk_score":
+        rec.risk_score = 0.01
+    elif tamper_field == "action":
+        rec.action = "HOLD"
+    elif tamper_field == "reason_codes":
+        rec.reason_codes = [{"feature": "tampered", "shap_log_odds": 0.0}]
+    elif tamper_field == "model_version":
+        rec.model_version = "hopstop-gbdt-v9.9"
+    elif tamper_field == "hold_threshold":
+        rec.hold_threshold = 0.99
+    elif tamper_field == "step_up_threshold":
+        rec.step_up_threshold = 0.50
+    elif tamper_field == "amount":
+        rec.amount = 49999.99
+    elif tamper_field == "from_account_hash":
+        rec.from_account_hash = "ACCT_" + "0" * 32
+    elif tamper_field == "prev_audit_hash":
+        ph = rec.prev_audit_hash
+        rec.prev_audit_hash = ("f" if ph[0] != "f" else "0") + ph[1:]
+    elif tamper_field == "hmac_signature":
+        sig = rec.hmac_signature
+        rec.hmac_signature = sig[:-1] + ("a" if sig[-1] != "a" else "b")
+    elif tamper_field == "delete_allow_record":
+        del chain[1]  # Deleting the ALLOW record breaks the hash link at chain[2]!
 
-    # 3. Flip 1 byte in hmac_signature
-    t3 = copy.deepcopy(policy.audit_chain)
-    sig = t3[0].hmac_signature
-    flipped_char = "a" if sig[-1] != "a" else "b"
-    t3[0].hmac_signature = sig[:-1] + flipped_char
-    ok3, _ = PolicyEngine.verify_chain(t3, audit_hmac_key="unit-test-hmac-secret")
-    assert not ok3
-
-    # 4. Flip 1 byte in prev_audit_hash link
-    t4 = copy.deepcopy(policy.audit_chain)
-    ph = t4[2].prev_audit_hash
-    t4[2].prev_audit_hash = ("f" if ph[0] != "f" else "0") + ph[1:]
-    ok4, _ = PolicyEngine.verify_chain(t4, audit_hmac_key="unit-test-hmac-secret")
-    assert not ok4
+    ok, _ = PolicyEngine.verify_chain(chain, audit_hmac_key="unit-test-hmac-secret")
+    assert not ok, f"Tampering with {tamper_field} was not detected!"

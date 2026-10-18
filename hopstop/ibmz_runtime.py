@@ -102,7 +102,14 @@ def detect_ibmz_environment() -> Dict[str, Any]:
 
     snapml_spec = importlib.util.find_spec("snapml")
     snapml_available = snapml_spec is not None
-    snapml_version: Optional[str] = "installed" if snapml_available else None
+    snapml_version: Optional[str] = None
+    if snapml_available:
+        try:
+            import importlib.metadata
+
+            snapml_version = importlib.metadata.version("snapml")
+        except Exception:
+            snapml_version = "installed"
 
     hmac_info = get_hmac_key_status()
 

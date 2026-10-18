@@ -90,31 +90,65 @@ def hash_account_id(raw_id: str, secret_key: Optional[str] = None) -> str:
 
 
 class PayeeBloomFilter:
-    """Compact 65,536-bit (8 KB) 3-hash Bloom filter for evicted LRU payees on high-fan-out payroll accounts."""
+    """Dual-generation rotating Bloom filter (64 KB / 524,288 bits per generation, k=4 probes).
 
-    __slots__ = ("bits",)
+    Capacity & False-Positive Rate (FPR) guarantees:
+    - Each generation holds 524,288 bits (64 KB) with k=4 independent 19-bit probes.
+    - At n = 10,000 evicted payees: FPR = (1 - exp(-4 * 10000 / 524288))^4 = 0.0029% (2.9e-5).
+    - At n = 25,000 evicted payees (rotation threshold): FPR = 0.091% (< 0.1%).
+    - When `active_count >= max_generation_items` (25,000) or `ts - last_rotation_ts >= rotation_sec`,
+      `active_bits` rotates to `prev_bits` and a fresh `active_bits` generation starts, preventing
+      saturation and aging out stale payees while preserving recent recurring payroll recipients.
+    """
 
-    def __init__(self) -> None:
-        self.bits = bytearray(8192)  # 65,536 bits = 8 KB fixed memory
+    __slots__ = ("active_bits", "prev_bits", "active_count", "max_generation_items", "last_rotation_ts", "rotation_sec")
+
+    def __init__(self, max_generation_items: int = 25000, rotation_sec: float = 2592000.0) -> None:
+        self.active_bits = bytearray(65536)  # 524,288 bits = 64 KB
+        self.prev_bits: Optional[bytearray] = None
+        self.active_count: int = 0
+        self.max_generation_items: int = max_generation_items
+        self.last_rotation_ts: float = 0.0
+        self.rotation_sec: float = rotation_sec
 
     @staticmethod
-    def _probes(acct_token: str) -> Tuple[int, int, int]:
-        # Derive 3 independent 16-bit bit-indices from the HMAC hex suffix (or SHA-256 fallback)
-        hex_part = acct_token[5:17] if acct_token.startswith("ACCT_") and len(acct_token) >= 17 else hashlib.sha256(acct_token.encode("utf-8")).hexdigest()[:12]
-        h1 = int(hex_part[0:4], 16)
-        h2 = int(hex_part[4:8], 16)
-        h3 = int(hex_part[8:12], 16)
-        return h1, h2, h3
+    def _probes(acct_token: str) -> Tuple[int, int, int, int]:
+        # Derive 4 independent 19-bit bit-indices (0 .. 524,287) from 20 hex chars of HMAC token
+        hex_part = (
+            acct_token[5:25]
+            if acct_token.startswith("ACCT_") and len(acct_token) >= 25
+            else hashlib.sha256(acct_token.encode("utf-8")).hexdigest()[:20]
+        )
+        h1 = int(hex_part[0:5], 16) & 0x7FFFF
+        h2 = int(hex_part[5:10], 16) & 0x7FFFF
+        h3 = int(hex_part[10:15], 16) & 0x7FFFF
+        h4 = int(hex_part[15:20], 16) & 0x7FFFF
+        return h1, h2, h3, h4
 
-    def add(self, acct_token: str) -> None:
+    def _rotate(self, current_ts: float) -> None:
+        self.prev_bits = self.active_bits
+        self.active_bits = bytearray(65536)
+        self.active_count = 0
+        self.last_rotation_ts = current_ts
+
+    def add(self, acct_token: str, current_ts: float = 0.0) -> None:
+        if self.last_rotation_ts == 0.0 and current_ts > 0.0:
+            self.last_rotation_ts = current_ts
+        if self.active_count >= self.max_generation_items or (
+            current_ts > 0.0 and self.last_rotation_ts > 0.0 and (current_ts - self.last_rotation_ts) >= self.rotation_sec
+        ):
+            self._rotate(current_ts)
         for idx in self._probes(acct_token):
-            self.bits[idx >> 3] |= 1 << (idx & 7)
+            self.active_bits[idx >> 3] |= 1 << (idx & 7)
+        self.active_count += 1
 
     def contains(self, acct_token: str) -> bool:
-        for idx in self._probes(acct_token):
-            if not (self.bits[idx >> 3] & (1 << (idx & 7))):
-                return False
-        return True
+        probes = self._probes(acct_token)
+        if all(self.active_bits[idx >> 3] & (1 << (idx & 7)) for idx in probes):
+            return True
+        if self.prev_bits is not None:
+            return all(self.prev_bits[idx >> 3] & (1 << (idx & 7)) for idx in probes)
+        return False
 
 
 class SlidingWindow:
@@ -317,7 +351,7 @@ class StreamingFeatureEngine:
                 evicted_payee, _ = s_state.known_payees.popitem(last=False)
                 if s_state.payee_bloom is None:
                     s_state.payee_bloom = PayeeBloomFilter()
-                s_state.payee_bloom.add(evicted_payee)
+                s_state.payee_bloom.add(evicted_payee, t)
 
         s_state.tx_count += 1
         delta = amt - s_state.mean_amt

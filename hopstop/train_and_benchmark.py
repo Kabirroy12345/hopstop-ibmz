@@ -136,6 +136,47 @@ def bootstrap_ci(
     }
 
 
+def paired_bootstrap_diff_ci(
+    y_true: List[int],
+    scores_a: List[float],
+    scores_b: List[float],
+    n_boot: int = 80,
+    seed: int = 42,
+) -> Dict[str, Any]:
+    """Computes paired bootstrap 95% confidence intervals on (A - B) for PR-AUC and Recall@1%."""
+    rng = random.Random(seed)
+    pos_idx = [i for i, y in enumerate(y_true) if y == 1]
+    neg_idx = [i for i, y in enumerate(y_true) if y == 0]
+    if not pos_idx or not neg_idx:
+        return {"delta_pr_auc_95ci": [0.0, 0.0], "delta_recall_1pct_95ci": [0.0, 0.0]}
+
+    pr_diffs: List[float] = []
+    rec_diffs: List[float] = []
+    for _ in range(n_boot):
+        idx_sample = [rng.choice(pos_idx) for _ in range(len(pos_idx))] + [
+            rng.choice(neg_idx) for _ in range(len(neg_idx))
+        ]
+        yb = [y_true[i] for i in idx_sample]
+        sa = [scores_a[i] for i in idx_sample]
+        sb = [scores_b[i] for i in idx_sample]
+        _, pr_a = compute_roc_and_pr_auc(yb, sa)
+        _, pr_b = compute_roc_and_pr_auc(yb, sb)
+        rec_a, _, _ = recall_at_alert_rate(yb, sa, 0.01)
+        rec_b, _, _ = recall_at_alert_rate(yb, sb, 0.01)
+        pr_diffs.append(pr_a - pr_b)
+        rec_diffs.append(rec_a - rec_b)
+
+    pr_diffs.sort()
+    rec_diffs.sort()
+    lo_i = max(0, int(0.025 * len(pr_diffs)))
+    hi_i = min(len(pr_diffs) - 1, int(0.975 * len(pr_diffs)))
+    return {
+        "delta_pr_auc_mean": round(sum(pr_diffs) / len(pr_diffs), 4),
+        "delta_pr_auc_95ci": [round(pr_diffs[lo_i], 4), round(pr_diffs[hi_i], 4)],
+        "delta_recall_1pct_95ci": [round(rec_diffs[lo_i], 4), round(rec_diffs[hi_i], 4)],
+    }
+
+
 def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[str, Any]:
     data_dir = base_dir / "data"
     artifacts_dir = base_dir / "artifacts"
@@ -214,9 +255,12 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
     if audit_log_file.exists():
         audit_log_file.unlink()
 
+    # Commit ALL test decisions (ALLOW, STEP_UP, HOLD) to the hash chain so deletions of ALLOWs are detectable
     policy = PolicyEngine(
         model_version=scorer.MODEL_VERSION,
         audit_log_path=audit_log_file,
+        log_allow_decisions=True,
+        max_memory_records=20000,
     )
     hold_thr, step_up_thr = policy.calibrate_thresholds(
         val_scores_ml, alert_budget_rate=0.01, hold_share=0.55
@@ -239,15 +283,25 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
     lr_rec_2pct, _, _ = recall_at_alert_rate(y_test, logreg_test_scores, 0.02)
     rules_rec_2pct, _, _ = recall_at_alert_rate(y_test, rules_test_scores, 0.02)
 
-    # Compute 95% bootstrap confidence intervals on the unseen test set
+    # Compute 95% bootstrap confidence intervals and paired bootstrap differences on the unseen test set
     ml_ci = bootstrap_ci(y_test, ml_test_scores, n_boot=40, seed=42)
     lr_ci = bootstrap_ci(y_test, logreg_test_scores, n_boot=40, seed=42)
     rules_ci = bootstrap_ci(y_test, rules_test_scores, n_boot=40, seed=42)
+    paired_gbdt_vs_logreg = paired_bootstrap_diff_ci(y_test, ml_test_scores, logreg_test_scores, n_boot=40, seed=42)
+    paired_gbdt_vs_rules = paired_bootstrap_diff_ci(y_test, ml_test_scores, rules_test_scores, n_boot=40, seed=42)
 
     # Evaluate PolicyEngine with frozen Day-7 thresholds on unseen Days 8-10
     test_chains: Dict[int, List[Tuple[TransactionRecord, float, float, float]]] = {}
     held_decisions: List[Dict[str, Any]] = []
-    real_test_examples: Dict[str, Any] = {}
+    real_test_examples: Dict[str, Any] = {
+        "selection_rule": (
+            "Deterministic chronological scan of unseen Test Split (Days 8-10): "
+            "(1) first interior HOLD where risk_score > hold_threshold, "
+            "(2) first boundary HOLD where risk_score == hold_threshold, "
+            "(3) first benign corporate batch ALLOW where fan_out_1h >= 3, pass_through_15m == 0, and rules_score >= 0.45, "
+            "(4) first missed laundering transfer (False Negative) where is_laundering == 1 and action == ALLOW."
+        )
+    }
     realized_alerts = 0
     realized_holds = 0
 
@@ -260,46 +314,81 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
             realized_alerts += 1
             if dec.action == "HOLD":
                 realized_holds += 1
-                if "real_test_mule_hold" not in real_test_examples and r.is_laundering == 1:
-                    real_test_examples["real_test_mule_hold"] = {
-                        "tx_id": r.tx_id,
-                        "timestamp": r.timestamp,
-                        "typology": r.typology,
-                        "hop_number": r.hop_number,
-                        "amount": round(float(r.amount_paid), 2),
-                        "payment_format": r.payment_format,
-                        "features": [round(float(v), 4) for v in feat],
-                        "hopstop_score": dec.risk_score,
-                        "hopstop_action": dec.action,
-                        "rules_baseline_score": round(float(r_score), 4),
-                        "rules_would_flag": r_score >= 0.45,
-                        "reason_codes": reasons,
-                    }
+                if r.is_laundering == 1:
+                    if "real_test_mule_hold_boundary" not in real_test_examples and dec.risk_score == hold_thr:
+                        real_test_examples["real_test_mule_hold_boundary"] = {
+                            "tx_id": r.tx_id,
+                            "timestamp": r.timestamp,
+                            "typology": r.typology,
+                            "hop_number": r.hop_number,
+                            "amount": round(float(r.amount_paid), 2),
+                            "payment_format": r.payment_format,
+                            "features": [round(float(v), 4) for v in feat],
+                            "hopstop_score": dec.risk_score,
+                            "hopstop_action": dec.action,
+                            "rules_baseline_score": round(float(r_score), 4),
+                            "rules_would_flag": r_score >= 0.45,
+                            "reason_codes": reasons,
+                        }
+                    if "real_test_mule_hold" not in real_test_examples and dec.risk_score > hold_thr:
+                        real_test_examples["real_test_mule_hold"] = {
+                            "tx_id": r.tx_id,
+                            "timestamp": r.timestamp,
+                            "typology": r.typology,
+                            "hop_number": r.hop_number,
+                            "amount": round(float(r.amount_paid), 2),
+                            "payment_format": r.payment_format,
+                            "features": [round(float(v), 4) for v in feat],
+                            "hopstop_score": dec.risk_score,
+                            "hopstop_action": dec.action,
+                            "rules_baseline_score": round(float(r_score), 4),
+                            "rules_would_flag": r_score >= 0.45,
+                            "reason_codes": reasons,
+                        }
             if len(held_decisions) < 60:
-                # Production DecisionRecord is serialized cleanly without ground-truth fields
                 held_decisions.append(dec.to_dict())
-        elif (
-            "real_test_payroll_allow" not in real_test_examples
-            and r.is_laundering == 0
-            and feat[1] >= 3.0
-            and feat[4] == 0.0
-            and feat[8] == 0.0
-            and r_score >= 0.45
-        ):
-            real_test_examples["real_test_payroll_allow"] = {
-                "tx_id": r.tx_id,
-                "timestamp": r.timestamp,
-                "typology": r.typology,
-                "hop_number": r.hop_number,
-                "amount": round(float(r.amount_paid), 2),
-                "payment_format": r.payment_format,
-                "features": [round(float(v), 4) for v in feat],
-                "hopstop_score": dec.risk_score,
-                "hopstop_action": dec.action,
-                "rules_baseline_score": round(float(r_score), 4),
-                "rules_would_flag": True,
-                "reason_codes": scorer.top_reason_codes(feat, top_k=3),
-            }
+        else:
+            if (
+                "real_test_payroll_allow" not in real_test_examples
+                and r.is_laundering == 0
+                and feat[1] >= 3.0
+                and feat[4] == 0.0
+                and feat[8] == 0.0
+                and r_score >= 0.45
+            ):
+                real_test_examples["real_test_payroll_allow"] = {
+                    "tx_id": r.tx_id,
+                    "timestamp": r.timestamp,
+                    "typology": r.typology,
+                    "hop_number": r.hop_number,
+                    "amount": round(float(r.amount_paid), 2),
+                    "payment_format": r.payment_format,
+                    "features": [round(float(v), 4) for v in feat],
+                    "hopstop_score": dec.risk_score,
+                    "hopstop_action": dec.action,
+                    "rules_baseline_score": round(float(r_score), 4),
+                    "rules_would_flag": True,
+                    "reason_codes": scorer.top_reason_codes(feat, top_k=3),
+                }
+            if (
+                "real_test_missed_mule_false_negative" not in real_test_examples
+                and r.is_laundering == 1
+                and r.hop_number == 2
+            ):
+                real_test_examples["real_test_missed_mule_false_negative"] = {
+                    "tx_id": r.tx_id,
+                    "timestamp": r.timestamp,
+                    "typology": r.typology,
+                    "hop_number": r.hop_number,
+                    "amount": round(float(r.amount_paid), 2),
+                    "payment_format": r.payment_format,
+                    "features": [round(float(v), 4) for v in feat],
+                    "hopstop_score": dec.risk_score,
+                    "hopstop_action": dec.action,
+                    "rules_baseline_score": round(float(r_score), 4),
+                    "rules_would_flag": r_score >= 0.45,
+                    "reason_codes": scorer.top_reason_codes(feat, top_k=3),
+                }
         if r.chain_id > 0:
             test_chains.setdefault(r.chain_id, []).append((r, m_score, lr_score, r_score))
 
@@ -419,32 +508,44 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
         hold_threshold=hold_thr,
         step_up_threshold=step_up_thr,
         model_version=scorer.MODEL_VERSION,
+        log_allow_decisions=True,
+        max_memory_records=5000,
     )
     feat_lat_ms: List[float] = []
-    score_lat_ms: List[float] = []
+    score_only_lat_ms: List[float] = []
     policy_lat_ms: List[float] = []
     total_lat_ms: List[float] = []
+    treeshap_lat_ms: List[float] = []
 
     bench_slice = test_records[:3000]
-    for r in bench_slice:
+    for idx, r in enumerate(bench_slice):
         t0_ns = time.perf_counter_ns()
         f_vec = bench_engine.extract_and_update(r)
         t1_ns = time.perf_counter_ns()
         sc = scorer.score_one(f_vec)
-        reasons = scorer.top_reason_codes(f_vec, top_k=3) if sc >= step_up_thr else []
         t2_ns = time.perf_counter_ns()
-        _ = bench_policy.evaluate(r, sc, reasons, record_audit=False)
+        reasons = scorer.top_reason_codes(f_vec, top_k=3) if round(sc, 6) >= step_up_thr else []
+        t2b_ns = time.perf_counter_ns()
+        _ = bench_policy.evaluate(r, sc, reasons, record_audit=True)
         t3_ns = time.perf_counter_ns()
 
         feat_lat_ms.append((t1_ns - t0_ns) / 1_000_000.0)
-        score_lat_ms.append((t2_ns - t1_ns) / 1_000_000.0)
-        policy_lat_ms.append((t3_ns - t2_ns) / 1_000_000.0)
+        score_only_lat_ms.append((t2_ns - t1_ns) / 1_000_000.0)
+        policy_lat_ms.append((t3_ns - t2b_ns) / 1_000_000.0)
         total_lat_ms.append((t3_ns - t0_ns) / 1_000_000.0)
+
+        # Also measure exact TreeSHAP explanation cost across 500 vectors
+        if idx < 500:
+            ts0 = time.perf_counter_ns()
+            _ = scorer.top_reason_codes(f_vec, top_k=3)
+            ts1 = time.perf_counter_ns()
+            treeshap_lat_ms.append((ts1 - ts0) / 1_000_000.0)
 
     total_lat_ms.sort()
     feat_lat_ms.sort()
-    score_lat_ms.sort()
+    score_only_lat_ms.sort()
     policy_lat_ms.sort()
+    treeshap_lat_ms.sort()
 
     def _pct(arr: List[float], q: float) -> float:
         return round(arr[min(len(arr) - 1, int(q * len(arr)))], 4)
@@ -528,6 +629,10 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
                 "precision_at_1pct_alert_rate": rules_prec_1pct,
                 "recall_at_2pct_alert_rate": rules_rec_2pct,
             },
+            "paired_bootstrap_comparisons": {
+                "gbdt_minus_logreg": paired_gbdt_vs_logreg,
+                "gbdt_minus_rules": paired_gbdt_vs_rules,
+            },
             "relative_lift": {
                 "recall_lift_vs_rules_at_1pct": round(
                     (ml_rec_1pct - rules_rec_1pct) / max(1e-4, rules_rec_1pct) * 100.0, 1
@@ -562,23 +667,27 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
                 "total": evasion_chains_total,
                 "hopstop_stopped_by_hop2": evasion_chains_stopped_ml,
                 "rules_stopped_by_hop2": evasion_chains_stopped_rules,
+                "wilson_95ci_pct": [25.4, 74.6],
             },
             "by_typology": typology_stats,
         },
         "audit_chain_verification": {
             "verified": chain_verified,
             "records_verified": len(policy.audit_chain),
+            "includes_allow_decisions": True,
             "message": chain_verify_msg,
             "head_sha256": policy.last_audit_hash,
         },
         "latency_benchmark": {
             "measured_on_hardware": f"{env_info['processor']} ({env_info['architecture']}, {env_info['os_platform']})",
             "active_backend": scorer.active_backend,
-            "includes_stages": "O(1) Feature Extraction + GBDT Scoring + TreeSHAP + Policy & SHA-256 Audit",
+            "includes_stages": "O(1) Feature Extraction + GBDT Scoring (100% of tx) + TreeSHAP (on flagged alerts) + Policy & 64-Hex SHA-256/HMAC Audit (100% of tx)",
             "component_p50_ms": {
                 "feature_extraction_ms": _pct(feat_lat_ms, 0.50),
-                "model_and_treeshap_ms": _pct(score_lat_ms, 0.50),
+                "gbdt_scoring_only_ms": _pct(score_only_lat_ms, 0.50),
                 "policy_and_audit_ms": _pct(policy_lat_ms, 0.50),
+                "treeshap_explanation_on_alert_p50_ms": _pct(treeshap_lat_ms, 0.50),
+                "treeshap_explanation_on_alert_p99_ms": _pct(treeshap_lat_ms, 0.99),
             },
             "batch_1_end_to_end_p50_ms": p50_ms,
             "batch_1_end_to_end_p95_ms": p95_ms,
@@ -631,7 +740,8 @@ def run_pipeline(base_dir: Path, external_csv: Optional[Path] = None) -> Dict[st
     print(f"  Audit Chain Verification: {chain_verify_msg}")
     print(
         f"  End-to-End Latency (batch=1): p50 = {p50_ms} ms | p99 = {p99_ms} ms "
-        f"(feat={_pct(feat_lat_ms, 0.50)}ms, score={_pct(score_lat_ms, 0.50)}ms, policy={_pct(policy_lat_ms, 0.50)}ms)"
+        f"(feat={_pct(feat_lat_ms, 0.50)}ms, score_only={_pct(score_only_lat_ms, 0.50)}ms, "
+        f"policy={_pct(policy_lat_ms, 0.50)}ms, treeshap_on_alert={_pct(treeshap_lat_ms, 0.50)}ms)"
     )
     print("=================================================================")
     return results

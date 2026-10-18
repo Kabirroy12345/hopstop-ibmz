@@ -127,7 +127,7 @@ def score_preset_scenario(scenario: str) -> dict:
     }
 
     real_examples = bench.get("real_test_case_examples", {})
-    if scenario in real_examples:
+    if scenario in real_examples and isinstance(real_examples[scenario], dict):
         rex = real_examples[scenario]
         p = {
             "title": f"Real Unseen Test Tx #{rex['tx_id']} ({rex['typology']}, INR {rex['amount']:,.2f})",
@@ -148,9 +148,13 @@ def score_preset_scenario(scenario: str) -> dict:
 
     t0 = time.perf_counter_ns()
     score = scorer.score_one(feats)
+    t1 = time.perf_counter_ns()
     reasons = scorer.top_reason_codes(feats, top_k=3)
+    t2 = time.perf_counter_ns()
     rules_score = VelocityRulesBaseline.score_one(feats)
-    elapsed_ms = round((time.perf_counter_ns() - t0) / 1_000_000.0, 4)
+    gbdt_scoring_ms = round((t1 - t0) / 1_000_000.0, 4)
+    treeshap_ms = round((t2 - t1) / 1_000_000.0, 4)
+    elapsed_ms = round((t2 - t0) / 1_000_000.0, 4)
 
     tx = TransactionRecord(
         tx_id=99001,
@@ -171,6 +175,8 @@ def score_preset_scenario(scenario: str) -> dict:
     res["title"] = p["title"]
     res["scenario_source"] = p["scenario_source"]
     res["latency_ms"] = elapsed_ms
+    res["gbdt_scoring_only_ms"] = gbdt_scoring_ms
+    res["treeshap_explanation_ms"] = treeshap_ms
     res["rules_baseline_score"] = round(rules_score, 4)
     res["rules_would_flag"] = rules_score >= 0.45
     res["feature_breakdown"] = [
