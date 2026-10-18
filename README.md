@@ -30,6 +30,12 @@ When an Authorized Push Payment (APP) scam, phishing attack, or cyber-extortion 
 
 ## 2. End-to-End Architecture on IBM Z / LinuxONE
 
+<div align="center">
+  <img src="submission/HopStop_System_Architecture.svg" alt="HopStop Overall System Architecture on IBM Z & LinuxONE" width="100%" />
+  <br/>
+  <sub><b>Figure 1:</b> HopStop Co-Located Pre-Settlement Inference & Cryptographic Audit Architecture on IBM Z / LinuxONE (<code>s390x</code>). <a href="submission/HopStop_Architecture_Diagram.pdf">Download Architecture PDF</a> • <a href="submission/HopStop_System_Architecture.png">View High-Res PNG</a> • <a href="submission/HopStop_System_Architecture.svg">View Vector SVG</a></sub>
+</div>
+
 ```mermaid
 flowchart LR
     subgraph Z["IBM Z / LinuxONE (s390x Security & Compute Enclave)"]
