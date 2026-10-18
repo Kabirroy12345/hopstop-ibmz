@@ -981,7 +981,7 @@ const SCENARIO_STATES = {
       { name: "rapid_turnover_flag", val: "0.0" },
       { name: "fan_out_1h", val: "5.0" },
       { name: "amount_zscore", val: "+0.25" },
-      { name: "time_since_credit_log", val: "11.36" }
+      { name: "time_since_last_credit_log", val: "11.36" }
     ],
     prev_hash: "c30491e82a71d553",
     audit_sha256: "e71904b28c61f33901a45d82e7c31094b8821f63d09a4128c55e7019a38b410f"
@@ -1167,10 +1167,10 @@ const FEATURE_IMPORTANCES = [
 
 const TELEMETRY_ROWS = [
   ["Target Platform", "IBM Z / LinuxONE (s390x Container Ready)"],
-  ["Telum NNPA Probe", "libzdnn zdnn_is_nnpa_installed() auto-detect"],
-  ["Snap ML Engine", "tree_format='auto' (Telum NNPA / CPU Tensor-Trees)"],
-  ["Hardware Crypto", "CPACF AES-256-GCM & Salted SHA-256 Audit Chain"],
-  ["Chronological Split", "35,648 train (Days 1–7) / 15,232 test (Days 8–10)"]
+  ["Telum NNPA Probe", "Facility 165 & libzdnn zdnn_is_nnpa_installed()"],
+  ["Scoring Backend", "Snap ML tree_format='auto' / Portable Depth-2 GBDT"],
+  ["Hardware Crypto", "CPACF (MSA Facility 17/76/146) & Secure Exec (158)"],
+  ["3-Way Split", "Train Days 1–6 | Val Day 7 | Test Days 8–10"]
 ];
 
 let currentStreamFilter = "ALL";
@@ -1191,9 +1191,26 @@ document.addEventListener("mousemove", (e) => {
   });
 });
 
-// Render Hero Sandbox State Machine
-function selectScenario(key) {
-  const s = SCENARIO_STATES[key] || SCENARIO_STATES.fan_out_mule;
+// Render Hero Sandbox State Machine (Fetches live from /api/score_preset when server is active, with instant offline fallback)
+async function selectScenario(key) {
+  let s = Object.assign({}, SCENARIO_STATES[key] || SCENARIO_STATES.fan_out_mule);
+  try {
+    const resp = await fetch(`/api/score_preset?type=${encodeURIComponent(key)}`);
+    if (resp.ok) {
+      const live = await resp.json();
+      s.decision = live.action;
+      s.score = live.risk_score;
+      s.latency_ms = `${live.latency_ms} ms`;
+      s.from_hash = live.from_account_hash.slice(0, 17);
+      s.to_hash = live.to_account_hash.slice(0, 17);
+      s.audit_sha256 = live.audit_hash;
+      if (Array.isArray(live.reason_codes) && live.reason_codes.length) {
+        s.shap_reasons = live.reason_codes;
+      }
+    }
+  } catch (_) {
+    // Standalone file:// mode uses embedded calibrated snapshot
+  }
   document.querySelectorAll("#scenarioTabs .seg-tab").forEach((btn) => {
     btn.classList.toggle("active", btn.id === "tab_" + key);
   });

@@ -95,8 +95,12 @@ def main() -> None:
     zip_path = sub_dir / "HopStop_Project_KabirRoy.zip"
     include_paths = [
         base_dir / "README.md",
+        base_dir / "LICENSE",
         base_dir / "requirements.txt",
         base_dir / "Dockerfile.s390x",
+        base_dir / "run_hopstop.sh",
+        base_dir / "Start_HopStop_Dashboard.bat",
+        base_dir / ".github" / "workflows" / "ci.yml",
         base_dir / "hopstop" / "__init__.py",
         base_dir / "hopstop" / "data_generator.py",
         base_dir / "hopstop" / "feature_engine.py",
@@ -105,10 +109,13 @@ def main() -> None:
         base_dir / "hopstop" / "train_and_benchmark.py",
         base_dir / "hopstop" / "server.py",
         base_dir / "hopstop" / "dashboard.html",
+        base_dir / "tests" / "test_hopstop.py",
         base_dir / "artifacts" / "benchmark_results.json",
-        base_dir / "artifacts" / "hopstop_model.pkl",
+        base_dir / "artifacts" / "hopstop_model.json",
         sub_dir / "HopStop_PitchDeck_KabirRoy.pdf",
         sub_dir / "HopStop_Outline_KabirRoy.pdf",
+        sub_dir / "HopStop_Architecture_Diagram.pdf",
+        sub_dir / "HopStop_System_Architecture.svg",
     ]
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for p in include_paths:

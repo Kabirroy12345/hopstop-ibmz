@@ -1,3 +1,7 @@
-# HopStop runs out-of-the-box using the Python 3 standard library + ctypes (libzdnn).
-# Optional accelerators on IBM Z / LinuxONE (s390x):
-# snapml>=1.14.0
+# Core runtime uses only the Python 3.9+ Standard Library for zero-dependency portability.
+# Optional scientific & IBM Z s390x hardware-accelerated packages (pinned for reproducibility):
+numpy==1.26.4; platform_machine == "s390x"
+scipy==1.13.1; platform_machine == "s390x"
+scikit-learn==1.5.1; platform_machine == "s390x"
+snapml==1.15.0; platform_machine == "s390x"
+pytest==8.3.2

@@ -1,40 +1,40 @@
 """Multi-threaded HTTP server & live scoring API for HopStop.
 
 Serves:
-  - GET /                        -> Interactive IBM Carbon Analyst Console
-  - GET /api/benchmarks          -> Full benchmark metrics, chains & held alerts
-  - GET /api/score_preset?type=X -> Live-scores a transaction on the trained model
+  - GET /                        -> Interactive Analyst Console (`hopstop/dashboard.html`)
+  - GET /api/benchmarks          -> Full benchmark metrics, 95% CIs, chains & held alerts
+  - GET /api/score_preset?type=X -> Live-scores a transaction on the trained JSON model
                                     and returns exact microsecond latency, 12 features,
-                                    Top-3 reason codes, and SHA-256 audit hash.
+                                    exact TreeSHAP reason codes, and full 64-hex SHA-256 audit hash.
+  - GET /api/verify_audit        -> Cryptographically verifies the active hash-chained audit log.
 """
 from __future__ import annotations
 
-import hashlib
 import json
-import pickle
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import Optional, Tuple
 from urllib.parse import parse_qs, urlparse
 
 from hopstop.data_generator import TransactionRecord
-from hopstop.feature_engine import FEATURE_NAMES, StreamingFeatureEngine, hash_account_id
-from hopstop.ibmz_runtime import REASON_LABELS, SnapMLAcceleratedScorer
+from hopstop.feature_engine import FEATURE_NAMES
+from hopstop.ibmz_runtime import REASON_LABELS, SnapMLAcceleratedScorer, VelocityRulesBaseline
 from hopstop.policy_engine import PolicyEngine
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ARTIFACTS_DIR = BASE_DIR / "artifacts"
 DASHBOARD_HTML = Path(__file__).resolve().parent / "dashboard.html"
 
-_BENCH_CACHE: dict | None = None
-_SCORER_CACHE: SnapMLAcceleratedScorer | None = None
-_POLICY_CACHE: PolicyEngine | None = None
+_BENCH_CACHE: Optional[dict] = None
+_SCORER_CACHE: Optional[SnapMLAcceleratedScorer] = None
+_POLICY_CACHE: Optional[PolicyEngine] = None
 
 
-def _ensure_loaded() -> tuple[dict, SnapMLAcceleratedScorer, PolicyEngine]:
+def _ensure_loaded() -> Tuple[dict, SnapMLAcceleratedScorer, PolicyEngine]:
     global _BENCH_CACHE, _SCORER_CACHE, _POLICY_CACHE
     bench_path = ARTIFACTS_DIR / "benchmark_results.json"
-    model_path = ARTIFACTS_DIR / "hopstop_model.pkl"
+    model_path = ARTIFACTS_DIR / "hopstop_model.json"
     if not bench_path.exists() or not model_path.exists():
         from hopstop.train_and_benchmark import run_pipeline
 
@@ -42,22 +42,22 @@ def _ensure_loaded() -> tuple[dict, SnapMLAcceleratedScorer, PolicyEngine]:
     if _BENCH_CACHE is None:
         _BENCH_CACHE = json.loads(bench_path.read_text(encoding="utf-8"))
     if _SCORER_CACHE is None:
-        with model_path.open("rb") as f:
-            _SCORER_CACHE = pickle.load(f)
+        _SCORER_CACHE = SnapMLAcceleratedScorer.load_json(model_path)
     if _POLICY_CACHE is None:
         m = _BENCH_CACHE["model_metrics"]["hopstop_gbdt"]
         _POLICY_CACHE = PolicyEngine(
-            hold_threshold=m["hold_threshold"],
-            step_up_threshold=m["step_up_threshold"],
+            hold_threshold=m["val_calibrated_hold_threshold"],
+            step_up_threshold=m["val_calibrated_step_up_threshold"],
+            model_version=_SCORER_CACHE.MODEL_VERSION,
+            log_allow_decisions=True,
         )
     return _BENCH_CACHE, _SCORER_CACHE, _POLICY_CACHE
 
 
 def score_preset_scenario(scenario: str) -> dict:
-    """Runs live feature extraction + GBDT tensor-tree scoring for interactive demo."""
-    bench, scorer, policy = _ensure_loaded()
+    """Runs live GBDT scoring + exact TreeSHAP + verifiable SHA-256 audit logging."""
+    _, scorer, policy = _ensure_loaded()
 
-    # Representative feature vectors for interactive live testing
     presets = {
         "fan_out_mule": {
             "title": "Mule Hop 1 -> Hop 2 Fan-Out Dispersal (INR 185,000 Wire)",
@@ -126,8 +126,6 @@ def score_preset_scenario(scenario: str) -> dict:
     t0 = time.perf_counter_ns()
     score = scorer.score_one(feats)
     reasons = scorer.top_reason_codes(feats, top_k=3)
-    from hopstop.ibmz_runtime import VelocityRulesBaseline
-
     rules_score = VelocityRulesBaseline.score_one(feats)
     elapsed_ms = round((time.perf_counter_ns() - t0) / 1_000_000.0, 4)
 
@@ -144,10 +142,6 @@ def score_preset_scenario(scenario: str) -> dict:
         amount_paid=p["amount"],
         payment_currency="INR",
         payment_format=p["format"],
-        is_laundering=1 if p["hop"] > 0 else 0,
-        chain_id=999 if p["hop"] > 0 else 0,
-        hop_number=p["hop"],
-        typology=p["typology"],
     )
     decision = policy.evaluate(tx, score, reasons, record_audit=True)
     res = decision.to_dict()
@@ -195,6 +189,19 @@ class HopStopHandler(BaseHTTPRequestHandler):
             qs = parse_qs(parsed.query)
             scenario = qs.get("type", ["fan_out_mule"])[0]
             self._send_json(score_preset_scenario(scenario))
+            return
+
+        if parsed.path == "/api/verify_audit":
+            _, _, policy = _ensure_loaded()
+            ok, msg = PolicyEngine.verify_chain(policy.audit_chain)
+            self._send_json(
+                {
+                    "verified": ok,
+                    "message": msg,
+                    "records_count": len(policy.audit_chain),
+                    "head_sha256": policy.last_audit_hash,
+                }
+            )
             return
 
         self._send_json({"error": "Not found"}, status=404)
